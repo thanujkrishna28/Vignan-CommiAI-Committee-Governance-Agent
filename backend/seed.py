@@ -40,39 +40,39 @@ def seed():
         # ─── USERS ────────────────────────────────────────────────────────────
         
         registrar = User(
-            name="Dr. Rajesh Kumar",
-            email="registrar@example.com",
+            name="Prof. Dr. K. V. Krishna Kishore",
+            email="kvkk_cse@vignan.ac.in",
             password_hash=hash_password("Demo@1234"),
             role=UserRole.REGISTRAR,
             status=UserStatus.ACTIVE,
-            phone="+91-9876543210"
+            phone="+91-9440856976"
         )
         
         convener = User(
-            name="Prof. Anita Sharma",
-            email="convener@example.com",
+            name="Dr. S. V. Phani Kumar",
+            email="dsvpk_cse@vignan.ac.in",
             password_hash=hash_password("Demo@1234"),
             role=UserRole.CONVENER,
             status=UserStatus.ACTIVE,
-            phone="+91-9876543211"
+            phone="+91-9912354004"
         )
         
         member_user = User(
-            name="Dr. Venkat Reddy",
-            email="member@example.com",
+            name="Dr. J. Veeranjaneyulu",
+            email="jv_cse@vignan.ac.in",
             password_hash=hash_password("Demo@1234"),
             role=UserRole.MEMBER,
             status=UserStatus.ACTIVE,
-            phone="+91-9876543212"
+            phone="+91-9032128228"
         )
         
         iqac_user = User(
-            name="Dr. Priya Nair",
-            email="iqac@example.com",
+            name="Dr. E. Deepak Chowdary",
+            email="edc_cse@vignan.ac.in",
             password_hash=hash_password("Demo@1234"),
             role=UserRole.IQAC,
             status=UserStatus.ACTIVE,
-            phone="+91-9876543213"
+            phone="+91-9553147457"
         )
         
         db.add_all([registrar, convener, member_user, iqac_user])

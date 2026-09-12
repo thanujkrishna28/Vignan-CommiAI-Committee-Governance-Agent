@@ -39,8 +39,8 @@ export default function IqacDashboard() {
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, width: '100%' }}>
       {/* IQAC Header Banner */}
       <PortalGreetingBanner
-        roleTitle="IQAC Director"
-        badgeText="IQAC / ACCREDITATION AUDIT"
+        roleTitle="Dr. E. Deepak Chowdary"
+        badgeText="IQAC COORDINATOR • ASST. PROFESSOR, CSE"
         statusText="Internal Quality Assurance Cell • Audit statutory committee compositions, enforce UGC/AICTE mandates, and compile institutional evidence for accreditation."
         quoteText="“Quality Assurance. Accreditation Readiness. Continuous Institutional Improvement.” — Vignan CommiAI Governance Engine"
         accentColor="#10B981"

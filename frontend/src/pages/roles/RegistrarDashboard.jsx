@@ -163,7 +163,8 @@ export default function RegistrarDashboard() {
         {/* Left Hero Card */}
         <Grid size={{ xs: 12, lg: assistantVisible ? 8 : 12 }}>
           <PortalGreetingBanner
-            roleTitle="Registrar"
+            roleTitle="Prof. Dr. K. V. Krishna Kishore"
+            badgeText="REGISTRAR • PROFESSOR & DEAN, SOCE"
             statusText={`Institutional governance status: ${totalCommittees} active bodies, ${avgComplianceScore}% statutory compliance.`}
             quoteText="“Transparency. Statutory Accountability. Academic Excellence.” — Vignan CommiAI Governance Engine"
             accentColor="#1D61E7"

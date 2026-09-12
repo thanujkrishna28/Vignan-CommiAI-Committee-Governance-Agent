@@ -40,54 +40,54 @@ const DEMO_ACCOUNTS = [
   {
     role: 'REGISTRAR',
     label: 'Registrar',
-    subLabel: 'Super Admin',
-    name: 'Dr. Rajesh Kumar',
-    email: 'registrar@example.com',
+    subLabel: 'Dean, SOCE',
+    name: 'Prof. Dr. K. V. Krishna Kishore',
+    email: 'kvkk_cse@vignan.ac.in',
     password: 'Demo@1234',
     color: '#1D61E7',
     bgColor: 'rgba(29, 97, 231, 0.08)',
     borderColor: 'rgba(29, 97, 231, 0.25)',
     icon: <AdminIcon sx={{ fontSize: 20 }} />,
-    desc: 'Full governance, executive controls & MoM sign-off',
+    desc: 'Executive governance, statutory controls & institutional sign-off',
   },
   {
     role: 'CONVENER',
     label: 'Convener',
-    subLabel: 'Member Secretary',
-    name: 'Prof. Anita Sharma',
-    email: 'convener@example.com',
+    subLabel: 'HoD, CSE',
+    name: 'Dr. S. V. Phani Kumar',
+    email: 'dsvpk_cse@vignan.ac.in',
     password: 'Demo@1234',
     color: '#7C3AED',
     bgColor: 'rgba(124, 58, 237, 0.08)',
     borderColor: 'rgba(124, 58, 237, 0.25)',
     icon: <ConvenerIcon sx={{ fontSize: 20 }} />,
-    desc: 'Schedule meetings, quorum audit & AI MoM drafting',
+    desc: 'Meeting notices, live quorum validation & automated MoM generation',
   },
   {
     role: 'MEMBER',
     label: 'Member',
-    subLabel: 'Faculty / Nominee',
-    name: 'Dr. Venkat Reddy',
-    email: 'member@example.com',
+    subLabel: 'Asst. Prof., CSE',
+    name: 'Dr. J. Veeranjaneyulu',
+    email: 'jv_cse@vignan.ac.in',
     password: 'Demo@1234',
     color: '#059669',
     bgColor: 'rgba(5, 150, 105, 0.08)',
     borderColor: 'rgba(5, 150, 105, 0.25)',
     icon: <MemberIcon sx={{ fontSize: 20 }} />,
-    desc: 'View meetings, resolution voting & action updates',
+    desc: 'Agenda papers, assigned actions (ATR) & attendance confirmation',
   },
   {
     role: 'IQAC',
     label: 'IQAC Coordinator',
-    subLabel: 'Compliance Auditor',
-    name: 'Dr. Priya Nair',
-    email: 'iqac@example.com',
+    subLabel: 'Asst. Prof., CSE',
+    name: 'Dr. E. Deepak Chowdary',
+    email: 'edc_cse@vignan.ac.in',
     password: 'Demo@1234',
     color: '#D97706',
     bgColor: 'rgba(217, 119, 6, 0.08)',
     borderColor: 'rgba(217, 119, 6, 0.25)',
     icon: <IqacIcon sx={{ fontSize: 20 }} />,
-    desc: 'NAAC SSR 6.2.2 metrics & compliance gap tracker',
+    desc: 'NAAC SSR Criterion 6 compliance radar & composition auditor',
   },
 ];
 
@@ -102,7 +102,7 @@ export default function LoginPage() {
   const [activeDemoRole, setActiveDemoRole] = useState(null);
 
   // Login Form State
-  const [email, setEmail] = useState('registrar@example.com');
+  const [email, setEmail] = useState('kvkk_cse@vignan.ac.in');
   const [password, setPassword] = useState('Demo@1234');
 
   const handleLoginSubmit = async (e) => {
