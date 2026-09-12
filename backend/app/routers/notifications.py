@@ -15,7 +15,7 @@ from app.notifications.notification_service import retry_failed_email_log
 from app.notifications.event_service import emit_event
 from app.notifications.scheduler import run_scheduled_sweeps
 
-router = APIRouter(prefix="/notifications", tags=["Notifications & Automated Emails"])
+router = APIRouter(prefix="/api/notifications", tags=["Notifications & Automated Emails"])
 
 
 class RuleUpdate(BaseModel):
