@@ -194,9 +194,9 @@ export default function MembersListPage() {
                 <TableRow sx={{ bgcolor: (theme) => theme.palette.mode === 'dark' ? 'rgba(30, 41, 59, 0.8)' : '#F8FAFC' }}>
                   <TableCell sx={{ fontWeight: 800 }}>Member Name &amp; Designation</TableCell>
                   <TableCell sx={{ fontWeight: 800 }}>Category</TableCell>
-                  <TableCell sx={{ fontWeight: 800 }}>Gender</TableCell>
                   <TableCell sx={{ fontWeight: 800 }}>Department / Affiliation</TableCell>
-                  <TableCell sx={{ fontWeight: 800 }} align="right">Status</TableCell>
+                  <TableCell sx={{ fontWeight: 800 }}>Committee Assignment &amp; Role</TableCell>
+                  <TableCell sx={{ fontWeight: 800 }} align="right">Tenure &amp; Status</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -231,21 +231,31 @@ export default function MembersListPage() {
                     </TableCell>
                     <TableCell>
                       <Typography variant="body2" sx={{ color: 'text.primary', fontSize: '0.84rem' }}>
-                        {m.gender || 'N/A'}
+                        {m.designation ? `${m.designation} • ` : ''}{m.department || 'Computer Science & Engineering'}
                       </Typography>
                     </TableCell>
                     <TableCell>
-                      <Typography variant="body2" sx={{ color: 'text.primary', fontSize: '0.84rem' }}>
-                        {m.designation ? `${m.designation} • ` : ''}{m.department || 'General'}
-                      </Typography>
+                      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.4 }}>
+                        <Typography variant="body2" sx={{ color: 'text.primary', fontWeight: 600, fontSize: '0.84rem' }}>
+                          {m.primary_committee || m.committee_name || (m.committees_count ? `${m.committees_count} Committees` : 'Statutory Body Member')}
+                        </Typography>
+                        <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600 }}>
+                          Role: {m.role || 'Member'}
+                        </Typography>
+                      </Box>
                     </TableCell>
                     <TableCell align="right">
-                      <Chip
-                        label={m.status || (m.is_active !== false ? 'ACTIVE' : 'INACTIVE')}
-                        size="small"
-                        color={m.status === 'INACTIVE' || m.is_active === false ? 'default' : 'success'}
-                        sx={{ fontWeight: 800, fontSize: '0.68rem' }}
-                      />
+                      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 0.4 }}>
+                        <Chip
+                          label={m.status || (m.is_active !== false ? 'ACTIVE' : 'INACTIVE')}
+                          size="small"
+                          color={m.status === 'INACTIVE' || m.is_active === false ? 'default' : 'success'}
+                          sx={{ fontWeight: 800, fontSize: '0.68rem', height: 22 }}
+                        />
+                        <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.72rem' }}>
+                          {m.tenure_status === 'EXPIRING' ? 'Expires in 18d' : m.tenure || '2024 - 2026 Term'}
+                        </Typography>
+                      </Box>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -316,15 +326,17 @@ export default function MembersListPage() {
             </FormControl>
 
             <FormControl fullWidth>
-              <InputLabel shrink>Gender</InputLabel>
+              <InputLabel shrink>Statutory Role</InputLabel>
               <Select
-                value={newMember.gender}
-                onChange={(e) => setNewMember({ ...newMember, gender: e.target.value })}
-                label="Gender"
+                value={newMember.role || 'MEMBER'}
+                onChange={(e) => setNewMember({ ...newMember, role: e.target.value })}
+                label="Statutory Role"
               >
-                <MenuItem value="MALE">Male</MenuItem>
-                <MenuItem value="FEMALE">Female</MenuItem>
-                <MenuItem value="OTHER">Other</MenuItem>
+                <MenuItem value="MEMBER">Committee Member</MenuItem>
+                <MenuItem value="CONVENER">Convener</MenuItem>
+                <MenuItem value="CHAIRPERSON">Chairperson</MenuItem>
+                <MenuItem value="STUDENT_REP">Student Representative</MenuItem>
+                <MenuItem value="EXTERNAL_EXPERT">External Expert</MenuItem>
               </Select>
             </FormControl>
           </Box>

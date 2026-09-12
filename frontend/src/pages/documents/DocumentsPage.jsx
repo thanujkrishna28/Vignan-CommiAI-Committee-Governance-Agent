@@ -98,10 +98,10 @@ export default function DocumentsPage() {
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
         <Box>
           <Typography variant="h4" sx={{ fontWeight: 800, color: 'text.primary', letterSpacing: '-0.02em' }}>
-            Evidence Locker &amp; Documents Vault
+            Statutory Gazette &amp; Governance Repository
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5 }}>
-            Archival of statutory acts, signed minutes, and regulatory bylaws with pgvector RAG indexing.
+            Official archival of statutory acts, signed meeting minutes, ordinances, and regulatory compliance records.
           </Typography>
         </Box>
 
@@ -111,24 +111,24 @@ export default function DocumentsPage() {
           onClick={() => setOpenModal(true)}
           sx={{ fontWeight: 700, borderRadius: '10px' }}
         >
-          Deposit Statutory Document
+          Deposit Statutory Record
         </Button>
       </Box>
 
-      {/* RAG Status Callout */}
+      {/* Repository Status Callout */}
       <Paper elevation={0} sx={{ p: 2.5, mb: 3, borderRadius: '16px', border: '1px solid', borderColor: 'divider', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2, bgcolor: 'background.paper' }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
           <DoneIcon color="success" />
           <Box>
             <Typography variant="subtitle2" sx={{ fontWeight: 700, color: 'text.primary' }}>
-              Vector Search &amp; RAG Indexing Service Operational
+              Institutional Governance Repository Operational
             </Typography>
             <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-              Live document embeddings active for context-aware CommiAI queries and statutory reasoning.
+              Statutory documents, meeting minutes, and regulatory records verified and preserved for institutional audits.
             </Typography>
           </Box>
         </Box>
-        <Chip label="100% Vectorized" size="small" color="success" sx={{ fontWeight: 800, fontSize: '0.7rem' }} />
+        <Chip label="OFFICIAL ARCHIVE" size="small" color="primary" sx={{ fontWeight: 800, fontSize: '0.7rem' }} />
       </Paper>
 
       {error && (
@@ -141,7 +141,7 @@ export default function DocumentsPage() {
       {loading ? (
         <Box sx={{ p: 6, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 2 }}>
           <CircularProgress size={24} />
-          <Typography variant="body2" sx={{ color: 'text.secondary' }}>Loading vault documents from database...</Typography>
+          <Typography variant="body2" sx={{ color: 'text.secondary' }}>Loading repository records from database...</Typography>
         </Box>
       ) : docs.length === 0 ? (
         <Paper elevation={0} sx={{ p: 6, textAlign: 'center', borderRadius: '16px', border: '1px solid', borderColor: 'divider', bgcolor: 'background.paper' }}>
@@ -150,41 +150,64 @@ export default function DocumentsPage() {
             No Documents Deposited
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary', mb: 2.5, maxWidth: 400, mx: 'auto' }}>
-            No statutory documents or gazettes have been deposited yet. Click below to upload your first document.
+            No statutory documents or gazettes have been deposited yet. Click below to deposit an official record.
           </Typography>
           <Button variant="contained" startIcon={<UploadIcon />} onClick={() => setOpenModal(true)}>
-            Deposit First Document
+            Deposit First Record
           </Button>
         </Paper>
       ) : (
         <Grid container spacing={3}>
           {docs.map((doc) => (
-            <Grid item xs={12} md={6} key={doc.id}>
-              <Card sx={{ p: 2.5, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', borderRadius: '16px', border: '1px solid', borderColor: 'divider' }}>
+            <Grid item xs={12} sm={6} md={4} key={doc.id}>
+              <Card
+                elevation={0}
+                sx={{
+                  p: 2.5,
+                  borderRadius: '16px',
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  transition: 'transform 0.2s, box-shadow 0.2s',
+                  '&:hover': {
+                    transform: 'translateY(-2px)',
+                    boxShadow: '0 8px 24px rgba(0,0,0,0.06)',
+                  },
+                }}
+              >
                 <Box>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1.5 }}>
-                    <Chip label={(doc.category || 'STATUTORY').replace(/_/g, ' ')} size="small" sx={{ fontWeight: 700, fontSize: '0.65rem' }} />
                     <Chip
-                      label={doc.rag_indexed ? `${doc.chunks_count || 12} RAG Chunks` : 'Vector Indexed'}
+                      label={doc.doc_type || 'STATUTORY_RECORD'}
+                      size="small"
+                      sx={{ fontWeight: 700, fontSize: '0.65rem', textTransform: 'uppercase' }}
+                    />
+                    <Chip
+                      label="VERIFIED"
                       size="small"
                       color="success"
                       variant="outlined"
-                      sx={{ fontWeight: 700, fontSize: '0.65rem' }}
+                      sx={{ fontWeight: 800, fontSize: '0.65rem' }}
                     />
                   </Box>
-                  <Typography variant="subtitle1" sx={{ fontWeight: 800, color: 'text.primary', mb: 0.5 }}>
-                    {doc.title || doc.filename || 'Statutory Gazette Document'}
+                  <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 0.5, lineHeight: 1.3 }}>
+                    {doc.filename}
                   </Typography>
-                  <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block' }}>
-                    Committee: <strong>{doc.committee?.name || doc.committee_name || 'General Governance'}</strong> • Uploaded {doc.created_at ? new Date(doc.created_at).toLocaleDateString() : 'Recently'} • {doc.file_size ? `${Math.round(doc.file_size / 1024)} KB` : '1.2 MB'}
+                  <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1.5 }}>
+                    {doc.summary || 'Official governance documentation deposited into the institutional repository.'}
                   </Typography>
                 </Box>
 
-                <Box sx={{ mt: 2, pt: 2, borderTop: '1px solid', borderColor: 'divider', display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
+                <Box sx={{ pt: 2, borderTop: '1px solid', borderColor: 'divider', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                    {doc.created_at ? new Date(doc.created_at).toLocaleDateString() : 'Active Record'}
+                  </Typography>
                   <Button
                     size="small"
                     variant="outlined"
-                    startIcon={<DownloadIcon />}
                     onClick={() => {
                       if (doc.file_url) {
                         window.open(doc.file_url, '_blank');
@@ -232,13 +255,13 @@ export default function DocumentsPage() {
               <MenuItem value="STATUTORY_ACT">Statutory Act &amp; Charter</MenuItem>
               <MenuItem value="RATIFIED_MINUTES">Ratified Meeting Minutes</MenuItem>
               <MenuItem value="REGULATORY_GUIDELINE">UGC / AICTE Regulatory Guideline</MenuItem>
-              <MenuItem value="POLICY_ORDER">Institutional Policy Order</MenuItem>
-              <MenuItem value="OTHER">Other Evidence / Circular</MenuItem>
+              <MenuItem value="POLICY_ORDER">Institutional Policy Order &amp; Gazette</MenuItem>
+              <MenuItem value="ACCREDITATION_EVIDENCE">Accreditation Evidence (NAAC / NBA / NIRF)</MenuItem>
             </Select>
           </FormControl>
 
           <Button variant="outlined" component="label" startIcon={<UploadIcon />} sx={{ py: 2.5, borderStyle: 'dashed', borderRadius: '12px' }}>
-            {selectedFile ? selectedFile.name : 'Select PDF / DOCX / File for Vectorization'}
+            {selectedFile ? selectedFile.name : 'Select PDF / DOCX / Document for Deposition'}
             <input
               type="file"
               hidden
@@ -252,7 +275,7 @@ export default function DocumentsPage() {
             Cancel
           </Button>
           <Button variant="contained" onClick={handleUpload} disabled={uploading || !selectedFile}>
-            {uploading ? 'Vectorizing & Indexing...' : 'Upload & Index in RAG'}
+            {uploading ? 'Depositing & Archiving...' : 'Deposit Document'}
           </Button>
         </DialogActions>
       </Dialog>

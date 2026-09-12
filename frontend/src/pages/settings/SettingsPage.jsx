@@ -165,7 +165,7 @@ export default function SettingsPage() {
         >
           <Tab icon={<UniversityIcon sx={{ fontSize: 20 }} />} iconPosition="start" label="Institutional Profile" />
           <Tab icon={<LegalIcon sx={{ fontSize: 20 }} />} iconPosition="start" label="Statutory Quorum Rules" />
-          <Tab icon={<NotificationIcon sx={{ fontSize: 20 }} />} iconPosition="start" label="Brevo & Notifications" />
+          <Tab icon={<NotificationIcon sx={{ fontSize: 20 }} />} iconPosition="start" label="Institutional Dispatch" />
           <Tab icon={<AiIcon sx={{ fontSize: 20 }} />} iconPosition="start" label="CommiAI Agent Core" />
           <Tab icon={<SecurityIcon sx={{ fontSize: 20 }} />} iconPosition="start" label="Security & Access Control" />
         </Tabs>
@@ -182,56 +182,95 @@ export default function SettingsPage() {
             bgcolor: '#FFFFFF',
           }}
         >
-          <Typography variant="h6" sx={{ fontWeight: 800, color: '#1E3A8A', mb: 0.5 }}>
-            University Identity & Accreditation Details
-          </Typography>
-          <Typography variant="body2" sx={{ color: '#64748B', mb: 3 }}>
-            These parameters are embedded automatically into all statutory dossiers, notices, and meeting minutes.
-          </Typography>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+            <Box>
+              <Typography variant="h6" sx={{ fontWeight: 800, color: '#1E3A8A' }}>
+                University Details & Header Branding
+              </Typography>
+              <Typography variant="body2" sx={{ color: '#64748B' }}>
+                Statutory university metadata affixed to official meeting minutes, compliance reports, and notices.
+              </Typography>
+            </Box>
+            <Button
+              variant="contained"
+              startIcon={<SaveIcon />}
+              onClick={() => handleSave('Institutional Profile')}
+              sx={{ bgcolor: '#2563EB', fontWeight: 700, borderRadius: '8px' }}
+            >
+              Save Profile
+            </Button>
+          </Box>
 
           <Grid container spacing={2.5}>
-            <Grid item xs={12} md={8}>
+            <Grid item xs={12} sm={6}>
               <TextField
-                label="Institution Name"
+                label="University Name"
                 fullWidth
-                value={generalSettings.institutionName}
-                onChange={(e) => setGeneralSettings({ ...generalSettings, institutionName: e.target.value })}
+                value={generalSettings.universityName}
+                onChange={(e) => setGeneralSettings({ ...generalSettings, universityName: e.target.value })}
                 size="small"
               />
             </Grid>
-            <Grid item xs={12} sm={6} md={4}>
+            <Grid item xs={12} sm={6}>
               <TextField
-                label="AISHE Code"
+                label="Statutory Accreditation / AISHE Code"
                 fullWidth
                 value={generalSettings.aisheCode}
                 onChange={(e) => setGeneralSettings({ ...generalSettings, aisheCode: e.target.value })}
                 size="small"
               />
             </Grid>
-            <Grid item xs={12} sm={6} md={4}>
+            <Grid item xs={12} sm={6}>
               <TextField
-                label="NAAC Grade Status"
+                label="Vice Chancellor"
                 fullWidth
-                value={generalSettings.naacGrade}
-                onChange={(e) => setGeneralSettings({ ...generalSettings, naacGrade: e.target.value })}
+                value={generalSettings.vcName}
+                onChange={(e) => setGeneralSettings({ ...generalSettings, vcName: e.target.value })}
                 size="small"
               />
             </Grid>
-            <Grid item xs={12} sm={6} md={4}>
+            <Grid item xs={12} sm={6}>
               <TextField
-                label="Current Academic Year"
+                label="Registrar"
+                fullWidth
+                value={generalSettings.registrarName}
+                onChange={(e) => setGeneralSettings({ ...generalSettings, registrarName: e.target.value })}
+                size="small"
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Dean Academics"
+                fullWidth
+                value={generalSettings.deanAcademicsName}
+                onChange={(e) => setGeneralSettings({ ...generalSettings, deanAcademicsName: e.target.value })}
+                size="small"
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="IQAC Director"
+                fullWidth
+                value={generalSettings.iqacDirectorName}
+                onChange={(e) => setGeneralSettings({ ...generalSettings, iqacDirectorName: e.target.value })}
+                size="small"
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Official Campus Domain"
+                fullWidth
+                value={generalSettings.officialDomain}
+                onChange={(e) => setGeneralSettings({ ...generalSettings, officialDomain: e.target.value })}
+                size="small"
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Academic Year"
                 fullWidth
                 value={generalSettings.academicYear}
                 onChange={(e) => setGeneralSettings({ ...generalSettings, academicYear: e.target.value })}
-                size="small"
-              />
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <TextField
-                label="Office of Registrar Contact Email"
-                fullWidth
-                value={generalSettings.registrarEmail}
-                onChange={(e) => setGeneralSettings({ ...generalSettings, registrarEmail: e.target.value })}
                 size="small"
               />
             </Grid>
@@ -250,85 +289,97 @@ export default function SettingsPage() {
             bgcolor: '#FFFFFF',
           }}
         >
-          <Typography variant="h6" sx={{ fontWeight: 800, color: '#1E3A8A', mb: 0.5 }}>
-            Statutory Governance & Compliance Policies
-          </Typography>
-          <Typography variant="body2" sx={{ color: '#64748B', mb: 3 }}>
-            Enforce mandatory thresholds adhering to UGC §12 and AICTE statutory committee compliance frameworks.
-          </Typography>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+            <Box>
+              <Typography variant="h6" sx={{ fontWeight: 800, color: '#1E3A8A' }}>
+                Statutory Governance & Quorum Thresholds
+              </Typography>
+              <Typography variant="body2" sx={{ color: '#64748B' }}>
+                UGC, AICTE, and university regulations governing committee validity and meeting legality.
+              </Typography>
+            </Box>
+            <Button
+              variant="contained"
+              startIcon={<SaveIcon />}
+              onClick={() => handleSave('Statutory Governance')}
+              sx={{ bgcolor: '#2563EB', fontWeight: 700, borderRadius: '8px' }}
+            >
+              Save Rules
+            </Button>
+          </Box>
 
           <Grid container spacing={2.5}>
-            <Grid item xs={12} sm={6} md={6}>
+            <Grid item xs={12} sm={6}>
               <TextField
-                label="Mandatory Quorum Threshold (%)"
+                label="Minimum Quorum Percentage (%)"
                 type="number"
                 fullWidth
-                value={governanceSettings.quorumThreshold}
-                onChange={(e) => setGovernanceSettings({ ...governanceSettings, quorumThreshold: e.target.value })}
-                helperText="Minimum attendance required before resolutions can be legally ratified."
+                value={governanceSettings.defaultQuorumPercent}
+                onChange={(e) => setGovernanceSettings({ ...governanceSettings, defaultQuorumPercent: e.target.value })}
                 size="small"
+                helperText="Statutory minimum attendance required to legally begin proceedings."
               />
             </Grid>
-            <Grid item xs={12} sm={6} md={6}>
+            <Grid item xs={12} sm={6}>
               <TextField
-                label="Max Interval Between Statutory Meetings (Days)"
+                label="Mandatory External Members"
                 type="number"
                 fullWidth
-                value={governanceSettings.statutoryMeetingIntervalDays}
-                onChange={(e) => setGovernanceSettings({ ...governanceSettings, statutoryMeetingIntervalDays: e.target.value })}
-                helperText="Triggers compliance warnings if no meeting is held within this window."
+                value={governanceSettings.mandatoryExternalCount}
+                onChange={(e) => setGovernanceSettings({ ...governanceSettings, mandatoryExternalCount: e.target.value })}
                 size="small"
+                helperText="Required industry/external academic experts on key statutory bodies."
               />
             </Grid>
-            <Grid item xs={12} sm={6} md={6}>
+            <Grid item xs={12} sm={6}>
               <TextField
-                label="Meeting Notice Lead Time (Days)"
+                label="Minimum Notice Period (Days)"
                 type="number"
                 fullWidth
-                value={governanceSettings.noticeLeadTimeDays}
-                onChange={(e) => setGovernanceSettings({ ...governanceSettings, noticeLeadTimeDays: e.target.value })}
-                helperText="Notice circulation SLA prior to meeting date."
+                value={governanceSettings.noticePeriodDays}
+                onChange={(e) => setGovernanceSettings({ ...governanceSettings, noticePeriodDays: e.target.value })}
                 size="small"
+                helperText="Lead time for convening ordinary statutory meetings."
               />
             </Grid>
-            <Grid item xs={12} sm={6} md={6}>
+            <Grid item xs={12} sm={6}>
               <TextField
-                label="Action Taken Report (ATR) Submission Deadline (Days)"
+                label="Emergency Meeting Notice (Days)"
                 type="number"
                 fullWidth
-                value={governanceSettings.atrSubmissionDeadlineDays}
-                onChange={(e) => setGovernanceSettings({ ...governanceSettings, atrSubmissionDeadlineDays: e.target.value })}
-                helperText="Days allowed for action item owners to submit verified progress reports."
+                value={governanceSettings.emergencyNoticePeriodDays}
+                onChange={(e) => setGovernanceSettings({ ...governanceSettings, emergencyNoticePeriodDays: e.target.value })}
                 size="small"
+                helperText="Lead time for urgent / extraordinary committee sessions."
               />
             </Grid>
-            <Grid item xs={12}>
-              <Divider sx={{ my: 1 }} />
+            <Grid item xs={12} sm={6}>
               <FormControlLabel
                 control={
                   <Switch
-                    checked={governanceSettings.strictQuorumCancellation}
-                    onChange={(e) => setGovernanceSettings({ ...governanceSettings, strictQuorumCancellation: e.target.checked })}
-                    color="primary"
+                    checked={governanceSettings.autoLockMinutesOnSignoff}
+                    onChange={(e) => setGovernanceSettings({ ...governanceSettings, autoLockMinutesOnSignoff: e.target.checked })}
                   />
                 }
-                label={
-                  <Box>
-                    <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
-                      Autonomous Quorum Adjournment Alert
-                    </Typography>
-                    <Typography variant="caption" sx={{ color: '#64748B' }}>
-                      CommiAI automatically flags and postpones meetings if RSVPs fall below legal threshold 24 hours prior.
-                    </Typography>
-                  </Box>
+                label="Cryptographic Lock on Chair Sign-Off (Tamper-Proof)"
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={governanceSettings.requireIqacDirectorVeto}
+                    onChange={(e) => setGovernanceSettings({ ...governanceSettings, requireIqacDirectorVeto: e.target.checked })}
+                  />
                 }
+                label="IQAC Director Regulatory Review Required for Minutes"
               />
             </Grid>
           </Grid>
         </Paper>
       )}
 
-      {/* TAB 2: Brevo & Notifications */}
+      {/* TAB 2: Institutional Email & Dispatch */}
       {activeTab === 2 && (
         <Paper
           elevation={0}
@@ -342,19 +393,19 @@ export default function SettingsPage() {
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
             <Box>
               <Typography variant="h6" sx={{ fontWeight: 800, color: '#1E3A8A' }}>
-                Brevo SMTP & Multi-Channel Gateway
+                Institutional Email &amp; Notification Dispatch Gateway
               </Typography>
               <Typography variant="body2" sx={{ color: '#64748B' }}>
-                Delivery channels for 13 automated email notices, quorum reminders, and digital sign-off alerts.
+                Official university delivery channels for automated meeting notices, quorum reminders, and circulars.
               </Typography>
             </Box>
-            <Chip label="Brevo API: Connected (42ms)" color="success" size="small" sx={{ fontWeight: 700 }} />
+            <Chip label="University Gateway: Connected" color="success" size="small" sx={{ fontWeight: 700 }} />
           </Box>
 
           <Grid container spacing={2.5}>
             <Grid item xs={12} sm={6}>
               <TextField
-                label="Verified Brevo Sender Email"
+                label="Official Institutional Sender Email"
                 fullWidth
                 value={notificationSettings.brevoSenderEmail}
                 onChange={(e) => setNotificationSettings({ ...notificationSettings, brevoSenderEmail: e.target.value })}

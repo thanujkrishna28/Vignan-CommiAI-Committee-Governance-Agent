@@ -380,7 +380,7 @@ export default function NotificationsPage() {
         force: true,
       });
       setDispatchResult(res);
-      setAlertInfo({ type: 'success', text: `Dispatched "${s.name}" to ${customRecipient} via Brevo Relay!` });
+      setAlertInfo({ type: 'success', text: `Dispatched "${s.name}" to ${customRecipient} via Institutional Gateway!` });
     } catch (err) {
       setAlertInfo({ type: 'error', text: 'Error dispatching automated service test' });
     } finally {
@@ -433,11 +433,11 @@ export default function NotificationsPage() {
           <Box>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.2, mb: 0.4 }}>
               <Typography variant="h5" sx={{ fontWeight: 900, color: 'text.primary', letterSpacing: '-0.02em' }}>
-                Notification & Email Automation Engine
+                Official Governance Notices &amp; Circular Dispatch
               </Typography>
               <Chip
                 icon={<ZapIcon sx={{ fontSize: '14px !important', color: '#10B981 !important' }} />}
-                label="LIVE RELAY"
+                label="DISPATCH ACTIVE"
                 size="small"
                 sx={{
                   bgcolor: isDark ? 'rgba(16, 185, 129, 0.15)' : '#DCFCE7',
@@ -449,7 +449,7 @@ export default function NotificationsPage() {
               />
             </Box>
             <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 500 }}>
-              13 statutory event services &bull; Role-aware recipient dispatch &bull; Brevo SMTP Relay &bull; Real-time audit trails
+              Statutory event triggers &bull; Role-aware member circulars &bull; Official institutional dispatch &bull; Live delivery audit trails
             </Typography>
           </Box>
         </Box>
@@ -856,7 +856,7 @@ export default function NotificationsPage() {
                 Statutory Email Audit Trail
               </Typography>
               <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 500 }}>
-                Verifiable cryptographic records of outgoing Brevo SMTP dispatches to university officers.
+                Verifiable cryptographic audit trail of official statutory dispatches to university officers.
               </Typography>
             </Box>
 
@@ -882,7 +882,7 @@ export default function NotificationsPage() {
                     {emailLogs.length === 0 ? (
                       <TableRow>
                         <TableCell colSpan={5} align="center" sx={{ py: 6, color: 'text.secondary' }}>
-                          No email logs recorded yet. Try dispatching a live test from the <strong>13-Service Live Test Studio</strong> tab.
+                          No email logs recorded yet. Try dispatching a verification notice from the <strong>Notification Preview &amp; Verification</strong> tab.
                         </TableCell>
                       </TableRow>
                     ) : (
@@ -921,7 +921,7 @@ export default function NotificationsPage() {
                 Failed Email Queue & Resend Console
               </Typography>
               <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 500 }}>
-                Isolate SMTP relay rejections, network timeouts, and execute immediate redelivery.
+                Isolate gateway rejections, network timeouts, and execute immediate redelivery.
               </Typography>
             </Box>
 
@@ -945,7 +945,7 @@ export default function NotificationsPage() {
                   Zero Failed Deliveries
                 </Typography>
                 <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5 }}>
-                  All outgoing automated dispatches were accepted by Brevo SMTP relay without issues.
+                  All outgoing automated dispatches were accepted and delivered without issues.
                 </Typography>
               </Box>
             ) : (
@@ -966,7 +966,7 @@ export default function NotificationsPage() {
                         <TableRow key={l.id} hover>
                           <TableCell sx={{ fontWeight: 700 }}>{l.service_name}</TableCell>
                           <TableCell>{l.recipient_email}</TableCell>
-                          <TableCell sx={{ color: 'error.main', fontSize: '0.8rem', fontWeight: 600 }}>{l.error_message || 'SMTP Timeout'}</TableCell>
+                          <TableCell sx={{ color: 'error.main', fontSize: '0.8rem', fontWeight: 600 }}>{l.error_message || 'Timeout / Connection Refused'}</TableCell>
                           <TableCell align="right">
                             <Button
                               variant="contained"
@@ -992,15 +992,15 @@ export default function NotificationsPage() {
           </Box>
         )}
 
-        {/* ─── TAB 3: 13 Automation Rules ─────────────────────────────────── */}
+        {/* ─── TAB 3: Statutory Dispatch Policies ─────────────────────────── */}
         {tabIndex === 3 && (
           <Box sx={{ p: { xs: 2.5, sm: 3.5 } }}>
             <Box sx={{ mb: 3 }}>
               <Typography variant="h6" sx={{ fontWeight: 900, color: 'text.primary' }}>
-                13 Automated Governance Email Rules
+                Statutory Dispatch Policies &amp; Trigger Rules
               </Typography>
               <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 500 }}>
-                Configure trigger automations. Note: Statutory critical circulars (Composition Deficit, Quorum Override, Ratified Minutes) are locked to active.
+                Automated notification policies governed by UGC, AICTE, and university statutory compliance rules.
               </Typography>
             </Box>
 
@@ -1077,15 +1077,15 @@ export default function NotificationsPage() {
           </Box>
         )}
 
-        {/* ─── TAB 4: 13-Service Live Test Studio ─────────────────────────── */}
+        {/* ─── TAB 4: Notification Preview & Verification ─────────────────── */}
         {tabIndex === 4 && (
           <Box sx={{ p: { xs: 2.5, sm: 3.5 } }}>
             <Box sx={{ mb: 3 }}>
               <Typography variant="h6" sx={{ fontWeight: 900, color: 'text.primary' }}>
-                13-Service Live Demonstration Studio
+                Notification Preview &amp; Verification Center
               </Typography>
               <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 500 }}>
-                Trigger real-time Brevo SMTP emails for any of the 13 automated services. Evaluates template rendering, dynamic resolution, and audit logging.
+                Verify and dispatch institutional governance notices for statutory events. Validates template formatting and recipient delivery.
               </Typography>
             </Box>
 
@@ -1128,7 +1128,7 @@ export default function NotificationsPage() {
                     value={customRecipient}
                     onChange={(e) => setCustomRecipient(e.target.value)}
                     placeholder="name@vignan.ac.in"
-                    helperText="Brevo verified sender will dispatch real email to this inbox"
+                    helperText="Institutional verified sender will dispatch official notice to this inbox"
                     sx={{ mb: 3, bgcolor: 'background.paper', borderRadius: '10px' }}
                   />
 
@@ -1150,7 +1150,7 @@ export default function NotificationsPage() {
                       '&:hover': { bgcolor: '#1548B2' },
                     }}
                   >
-                    {dispatching ? 'Dispatching via Brevo Relay...' : `Dispatch #${selectedServiceId} Live Email`}
+                    {dispatching ? 'Dispatching Official Notice...' : `Dispatch #${selectedServiceId} Verification Notice`}
                   </Button>
                 </Paper>
               </Grid>
