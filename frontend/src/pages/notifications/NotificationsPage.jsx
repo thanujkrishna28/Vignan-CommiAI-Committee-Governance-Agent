@@ -49,6 +49,7 @@ import {
   HubRounded as HubIcon,
 } from '@mui/icons-material';
 import { notificationsApi } from '../../services/api';
+import { useAuth } from '../../context/AuthContext';
 
 const SERVICES_CATALOG = [
   {
@@ -262,6 +263,8 @@ const SERVICES_CATALOG = [
 export default function NotificationsPage() {
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
+  const { user } = useAuth();
+  const isRegistrar = user?.role === 'REGISTRAR' || user?.role === 'SUPER_ADMIN';
 
   const [tabIndex, setTabIndex] = useState(0);
   const [notifications, setNotifications] = useState([]);
@@ -455,24 +458,26 @@ export default function NotificationsPage() {
         </Box>
 
         <Box sx={{ display: 'flex', gap: 1.5, flexWrap: 'wrap' }}>
-          <Button
-            variant="outlined"
-            size="small"
-            startIcon={<ScheduleIcon />}
-            onClick={handleRunManualSweep}
-            disabled={loading}
-            sx={{
-              borderRadius: '12px',
-              textTransform: 'none',
-              fontWeight: 700,
-              color: 'text.primary',
-              borderColor: isDark ? 'rgba(255,255,255,0.15)' : 'rgba(226,232,240,0.9)',
-              bgcolor: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.8)',
-              '&:hover': { bgcolor: isDark ? 'rgba(255,255,255,0.08)' : '#FFF' },
-            }}
-          >
-            Run Scheduler Sweep
-          </Button>
+          {isRegistrar && (
+            <Button
+              variant="outlined"
+              size="small"
+              startIcon={<ScheduleIcon />}
+              onClick={handleRunManualSweep}
+              disabled={loading}
+              sx={{
+                borderRadius: '12px',
+                textTransform: 'none',
+                fontWeight: 700,
+                color: 'text.primary',
+                borderColor: isDark ? 'rgba(255,255,255,0.15)' : 'rgba(226,232,240,0.9)',
+                bgcolor: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.8)',
+                '&:hover': { bgcolor: isDark ? 'rgba(255,255,255,0.08)' : '#FFF' },
+              }}
+            >
+              Run Scheduler Sweep
+            </Button>
+          )}
           <Button
             variant="contained"
             size="small"
@@ -674,31 +679,39 @@ export default function NotificationsPage() {
             icon={<NotificationsIcon />}
             iconPosition="start"
           />
-          <Tab
-            label="Email Delivery Logs"
-            icon={<EmailIcon />}
-            iconPosition="start"
-          />
-          <Tab
-            label={
-              <Badge badgeContent={emailStats.failed} color="error">
-                Failed & Retries
-              </Badge>
-            }
-            icon={<ErrorIcon />}
-            iconPosition="start"
-          />
-          <Tab
-            label="13 Automation Rules"
-            icon={<RulesIcon />}
-            iconPosition="start"
-          />
-          <Tab
-            label="13-Service Live Test Studio"
-            icon={<TestIcon />}
-            iconPosition="start"
-            sx={{ color: '#1D61E7 !important' }}
-          />
+          {isRegistrar && (
+            <Tab
+              label="Email Delivery Logs"
+              icon={<EmailIcon />}
+              iconPosition="start"
+            />
+          )}
+          {isRegistrar && (
+            <Tab
+              label={
+                <Badge badgeContent={emailStats.failed} color="error">
+                  Failed & Retries
+                </Badge>
+              }
+              icon={<ErrorIcon />}
+              iconPosition="start"
+            />
+          )}
+          {isRegistrar && (
+            <Tab
+              label="13 Automation Rules"
+              icon={<RulesIcon />}
+              iconPosition="start"
+            />
+          )}
+          {isRegistrar && (
+            <Tab
+              label="13-Service Live Test Studio"
+              icon={<TestIcon />}
+              iconPosition="start"
+              sx={{ color: '#1D61E7 !important' }}
+            />
+          )}
         </Tabs>
 
         {/* ─── TAB 0: In-App Notifications ───────────────────────────────── */}

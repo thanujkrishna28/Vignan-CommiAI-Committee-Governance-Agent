@@ -34,8 +34,10 @@ import {
 } from '@mui/icons-material';
 import { actionsApi, committeesApi, membersApi } from '../../services/api';
 import { useRealtime } from '../../context/SocketContext';
+import { useAuth } from '../../context/AuthContext';
 
 export default function ActionItemsPage() {
+  const { user } = useAuth();
   const [search, setSearch] = useState('');
   const [filterStatus, setFilterStatus] = useState('ALL');
   const [actions, setActions] = useState([]);
@@ -173,9 +175,11 @@ export default function ActionItemsPage() {
           </Typography>
         </Box>
 
-        <Button variant="contained" startIcon={<AddIcon />} onClick={() => setOpenModal(true)} sx={{ fontWeight: 700, borderRadius: '10px' }}>
-          Create Action Item
-        </Button>
+        {(user?.role === 'REGISTRAR' || user?.role === 'CONVENER' || user?.role === 'SUPER_ADMIN') && (
+          <Button variant="contained" startIcon={<AddIcon />} onClick={() => setOpenModal(true)} sx={{ fontWeight: 700, borderRadius: '10px' }}>
+            Create Action Item
+          </Button>
+        )}
       </Box>
 
       {/* Filters & Search */}

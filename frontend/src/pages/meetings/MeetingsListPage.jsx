@@ -38,8 +38,10 @@ import {
 } from '@mui/icons-material';
 import { meetingsApi, committeesApi } from '../../services/api';
 import { useRealtime } from '../../context/SocketContext';
+import { useAuth } from '../../context/AuthContext';
 
 export default function MeetingsListPage() {
+  const { user } = useAuth();
   const [meetings, setMeetings] = useState([]);
   const [committees, setCommittees] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -247,20 +249,22 @@ export default function MeetingsListPage() {
           </Typography>
         </Box>
 
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={() => setOpenModal(true)}
-          sx={{
-            fontWeight: 800,
-            borderRadius: '12px',
-            px: 2.5,
-            py: 1,
-            boxShadow: '0 4px 14px rgba(37, 99, 235, 0.3)',
-          }}
-        >
-          Convene New Session
-        </Button>
+        {(user?.role === 'REGISTRAR' || user?.role === 'CONVENER' || user?.role === 'SUPER_ADMIN') && (
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => setOpenModal(true)}
+            sx={{
+              fontWeight: 800,
+              borderRadius: '12px',
+              px: 2.5,
+              py: 1,
+              boxShadow: '0 4px 14px rgba(37, 99, 235, 0.3)',
+            }}
+          >
+            Convene New Session
+          </Button>
+        )}
       </Box>
 
       {/* Filter and Search Bar */}

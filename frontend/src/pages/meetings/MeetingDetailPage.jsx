@@ -46,6 +46,7 @@ import { meetingsApi, aiApi } from '../../services/api';
 export default function MeetingDetailPage() {
   const { id } = useParams();
   const { user, isRole } = useAuth();
+  const isExecutive = user?.role === 'REGISTRAR' || user?.role === 'CONVENER' || user?.role === 'SUPER_ADMIN';
 
   const [tabIndex, setTabIndex] = useState(0);
   const [meetingStatus, setMeetingStatus] = useState('IN_PROGRESS');
@@ -58,11 +59,11 @@ export default function MeetingDetailPage() {
 
   // Live Attendance State
   const [attendees, setAttendees] = useState([
-    { id: '1', name: 'Dr. P. Nagabhushan', role: 'Chairperson / VC', status: 'PRESENT', type: 'INTERNAL' },
-    { id: '2', name: 'Dr. M. S. Rao', role: 'Convener / Dean Academics', status: 'PRESENT', type: 'INTERNAL' },
-    { id: '3', name: 'Prof. K. Sunitha', role: 'Faculty Member', status: 'PRESENT', type: 'INTERNAL' },
-    { id: '4', name: 'Dr. T. S. Murthy', role: 'External Expert (NIT)', status: 'VIRTUAL', type: 'EXTERNAL' },
-    { id: '5', name: 'Dr. B. Prasad', role: 'Director IQAC', status: 'PRESENT', type: 'INTERNAL' },
+    { id: '1', name: 'Dr. P. Nagabhushan', email: '231fa04e50@gmail.com', role: 'Chairperson / VC', status: 'PRESENT', type: 'INTERNAL' },
+    { id: '2', name: 'Dr. M. S. Rao', email: '231fa04a32@gmail.com', role: 'Convener / Dean Academics', status: 'PRESENT', type: 'INTERNAL' },
+    { id: '3', name: 'Prof. Thanuj Krishna', email: 'thanujkrishna28@gmail.com', role: 'Faculty Member', status: 'PRESENT', type: 'INTERNAL' },
+    { id: '4', name: 'Dr. T. S. Murthy', email: 'k4@gmail.com', role: 'External Expert (NIT)', status: 'VIRTUAL', type: 'EXTERNAL' },
+    { id: '5', name: 'Dr. Pujitha Yarramsetty', email: 'pujithayarramsetty@gmail.com', role: 'Director IQAC', status: 'PRESENT', type: 'INTERNAL' },
     { id: '6', name: 'Prof. A. V. Rao', role: 'Dean Admissions', status: 'PRESENT', type: 'INTERNAL' },
     { id: '7', name: 'Dr. S. Reddy', role: 'HOD ECE', status: 'ABSENT', type: 'INTERNAL' },
     { id: '8', name: 'Dr. N. Sharma', role: 'HOD Mechanical', status: 'ABSENT', type: 'INTERNAL' },
@@ -168,30 +169,32 @@ export default function MeetingDetailPage() {
           </Typography>
         </Box>
 
-        <Box sx={{ display: 'flex', gap: 1.5 }}>
-          {meetingStatus === 'IN_PROGRESS' ? (
-            <Button
-              variant="contained"
-              color="error"
-              size="small"
-              startIcon={<StopIcon />}
-              onClick={() => setMeetingStatus('CONCLUDED')}
-              sx={{ fontWeight: 700 }}
-            >
-              Adjourn Session
-            </Button>
-          ) : (
-            <Button
-              variant="contained"
-              size="small"
-              startIcon={<PlayIcon />}
-              onClick={() => setMeetingStatus('IN_PROGRESS')}
-              sx={{ bgcolor: '#059669', fontWeight: 700 }}
-            >
-              Resume Session
-            </Button>
-          )}
-        </Box>
+        {isExecutive && (
+          <Box sx={{ display: 'flex', gap: 1.5 }}>
+            {meetingStatus === 'IN_PROGRESS' ? (
+              <Button
+                variant="contained"
+                color="error"
+                size="small"
+                startIcon={<StopIcon />}
+                onClick={() => setMeetingStatus('CONCLUDED')}
+                sx={{ fontWeight: 700 }}
+              >
+                Adjourn Session
+              </Button>
+            ) : (
+              <Button
+                variant="contained"
+                size="small"
+                startIcon={<PlayIcon />}
+                onClick={() => setMeetingStatus('IN_PROGRESS')}
+                sx={{ bgcolor: '#059669', fontWeight: 700 }}
+              >
+                Resume Session
+              </Button>
+            )}
+          </Box>
+        )}
       </Paper>
 
       {/* LIVE QUORUM ENGINE BANNER */}
@@ -236,7 +239,7 @@ export default function MeetingDetailPage() {
           </Grid>
 
           <Grid item xs={12} md={5} sx={{ display: 'flex', justifyContent: { xs: 'flex-start', md: 'flex-end' }, gap: 1.5 }}>
-            {!quorumMet && (
+            {!quorumMet && isExecutive && (
               <Button
                 variant="outlined"
                 color="error"
@@ -272,7 +275,7 @@ export default function MeetingDetailPage() {
               Roll Call Roster & Real-time Attendance
             </Typography>
             <Typography variant="caption" sx={{ color: '#64748B' }}>
-              Toggling member status immediately re-evaluates legal quorum
+              {isExecutive ? 'Toggling member status immediately re-evaluates legal quorum' : 'Official statutory roll call record • Read-only attendee view'}
             </Typography>
           </Box>
 
@@ -283,66 +286,105 @@ export default function MeetingDetailPage() {
                   <TableCell>Member Name</TableCell>
                   <TableCell>Designation & Role</TableCell>
                   <TableCell>Type</TableCell>
-                  <TableCell align="right">Attendance Mode</TableCell>
+                  <TableCell align="right">Attendance Status</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {attendees.map((member) => (
-                  <TableRow key={member.id}>
-                    <TableCell>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                        <Avatar sx={{ bgcolor: '#1E3A8A', width: 32, height: 32, fontSize: '0.8rem', fontWeight: 700 }}>
-                          {member.name[0]}
-                        </Avatar>
-                        <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#0F172A' }}>
-                          {member.name}
+                {attendees.map((member) => {
+                  const isSelf = member.email?.toLowerCase() === user?.email?.toLowerCase() ||
+                    (user?.role === 'MEMBER' && member.name?.toLowerCase().includes('thanuj'));
+
+                  return (
+                    <TableRow key={member.id}>
+                      <TableCell>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                          <Avatar sx={{ bgcolor: '#1E3A8A', width: 32, height: 32, fontSize: '0.8rem', fontWeight: 700 }}>
+                            {member.name[0]}
+                          </Avatar>
+                          <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#0F172A' }}>
+                            {member.name} {isSelf && <Chip label="YOU" size="small" sx={{ height: 18, fontSize: '0.6rem', fontWeight: 800, bgcolor: '#DBEAFE', color: '#1D4ED8', ml: 0.5 }} />}
+                          </Typography>
+                        </Box>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="caption" sx={{ color: '#475569', fontWeight: 600 }}>
+                          {member.role}
                         </Typography>
-                      </Box>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="caption" sx={{ color: '#475569', fontWeight: 600 }}>
-                        {member.role}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Chip
-                        label={member.type}
-                        size="small"
-                        sx={{
-                          height: 20,
-                          fontSize: '0.62rem',
-                          fontWeight: 700,
-                          bgcolor: member.type === 'EXTERNAL' ? '#EFF6FF' : '#F1F5F9',
-                          color: member.type === 'EXTERNAL' ? '#1E40AF' : '#475569',
-                        }}
-                      />
-                    </TableCell>
-                    <TableCell align="right">
-                      <Box sx={{ display: 'inline-flex', gap: 0.5 }}>
-                        {['PRESENT', 'VIRTUAL', 'ABSENT', 'EXCUSED'].map((st) => (
-                          <Button
-                            key={st}
+                      </TableCell>
+                      <TableCell>
+                        <Chip
+                          label={member.type}
+                          size="small"
+                          sx={{
+                            height: 20,
+                            fontSize: '0.62rem',
+                            fontWeight: 700,
+                            bgcolor: member.type === 'EXTERNAL' ? '#EFF6FF' : '#F1F5F9',
+                            color: member.type === 'EXTERNAL' ? '#1E40AF' : '#475569',
+                          }}
+                        />
+                      </TableCell>
+                      <TableCell align="right">
+                        {isExecutive ? (
+                          <Box sx={{ display: 'inline-flex', gap: 0.5 }}>
+                            {['PRESENT', 'VIRTUAL', 'ABSENT', 'EXCUSED'].map((st) => (
+                              <Button
+                                key={st}
+                                size="small"
+                                variant={member.status === st ? 'contained' : 'outlined'}
+                                onClick={() => handleStatusChange(member.id, st)}
+                                sx={{
+                                  fontSize: '0.68rem',
+                                  fontWeight: 700,
+                                  py: 0.3,
+                                  px: 1.2,
+                                  borderRadius: 1.5,
+                                  bgcolor: member.status === st ? (st === 'PRESENT' ? '#059669' : st === 'VIRTUAL' ? '#2563EB' : st === 'EXCUSED' ? '#D97706' : '#DC2626') : 'transparent',
+                                  borderColor: '#CBD5E1',
+                                  color: member.status === st ? '#FFF' : '#64748B',
+                                }}
+                              >
+                                {st}
+                              </Button>
+                            ))}
+                          </Box>
+                        ) : isSelf ? (
+                          <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 1 }}>
+                            <Chip
+                              label={member.status}
+                              size="small"
+                              sx={{
+                                fontWeight: 800,
+                                fontSize: '0.72rem',
+                                bgcolor: member.status === 'PRESENT' ? '#DCFCE7' : member.status === 'VIRTUAL' ? '#DBEAFE' : '#FEE2E2',
+                                color: member.status === 'PRESENT' ? '#15803D' : member.status === 'VIRTUAL' ? '#1D4ED8' : '#B91C1C',
+                              }}
+                            />
+                            <Button
+                              size="small"
+                              variant="contained"
+                              onClick={() => handleStatusChange(member.id, member.status === 'PRESENT' ? 'VIRTUAL' : 'PRESENT')}
+                              sx={{ fontSize: '0.72rem', fontWeight: 800, borderRadius: 1.5, bgcolor: '#1E3A8A' }}
+                            >
+                              {member.status === 'PRESENT' ? 'Mark Virtual' : 'Confirm Presence'}
+                            </Button>
+                          </Box>
+                        ) : (
+                          <Chip
+                            label={member.status}
                             size="small"
-                            variant={member.status === st ? 'contained' : 'outlined'}
-                            onClick={() => handleStatusChange(member.id, st)}
                             sx={{
-                              fontSize: '0.68rem',
-                              fontWeight: 700,
-                              py: 0.3,
-                              px: 1.2,
-                              borderRadius: 1.5,
-                              bgcolor: member.status === st ? (st === 'PRESENT' ? '#059669' : st === 'VIRTUAL' ? '#2563EB' : st === 'EXCUSED' ? '#D97706' : '#DC2626') : 'transparent',
-                              borderColor: '#CBD5E1',
-                              color: member.status === st ? '#FFF' : '#64748B',
+                              fontWeight: 800,
+                              fontSize: '0.72rem',
+                              bgcolor: member.status === 'PRESENT' ? '#DCFCE7' : member.status === 'VIRTUAL' ? '#DBEAFE' : member.status === 'EXCUSED' ? '#FEF3C7' : '#FEE2E2',
+                              color: member.status === 'PRESENT' ? '#15803D' : member.status === 'VIRTUAL' ? '#1D4ED8' : member.status === 'EXCUSED' ? '#B45309' : '#B91C1C',
                             }}
-                          >
-                            {st}
-                          </Button>
-                        ))}
-                      </Box>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                          />
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           </TableContainer>
@@ -356,9 +398,11 @@ export default function MeetingDetailPage() {
             <Typography variant="h6" sx={{ fontWeight: 700, color: '#1E3A8A' }}>
               Statutory Agenda Items
             </Typography>
-            <Button size="small" startIcon={<AddIcon />} variant="outlined" sx={{ fontWeight: 700 }}>
-              Add Item
-            </Button>
+            {isExecutive && (
+              <Button size="small" startIcon={<AddIcon />} variant="outlined" sx={{ fontWeight: 700 }}>
+                Add Item
+              </Button>
+            )}
           </Box>
 
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
@@ -407,38 +451,50 @@ export default function MeetingDetailPage() {
                 Minutes of the Meeting (MoM)
               </Typography>
               <Typography variant="caption" sx={{ color: '#64748B' }}>
-                Status: <strong>{minutesStatus}</strong> • Human review and official approval required
+                Status: <strong>{minutesStatus}</strong> • Official Statutory Record
               </Typography>
             </Box>
 
-            <Box sx={{ display: 'flex', gap: 1.5 }}>
-              <Button
-                variant="outlined"
-                size="small"
-                startIcon={<SparkleIcon sx={{ color: '#F59E0B' }} />}
-                onClick={handleGenerateAiMinutes}
-                disabled={aiGenerating}
-                sx={{ fontWeight: 700 }}
-              >
-                {aiGenerating ? 'AI Synthesizing...' : '1-Click CommiAI Minutes'}
-              </Button>
-              <Button
-                variant="contained"
-                size="small"
-                startIcon={<SendIcon />}
-                onClick={() => setMinutesStatus('PENDING_REGISTRAR_APPROVAL')}
-                sx={{ bgcolor: '#1E3A8A', fontWeight: 700 }}
-              >
-                Submit for Registrar Sign-off
-              </Button>
-            </Box>
+            {isExecutive ? (
+              <Box sx={{ display: 'flex', gap: 1.5 }}>
+                <Button
+                  variant="outlined"
+                  size="small"
+                  startIcon={<SparkleIcon sx={{ color: '#F59E0B' }} />}
+                  onClick={handleGenerateAiMinutes}
+                  disabled={aiGenerating}
+                  sx={{ fontWeight: 700 }}
+                >
+                  {aiGenerating ? 'AI Synthesizing...' : '1-Click CommiAI Minutes'}
+                </Button>
+                <Button
+                  variant="contained"
+                  size="small"
+                  startIcon={<SendIcon />}
+                  onClick={() => setMinutesStatus('PENDING_REGISTRAR_APPROVAL')}
+                  sx={{ bgcolor: '#1E3A8A', fontWeight: 700 }}
+                >
+                  Submit for Registrar Sign-off
+                </Button>
+              </Box>
+            ) : (
+              <Chip
+                label="Official Minutes (Read-Only Archive)"
+                sx={{ fontWeight: 800, bgcolor: '#EFF6FF', color: '#1E40AF' }}
+              />
+            )}
           </Box>
 
           <TextField
             fullWidth
             multiline
             rows={12}
-            value={minutesDraft || 'Click "1-Click CommiAI Minutes" above to auto-generate structured minutes based on attendance and agenda deliberations.'}
+            slotProps={{
+              input: {
+                readOnly: !isExecutive,
+              },
+            }}
+            value={minutesDraft || (isExecutive ? 'Click "1-Click CommiAI Minutes" above to auto-generate structured minutes based on attendance and agenda deliberations.' : 'Minutes draft will be published here following executive convener synthesis and approval.')}
             onChange={(e) => setMinutesDraft(e.target.value)}
             sx={{
               fontFamily: 'monospace',

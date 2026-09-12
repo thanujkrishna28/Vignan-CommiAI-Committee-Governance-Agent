@@ -29,8 +29,10 @@ import {
   Add as AddIcon,
 } from '@mui/icons-material';
 import { documentsApi, committeesApi } from '../../services/api';
+import { useAuth } from '../../context/AuthContext';
 
 export default function DocumentsPage() {
+  const { user } = useAuth();
   const [docs, setDocs] = useState([]);
   const [committees, setCommittees] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -105,14 +107,16 @@ export default function DocumentsPage() {
           </Typography>
         </Box>
 
-        <Button
-          variant="contained"
-          startIcon={<UploadIcon />}
-          onClick={() => setOpenModal(true)}
-          sx={{ fontWeight: 700, borderRadius: '10px' }}
-        >
-          Deposit Statutory Record
-        </Button>
+        {(user?.role === 'REGISTRAR' || user?.role === 'IQAC' || user?.role === 'SUPER_ADMIN') && (
+          <Button
+            variant="contained"
+            startIcon={<UploadIcon />}
+            onClick={() => setOpenModal(true)}
+            sx={{ fontWeight: 700, borderRadius: '10px' }}
+          >
+            Deposit Statutory Record
+          </Button>
+        )}
       </Box>
 
       {/* Repository Status Callout */}

@@ -37,8 +37,10 @@ import {
 } from '@mui/icons-material';
 import { committeesApi, complianceApi } from '../../services/api';
 import { useRealtime } from '../../context/SocketContext';
+import { useAuth } from '../../context/AuthContext';
 
 export default function CommitteesListPage() {
+  const { user } = useAuth();
   const [committees, setCommittees] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -190,20 +192,22 @@ export default function CommitteesListPage() {
           </Typography>
         </Box>
 
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={() => setOpenModal(true)}
-          sx={{
-            fontWeight: 800,
-            borderRadius: '12px',
-            px: 2.5,
-            py: 1,
-            boxShadow: '0 4px 14px rgba(37, 99, 235, 0.3)',
-          }}
-        >
-          Constitute Committee
-        </Button>
+        {(user?.role === 'REGISTRAR' || user?.role === 'SUPER_ADMIN') && (
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => setOpenModal(true)}
+            sx={{
+              fontWeight: 800,
+              borderRadius: '12px',
+              px: 2.5,
+              py: 1,
+              boxShadow: '0 4px 14px rgba(37, 99, 235, 0.3)',
+            }}
+          >
+            Constitute Committee
+          </Button>
+        )}
       </Box>
 
       {/* Filter and Search Bar */}
