@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 import logging
@@ -52,15 +52,27 @@ fastapi_app = FastAPI(
     lifespan=lifespan
 )
 
-# CORS
+# Permissive CORS for Vercel frontends, Render, local dev, and custom domains
 fastapi_app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.cors_origins_list,
-    allow_origin_regex=r"https?://(localhost|127\.0\.0\.1)(:\d+)?",
+    allow_origins=["*"],
+    allow_origin_regex=r"^https?://.*",
     allow_credentials=True,
     allow_methods=["*"],
-    allow_headers=["*"]
+    allow_headers=["*"],
+    expose_headers=["*"],
 )
+
+
+@fastapi_app.middleware("http")
+async def api_prefix_fallback_middleware(request: Request, call_next):
+    # If frontend sends requests to /auth/login or /committees instead of /api/..., rewrite scope path
+    path = request.url.path
+    non_api_exempt = ("/health", "/docs", "/openapi.json", "/redoc", "/socket.io")
+    if not path.startswith("/api") and path != "/" and not any(path.startswith(prefix) for prefix in non_api_exempt):
+        request.scope["path"] = f"/api{path}"
+    response = await call_next(request)
+    return response
 
 # Include routers
 fastapi_app.include_router(auth.router)

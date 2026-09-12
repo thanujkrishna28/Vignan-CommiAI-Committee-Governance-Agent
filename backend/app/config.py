@@ -40,7 +40,7 @@ class Settings(BaseSettings):
     LANGCHAIN_PROJECT: str = "vignan-commiai"
 
     # CORS
-    CORS_ORIGINS: str = "http://localhost:5173,http://localhost:3000"
+    CORS_ORIGINS: str = "http://localhost:5173,http://localhost:3000,https://vignan-commiai-frontend-nxe3rvrm1n.vercel.app,*"
 
     @property
     def cors_origins_list(self) -> List[str]:
