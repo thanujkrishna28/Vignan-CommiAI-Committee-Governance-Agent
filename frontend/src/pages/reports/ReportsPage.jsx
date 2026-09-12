@@ -90,18 +90,32 @@ export default function ReportsPage() {
         }}
       >
         {/* University Official Header */}
-        <Box sx={{ textAlign: 'center', pb: 3, borderBottom: '2px solid #1E3A8A', mb: 4 }}>
-          <Typography variant="h5" sx={{ fontWeight: 800, color: '#1E3A8A', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-            Vignan's Foundation for Science, Technology & Research
-          </Typography>
-          <Typography variant="caption" sx={{ color: '#475569', fontWeight: 600, display: 'block', mt: 0.5 }}>
-            (Deemed to be University under Section 3 of UGC Act 1956) • Vadlamudi, Guntur, AP
-          </Typography>
-          <Typography variant="subtitle1" sx={{ fontWeight: 800, color: '#C69214', mt: 2, textTransform: 'uppercase' }}>
+        <Box sx={{ pb: 3, borderBottom: '2px solid #1E3A8A', mb: 4, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 3, mb: 1.5, flexWrap: 'wrap' }}>
+            <Box
+              component="img"
+              src="/vignan-official-logo.png"
+              alt="Vignan University Seal"
+              onError={(e) => { e.target.src = '/vignan-logo.png'; }}
+              sx={{ width: 72, height: 72, objectFit: 'contain' }}
+            />
+            <Box sx={{ textAlign: { xs: 'center', sm: 'left' } }}>
+              <Typography variant="h5" sx={{ fontWeight: 900, color: '#1E3A8A', textTransform: 'uppercase', letterSpacing: '0.03em', fontSize: { xs: '1.1rem', sm: '1.35rem' } }}>
+                Vignan's Foundation for Science, Technology & Research
+              </Typography>
+              <Typography variant="body2" sx={{ color: '#475569', fontWeight: 700, mt: 0.3 }}>
+                (Deemed to be University under Section 3 of UGC Act 1956) • Vadlamudi, Guntur - 522213, AP
+              </Typography>
+              <Typography variant="caption" sx={{ color: '#64748B', fontWeight: 600 }}>
+                NAAC 'A+' Accredited Institution • Internal Quality Assurance Cell (IQAC) Statutory Archive
+              </Typography>
+            </Box>
+          </Box>
+          <Typography variant="subtitle1" sx={{ fontWeight: 900, color: '#C69214', mt: 1.5, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
             OFFICIAL COMPLIANCE DOSSIER — AY 2025-2026
           </Typography>
-          <Typography variant="caption" sx={{ color: '#64748B' }}>
-            Document Reference: VIGNAN/REG/GOV/2026/09 • Generated on {new Date().toLocaleDateString()}
+          <Typography variant="caption" sx={{ color: '#64748B', fontWeight: 600 }}>
+            Document Reference: VIGNAN/REG/GOV/2026/09 • Verified &amp; Digitally Certified on {new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}
           </Typography>
         </Box>
 
@@ -176,18 +190,18 @@ export default function ReportsPage() {
               <Typography variant="caption" sx={{ fontWeight: 800, color: '#1E3A8A', display: 'block' }}>
                 Director, IQAC
               </Typography>
-              <Typography variant="caption" sx={{ color: '#64748B' }}>
-                Dr. B. Prasad
+              <Typography variant="caption" sx={{ color: '#64748B', fontWeight: 700 }}>
+                Dr. E. Deepak Chowdary
               </Typography>
             </Grid>
             <Grid item xs={4} sx={{ textAlign: 'center' }}>
               <Box sx={{ height: 40 }} />
               <Divider sx={{ mb: 1 }} />
               <Typography variant="caption" sx={{ fontWeight: 800, color: '#1E3A8A', display: 'block' }}>
-                Dean, Academics
+                Dean, Academics / Convener
               </Typography>
-              <Typography variant="caption" sx={{ color: '#64748B' }}>
-                Dr. M. S. Rao
+              <Typography variant="caption" sx={{ color: '#64748B', fontWeight: 700 }}>
+                Dr. S. V. Phani Kumar
               </Typography>
             </Grid>
             <Grid item xs={4} sx={{ textAlign: 'center' }}>
@@ -196,8 +210,8 @@ export default function ReportsPage() {
               <Typography variant="caption" sx={{ fontWeight: 800, color: '#1E3A8A', display: 'block' }}>
                 Registrar
               </Typography>
-              <Typography variant="caption" sx={{ color: '#64748B' }}>
-                Dr. R. K. Sharma
+              <Typography variant="caption" sx={{ color: '#64748B', fontWeight: 700 }}>
+                Prof. Dr. K. V. Krishna Kishore
               </Typography>
             </Grid>
           </Grid>
