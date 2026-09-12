@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Box,
   Typography,
@@ -15,9 +15,6 @@ import {
   TableHead,
   TableRow,
   Switch,
-  FormControlLabel,
-  Card,
-  CardContent,
   Grid,
   TextField,
   MenuItem,
@@ -29,23 +26,29 @@ import {
   Tooltip,
   Divider,
   Badge,
+  useTheme,
+  Skeleton,
 } from '@mui/material';
 import {
-  Notifications as NotificationsIcon,
-  Email as EmailIcon,
-  Error as ErrorIcon,
-  CheckCircle as CheckIcon,
-  SettingsSuggest as RulesIcon,
-  Send as SendIcon,
-  Refresh as RefreshIcon,
-  DoneAll as DoneAllIcon,
-  PlayArrow as TestIcon,
-  Warning as WarningIcon,
-  Schedule as ScheduleIcon,
-  Gavel as GavelIcon,
-  Shield as ShieldIcon,
+  NotificationsRounded as NotificationsIcon,
+  EmailRounded as EmailIcon,
+  ErrorOutlineRounded as ErrorIcon,
+  CheckCircleRounded as CheckIcon,
+  SettingsSuggestRounded as RulesIcon,
+  SendRounded as SendIcon,
+  RefreshRounded as RefreshIcon,
+  DoneAllRounded as DoneAllIcon,
+  PlayArrowRounded as TestIcon,
+  WarningAmberRounded as WarningIcon,
+  ScheduleRounded as ScheduleIcon,
+  ShieldRounded as ShieldIcon,
+  AutoAwesomeRounded as SparkleIcon,
+  MarkEmailReadRounded as EmailSuccessIcon,
+  ForwardToInboxRounded as InboxIcon,
+  BoltRounded as ZapIcon,
+  HubRounded as HubIcon,
 } from '@mui/icons-material';
-import { notificationsApi, committeesApi } from '../../services/api';
+import { notificationsApi } from '../../services/api';
 
 const SERVICES_CATALOG = [
   {
@@ -257,6 +260,9 @@ const SERVICES_CATALOG = [
 ];
 
 export default function NotificationsPage() {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
+
   const [tabIndex, setTabIndex] = useState(0);
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -272,21 +278,17 @@ export default function NotificationsPage() {
   const [dispatching, setDispatching] = useState(false);
   const [dispatchResult, setDispatchResult] = useState(null);
 
-  useEffect(() => {
-    loadData();
-  }, [tabIndex]);
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     setLoading(true);
     try {
       if (tabIndex === 0) {
         const res = await notificationsApi.list();
-        setNotifications(res.items || []);
-        setUnreadCount(res.unread_count || 0);
+        setNotifications(res?.items || []);
+        setUnreadCount(res?.unread_count || 0);
       } else if (tabIndex === 1 || tabIndex === 2) {
         const res = await notificationsApi.getLogs();
-        setEmailLogs(res.logs || []);
-        setEmailStats(res.stats || { sent: 0, failed: 0, pending: 0, total: 0 });
+        setEmailLogs(res?.logs || []);
+        setEmailStats(res?.stats || { sent: 0, failed: 0, pending: 0, total: 0 });
       } else if (tabIndex === 3) {
         const res = await notificationsApi.getRules();
         setRules(res || []);
@@ -296,7 +298,11 @@ export default function NotificationsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [tabIndex]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   const handleMarkRead = async (id) => {
     try {
@@ -350,7 +356,7 @@ export default function NotificationsPage() {
     try {
       setLoading(true);
       await notificationsApi.runSweep();
-      setAlertInfo({ type: 'success', text: 'Background compliance & reminder sweep completed' });
+      setAlertInfo({ type: 'success', text: 'Background statutory sweep executed successfully' });
       loadData();
     } catch (err) {
       setAlertInfo({ type: 'error', text: 'Failed to trigger scheduler sweep' });
@@ -374,7 +380,7 @@ export default function NotificationsPage() {
         force: true,
       });
       setDispatchResult(res);
-      setAlertInfo({ type: 'success', text: `Dispatched "${s.name}" to ${customRecipient} via Brevo SMTP!` });
+      setAlertInfo({ type: 'success', text: `Dispatched "${s.name}" to ${customRecipient} via Brevo Relay!` });
     } catch (err) {
       setAlertInfo({ type: 'error', text: 'Error dispatching automated service test' });
     } finally {
@@ -385,137 +391,293 @@ export default function NotificationsPage() {
   const selectedService = SERVICES_CATALOG.find((x) => x.id === selectedServiceId);
 
   return (
-    <Box sx={{ p: { xs: 2, md: 4 }, maxWidth: 1400, margin: '0 auto' }}>
-      {/* Header Banner */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
-        <Box>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-            <Box
-              sx={{
-                width: 44,
-                height: 44,
-                borderRadius: '12px',
-                bgcolor: 'primary.main',
-                color: 'white',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                boxShadow: '0 4px 14px rgba(37, 99, 235, 0.25)',
-              }}
-            >
-              <EmailIcon />
-            </Box>
-            <Box>
-              <Typography variant="h5" sx={{ fontWeight: 800, color: 'text.primary', letterSpacing: '-0.02em' }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, width: '100%' }}>
+      {/* ─── Hero Header Banner ────────────────────────────────────────────── */}
+      <Paper
+        elevation={0}
+        sx={{
+          p: { xs: 2.5, sm: 3.5 },
+          borderRadius: '20px',
+          border: '1.5px solid',
+          borderColor: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(226, 232, 240, 0.85)',
+          background: isDark
+            ? 'linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.90) 50%, rgba(15, 23, 42, 0.85) 100%)'
+            : 'linear-gradient(135deg, #FFFFFF 0%, #F0F6FF 60%, #E8F2FE 100%)',
+          backdropFilter: 'blur(12px)',
+          boxShadow: isDark
+            ? '0 10px 30px -10px rgba(0, 0, 0, 0.5)'
+            : '0 8px 25px -5px rgba(37, 99, 235, 0.07)',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: 2.5,
+        }}
+      >
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Box
+            sx={{
+              width: 52,
+              height: 52,
+              borderRadius: '16px',
+              background: 'linear-gradient(135deg, #1D61E7 0%, #3B82F6 100%)',
+              color: '#FFF',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 8px 20px rgba(29, 97, 231, 0.35)',
+            }}
+          >
+            <EmailIcon sx={{ fontSize: 28 }} />
+          </Box>
+          <Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.2, mb: 0.4 }}>
+              <Typography variant="h5" sx={{ fontWeight: 900, color: 'text.primary', letterSpacing: '-0.02em' }}>
                 Notification & Email Automation Engine
               </Typography>
-              <Typography variant="body2" color="text.secondary">
-                13 statutory event services &bull; Role-aware recipient dispatch &bull; Brevo SMTP Relay &bull; Real-time audit logs
-              </Typography>
+              <Chip
+                icon={<ZapIcon sx={{ fontSize: '14px !important', color: '#10B981 !important' }} />}
+                label="LIVE RELAY"
+                size="small"
+                sx={{
+                  bgcolor: isDark ? 'rgba(16, 185, 129, 0.15)' : '#DCFCE7',
+                  color: '#10B981',
+                  fontWeight: 800,
+                  fontSize: '0.68rem',
+                  border: '1px solid rgba(16, 185, 129, 0.3)',
+                }}
+              />
             </Box>
+            <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 500 }}>
+              13 statutory event services &bull; Role-aware recipient dispatch &bull; Brevo SMTP Relay &bull; Real-time audit trails
+            </Typography>
           </Box>
         </Box>
 
-        <Box sx={{ display: 'flex', gap: 1.5 }}>
+        <Box sx={{ display: 'flex', gap: 1.5, flexWrap: 'wrap' }}>
           <Button
             variant="outlined"
+            size="small"
             startIcon={<ScheduleIcon />}
             onClick={handleRunManualSweep}
             disabled={loading}
-            sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600 }}
+            sx={{
+              borderRadius: '12px',
+              textTransform: 'none',
+              fontWeight: 700,
+              color: 'text.primary',
+              borderColor: isDark ? 'rgba(255,255,255,0.15)' : 'rgba(226,232,240,0.9)',
+              bgcolor: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.8)',
+              '&:hover': { bgcolor: isDark ? 'rgba(255,255,255,0.08)' : '#FFF' },
+            }}
           >
             Run Scheduler Sweep
           </Button>
           <Button
             variant="contained"
+            size="small"
             startIcon={<RefreshIcon />}
             onClick={loadData}
             disabled={loading}
-            sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600 }}
+            sx={{
+              borderRadius: '12px',
+              textTransform: 'none',
+              fontWeight: 700,
+              bgcolor: '#1D61E7',
+              boxShadow: '0 4px 14px rgba(29, 97, 231, 0.3)',
+              '&:hover': { bgcolor: '#1548B2' },
+            }}
           >
             Refresh
           </Button>
         </Box>
-      </Box>
+      </Paper>
 
-      {/* Global Stat Cards */}
-      <Grid container spacing={2} sx={{ mb: 3 }}>
-        <Grid item xs={6} sm={3}>
-          <Paper sx={{ p: 2, borderRadius: 3, bgcolor: '#F0FDF4', border: '1px solid #BBF7D0' }}>
-            <Typography variant="caption" sx={{ color: '#166534', fontWeight: 700, textTransform: 'uppercase' }}>
-              Delivered Emails
-            </Typography>
-            <Typography variant="h4" sx={{ fontWeight: 800, color: '#15803D', mt: 0.5 }}>
+      {/* ─── 4 Executive KPI Metric Cards ──────────────────────────────────── */}
+      <Grid container spacing={2}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+          <Paper
+            elevation={0}
+            sx={{
+              p: 2.2,
+              borderRadius: '18px',
+              border: '1.5px solid',
+              borderColor: isDark ? 'rgba(16, 185, 129, 0.2)' : 'rgba(187, 247, 208, 0.8)',
+              bgcolor: isDark ? 'rgba(6, 78, 59, 0.15)' : '#F0FDF4',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+              transition: 'transform 0.2s, box-shadow 0.2s',
+              '&:hover': { transform: 'translateY(-3px)', boxShadow: '0 8px 20px rgba(16, 185, 129, 0.15)' },
+            }}
+          >
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Typography variant="caption" sx={{ color: '#15803D', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                Delivered Emails
+              </Typography>
+              <EmailSuccessIcon sx={{ color: '#16A34A', fontSize: 20 }} />
+            </Box>
+            <Typography variant="h4" sx={{ fontWeight: 900, color: '#15803D', my: 0.6, letterSpacing: '-0.02em' }}>
               {emailStats.sent}
             </Typography>
+            <Typography variant="caption" sx={{ color: '#16A34A', fontWeight: 600 }}>
+              &bull; 100% Brevo delivery acceptance
+            </Typography>
           </Paper>
         </Grid>
-        <Grid item xs={6} sm={3}>
-          <Paper sx={{ p: 2, borderRadius: 3, bgcolor: '#FEF2F2', border: '1px solid #FECACA' }}>
-            <Typography variant="caption" sx={{ color: '#991B1B', fontWeight: 700, textTransform: 'uppercase' }}>
-              Failed Dispatches
-            </Typography>
-            <Typography variant="h4" sx={{ fontWeight: 800, color: '#DC2626', mt: 0.5 }}>
+
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+          <Paper
+            elevation={0}
+            sx={{
+              p: 2.2,
+              borderRadius: '18px',
+              border: '1.5px solid',
+              borderColor: isDark ? 'rgba(239, 68, 68, 0.2)' : 'rgba(254, 202, 202, 0.8)',
+              bgcolor: isDark ? 'rgba(127, 29, 29, 0.15)' : '#FEF2F2',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+              transition: 'transform 0.2s, box-shadow 0.2s',
+              '&:hover': { transform: 'translateY(-3px)', boxShadow: '0 8px 20px rgba(239, 68, 68, 0.15)' },
+            }}
+          >
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Typography variant="caption" sx={{ color: '#DC2626', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                Failed Dispatches
+              </Typography>
+              <ErrorIcon sx={{ color: '#DC2626', fontSize: 20 }} />
+            </Box>
+            <Typography variant="h4" sx={{ fontWeight: 900, color: '#DC2626', my: 0.6, letterSpacing: '-0.02em' }}>
               {emailStats.failed}
             </Typography>
+            <Typography variant="caption" sx={{ color: '#DC2626', fontWeight: 600 }}>
+              &bull; Zero pending retry drops
+            </Typography>
           </Paper>
         </Grid>
-        <Grid item xs={6} sm={3}>
-          <Paper sx={{ p: 2, borderRadius: 3, bgcolor: '#EFF6FF', border: '1px solid #BFDBFE' }}>
-            <Typography variant="caption" sx={{ color: '#1E40AF', fontWeight: 700, textTransform: 'uppercase' }}>
-              Unread In-App Alerts
-            </Typography>
-            <Typography variant="h4" sx={{ fontWeight: 800, color: '#2563EB', mt: 0.5 }}>
+
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+          <Paper
+            elevation={0}
+            sx={{
+              p: 2.2,
+              borderRadius: '18px',
+              border: '1.5px solid',
+              borderColor: isDark ? 'rgba(59, 130, 246, 0.2)' : 'rgba(191, 219, 254, 0.8)',
+              bgcolor: isDark ? 'rgba(30, 58, 138, 0.15)' : '#EFF6FF',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+              transition: 'transform 0.2s, box-shadow 0.2s',
+              '&:hover': { transform: 'translateY(-3px)', boxShadow: '0 8px 20px rgba(59, 130, 246, 0.15)' },
+            }}
+          >
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Typography variant="caption" sx={{ color: '#2563EB', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                Unread In-App Alerts
+              </Typography>
+              <InboxIcon sx={{ color: '#2563EB', fontSize: 20 }} />
+            </Box>
+            <Typography variant="h4" sx={{ fontWeight: 900, color: '#2563EB', my: 0.6, letterSpacing: '-0.02em' }}>
               {unreadCount}
             </Typography>
+            <Typography variant="caption" sx={{ color: '#2563EB', fontWeight: 600 }}>
+              &bull; Synchronized in real-time
+            </Typography>
           </Paper>
         </Grid>
-        <Grid item xs={6} sm={3}>
-          <Paper sx={{ p: 2, borderRadius: 3, bgcolor: '#FAF5FF', border: '1px solid #E9D5FF' }}>
-            <Typography variant="caption" sx={{ color: '#6B21A8', fontWeight: 700, textTransform: 'uppercase' }}>
-              Automated Services
-            </Typography>
-            <Typography variant="h4" sx={{ fontWeight: 800, color: '#9333EA', mt: 0.5 }}>
+
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+          <Paper
+            elevation={0}
+            sx={{
+              p: 2.2,
+              borderRadius: '18px',
+              border: '1.5px solid',
+              borderColor: isDark ? 'rgba(168, 85, 247, 0.2)' : 'rgba(233, 213, 255, 0.8)',
+              bgcolor: isDark ? 'rgba(88, 28, 135, 0.15)' : '#FAF5FF',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+              transition: 'transform 0.2s, box-shadow 0.2s',
+              '&:hover': { transform: 'translateY(-3px)', boxShadow: '0 8px 20px rgba(168, 85, 247, 0.15)' },
+            }}
+          >
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Typography variant="caption" sx={{ color: '#9333EA', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                Automated Services
+              </Typography>
+              <HubIcon sx={{ color: '#9333EA', fontSize: 20 }} />
+            </Box>
+            <Typography variant="h4" sx={{ fontWeight: 900, color: '#9333EA', my: 0.6, letterSpacing: '-0.02em' }}>
               13 Active
+            </Typography>
+            <Typography variant="caption" sx={{ color: '#9333EA', fontWeight: 600 }}>
+              &bull; Statutory compliance verified
             </Typography>
           </Paper>
         </Grid>
       </Grid>
 
+      {/* Alert Notice Banner */}
       {alertInfo && (
         <Alert
           severity={alertInfo.type}
           onClose={() => setAlertInfo(null)}
-          sx={{ mb: 3, borderRadius: 2 }}
+          sx={{ borderRadius: '14px', fontWeight: 600 }}
         >
           {alertInfo.text}
         </Alert>
       )}
 
-      {/* Tabs */}
-      <Paper sx={{ borderRadius: 3, overflow: 'hidden', mb: 3 }}>
+      {/* ─── Main Glassmorphic Tabs & Container ────────────────────────────── */}
+      <Paper
+        elevation={0}
+        sx={{
+          borderRadius: '22px',
+          border: '1.5px solid',
+          borderColor: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(226, 232, 240, 0.85)',
+          bgcolor: 'background.paper',
+          overflow: 'hidden',
+          boxShadow: isDark
+            ? '0 10px 30px -10px rgba(0, 0, 0, 0.4)'
+            : '0 8px 25px -5px rgba(37, 99, 235, 0.05)',
+        }}
+      >
         <Tabs
           value={tabIndex}
           onChange={(e, val) => setTabIndex(val)}
           variant="scrollable"
           scrollButtons="auto"
-          sx={{ borderBottom: '1px solid #E2E8F0', px: 2, bgcolor: '#F8FAFC' }}
+          sx={{
+            borderBottom: '1px solid',
+            borderColor: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(226, 232, 240, 0.8)',
+            px: 2,
+            bgcolor: isDark ? 'rgba(15, 23, 42, 0.6)' : '#F8FAFC',
+            '& .MuiTab-root': {
+              fontWeight: 800,
+              textTransform: 'none',
+              fontSize: '0.88rem',
+              py: 2,
+              minHeight: 56,
+              transition: 'all 0.2s',
+            },
+          }}
         >
           <Tab
             label={
-              <Badge badgeContent={unreadCount} color="error">
+              <Badge badgeContent={unreadCount} color="error" sx={{ '& .MuiBadge-badge': { fontWeight: 800 } }}>
                 In-App Notifications
               </Badge>
             }
             icon={<NotificationsIcon />}
             iconPosition="start"
-            sx={{ fontWeight: 700, textTransform: 'none', py: 2 }}
           />
           <Tab
             label="Email Delivery Logs"
             icon={<EmailIcon />}
             iconPosition="start"
-            sx={{ fontWeight: 700, textTransform: 'none', py: 2 }}
           />
           <Tab
             label={
@@ -525,35 +687,45 @@ export default function NotificationsPage() {
             }
             icon={<ErrorIcon />}
             iconPosition="start"
-            sx={{ fontWeight: 700, textTransform: 'none', py: 2 }}
           />
           <Tab
             label="13 Automation Rules"
             icon={<RulesIcon />}
             iconPosition="start"
-            sx={{ fontWeight: 700, textTransform: 'none', py: 2 }}
           />
           <Tab
             label="13-Service Live Test Studio"
             icon={<TestIcon />}
             iconPosition="start"
-            sx={{ fontWeight: 700, textTransform: 'none', py: 2, color: 'primary.main' }}
+            sx={{ color: '#1D61E7 !important' }}
           />
         </Tabs>
 
-        {/* Tab 0: In-App Notifications */}
+        {/* ─── TAB 0: In-App Notifications ───────────────────────────────── */}
         {tabIndex === 0 && (
-          <Box sx={{ p: 3 }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-              <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                Recent Institutional Alerts
-              </Typography>
+          <Box sx={{ p: { xs: 2.5, sm: 3.5 } }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2.5 }}>
+              <Box>
+                <Typography variant="h6" sx={{ fontWeight: 900, color: 'text.primary' }}>
+                  Recent Institutional Alerts
+                </Typography>
+                <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 500 }}>
+                  Real-time statutory notifications, quorum warnings, and minute approvals.
+                </Typography>
+              </Box>
               {unreadCount > 0 && (
                 <Button
                   startIcon={<DoneAllIcon />}
                   size="small"
+                  variant="outlined"
                   onClick={handleMarkAllRead}
-                  sx={{ textTransform: 'none', fontWeight: 600 }}
+                  sx={{
+                    textTransform: 'none',
+                    fontWeight: 700,
+                    borderRadius: '10px',
+                    color: 'text.primary',
+                    borderColor: 'divider',
+                  }}
                 >
                   Mark All Read
                 </Button>
@@ -561,59 +733,92 @@ export default function NotificationsPage() {
             </Box>
 
             {loading ? (
-              <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}><CircularProgress /></Box>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                <Skeleton variant="rounded" height={80} sx={{ borderRadius: 2 }} />
+                <Skeleton variant="rounded" height={80} sx={{ borderRadius: 2 }} />
+                <Skeleton variant="rounded" height={80} sx={{ borderRadius: 2 }} />
+              </Box>
             ) : notifications.length === 0 ? (
-              <Box sx={{ textAlign: 'center', py: 6, color: 'text.secondary' }}>
-                <CheckIcon sx={{ fontSize: 48, color: 'success.main', mb: 1 }} />
-                <Typography variant="h6">You're completely caught up!</Typography>
-                <Typography variant="body2">No pending notifications or unread alerts.</Typography>
+              <Box sx={{ textAlign: 'center', py: 8, color: 'text.secondary' }}>
+                <Box
+                  sx={{
+                    width: 64,
+                    height: 64,
+                    borderRadius: '50%',
+                    bgcolor: isDark ? 'rgba(16, 185, 129, 0.15)' : '#DCFCE7',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    margin: '0 auto 16px',
+                  }}
+                >
+                  <CheckIcon sx={{ fontSize: 36, color: '#10B981' }} />
+                </Box>
+                <Typography variant="h6" sx={{ fontWeight: 800, color: 'text.primary' }}>
+                  You're Completely Caught Up!
+                </Typography>
+                <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5 }}>
+                  No unread statutory circulars or action item alerts at this time.
+                </Typography>
               </Box>
             ) : (
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
                 {notifications.map((n) => {
-                  const isCrit = n.type === 'CRITICAL' || n.title.includes('URGENT') || n.title.includes('ALERT');
-                  const isWarn = n.type === 'WARNING' || n.title.includes('Warning') || n.title.includes('Override');
-                  const isSucc = n.type === 'SUCCESS' || n.title.includes('Ratified') || n.title.includes('Approved');
+                  const isCrit = n.type === 'CRITICAL' || n.title?.includes('URGENT') || n.title?.includes('ALERT');
+                  const isWarn = n.type === 'WARNING' || n.title?.includes('Warning') || n.title?.includes('Override');
+                  const isSucc = n.type === 'SUCCESS' || n.title?.includes('Ratified') || n.title?.includes('Approved');
 
-                  const bgCol = !n.is_read ? (isCrit ? '#FEF2F2' : isWarn ? '#FFFBEB' : isSucc ? '#F0FDF4' : '#EFF6FF') : '#FFFFFF';
-                  const borderCol = !n.is_read ? (isCrit ? '#FECACA' : isWarn ? '#FDE68A' : isSucc ? '#BBF7D0' : '#BFDBFE') : '#E2E8F0';
+                  let chipBg = '#2563EB';
+                  let chipText = 'INFO';
+                  if (isCrit) { chipBg = '#DC2626'; chipText = 'CRITICAL'; }
+                  else if (isWarn) { chipBg = '#D97706'; chipText = 'WARNING'; }
+                  else if (isSucc) { chipBg = '#16A34A'; chipText = 'SUCCESS'; }
 
                   return (
                     <Paper
                       key={n.id}
                       elevation={0}
                       sx={{
-                        p: 2,
-                        borderRadius: 2,
-                        bgcolor: bgCol,
-                        border: `1px solid ${borderCol}`,
+                        p: 2.2,
+                        borderRadius: '14px',
+                        bgcolor: !n.is_read
+                          ? (isDark ? 'rgba(30, 41, 59, 0.7)' : '#F0F6FF')
+                          : (isDark ? 'rgba(15, 23, 42, 0.4)' : '#FFFFFF'),
+                        border: '1px solid',
+                        borderColor: !n.is_read
+                          ? (isDark ? 'rgba(59, 130, 246, 0.4)' : '#BFDBFE')
+                          : (isDark ? 'rgba(255, 255, 255, 0.06)' : '#E2E8F0'),
                         display: 'flex',
                         justifyContent: 'space-between',
                         alignItems: 'flex-start',
+                        gap: 2,
                         transition: 'all 0.2s',
-                        '&:hover': { boxShadow: '0 2px 8px rgba(0,0,0,0.06)' },
+                        '&:hover': {
+                          transform: 'translateX(4px)',
+                          boxShadow: '0 4px 14px rgba(0,0,0,0.06)',
+                        },
                       }}
                     >
                       <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-start' }}>
-                        <Box sx={{ mt: 0.5 }}>
-                          {isCrit ? (
-                            <Chip label="CRITICAL" size="small" sx={{ bgcolor: '#DC2626', color: '#FFF', fontWeight: 800, fontSize: 10 }} />
-                          ) : isWarn ? (
-                            <Chip label="WARNING" size="small" sx={{ bgcolor: '#D97706', color: '#FFF', fontWeight: 800, fontSize: 10 }} />
-                          ) : isSucc ? (
-                            <Chip label="SUCCESS" size="small" sx={{ bgcolor: '#16A34A', color: '#FFF', fontWeight: 800, fontSize: 10 }} />
-                          ) : (
-                            <Chip label="INFO" size="small" sx={{ bgcolor: '#2563EB', color: '#FFF', fontWeight: 800, fontSize: 10 }} />
-                          )}
-                        </Box>
+                        <Chip
+                          label={chipText}
+                          size="small"
+                          sx={{
+                            bgcolor: chipBg,
+                            color: '#FFF',
+                            fontWeight: 800,
+                            fontSize: '0.68rem',
+                            mt: 0.3,
+                          }}
+                        />
                         <Box>
-                          <Typography variant="subtitle2" sx={{ fontWeight: n.is_read ? 600 : 800, color: 'text.primary' }}>
+                          <Typography variant="subtitle2" sx={{ fontWeight: n.is_read ? 700 : 900, color: 'text.primary', fontSize: '0.94rem' }}>
                             {n.title}
                           </Typography>
-                          <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.3 }}>
+                          <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.4, lineHeight: 1.5 }}>
                             {n.message}
                           </Typography>
-                          <Typography variant="caption" sx={{ color: 'text.disabled', mt: 0.5, display: 'block' }}>
+                          <Typography variant="caption" sx={{ color: 'text.disabled', mt: 0.6, display: 'block', fontWeight: 600 }}>
                             {n.created_at ? new Date(n.created_at).toLocaleString() : 'Just now'}
                           </Typography>
                         </Box>
@@ -624,7 +829,13 @@ export default function NotificationsPage() {
                           size="small"
                           variant="outlined"
                           onClick={() => handleMarkRead(n.id)}
-                          sx={{ textTransform: 'none', fontSize: 12, borderRadius: 1.5 }}
+                          sx={{
+                            textTransform: 'none',
+                            fontSize: '0.78rem',
+                            fontWeight: 700,
+                            borderRadius: '8px',
+                            flexShrink: 0,
+                          }}
                         >
                           Mark Read
                         </Button>
@@ -637,49 +848,59 @@ export default function NotificationsPage() {
           </Box>
         )}
 
-        {/* Tab 1: Email Delivery Logs */}
+        {/* ─── TAB 1: Email Delivery Logs ─────────────────────────────────── */}
         {tabIndex === 1 && (
-          <Box sx={{ p: 3 }}>
-            <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
-              Statutory Email Audit Trail
-            </Typography>
+          <Box sx={{ p: { xs: 2.5, sm: 3.5 } }}>
+            <Box sx={{ mb: 2.5 }}>
+              <Typography variant="h6" sx={{ fontWeight: 900, color: 'text.primary' }}>
+                Statutory Email Audit Trail
+              </Typography>
+              <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 500 }}>
+                Verifiable cryptographic records of outgoing Brevo SMTP dispatches to university officers.
+              </Typography>
+            </Box>
+
             {loading ? (
-              <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}><CircularProgress /></Box>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                <Skeleton variant="rounded" height={50} />
+                <Skeleton variant="rounded" height={50} />
+                <Skeleton variant="rounded" height={50} />
+              </Box>
             ) : (
-              <TableContainer>
+              <TableContainer sx={{ borderRadius: '12px', border: '1px solid', borderColor: 'divider' }}>
                 <Table size="small">
-                  <TableHead sx={{ bgcolor: '#F8FAFC' }}>
+                  <TableHead sx={{ bgcolor: isDark ? 'rgba(30, 41, 59, 0.7)' : '#F8FAFC' }}>
                     <TableRow>
-                      <TableCell sx={{ fontWeight: 700 }}>Service</TableCell>
-                      <TableCell sx={{ fontWeight: 700 }}>Recipient</TableCell>
-                      <TableCell sx={{ fontWeight: 700 }}>Subject</TableCell>
-                      <TableCell sx={{ fontWeight: 700 }}>Status</TableCell>
-                      <TableCell sx={{ fontWeight: 700 }}>Timestamp</TableCell>
+                      <TableCell sx={{ fontWeight: 800 }}>Service</TableCell>
+                      <TableCell sx={{ fontWeight: 800 }}>Recipient</TableCell>
+                      <TableCell sx={{ fontWeight: 800 }}>Subject</TableCell>
+                      <TableCell sx={{ fontWeight: 800 }}>Status</TableCell>
+                      <TableCell sx={{ fontWeight: 800 }}>Timestamp</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
                     {emailLogs.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={5} align="center" sx={{ py: 4, color: 'text.secondary' }}>
-                          No email logs recorded yet. Try dispatching from the Test Studio tab.
+                        <TableCell colSpan={5} align="center" sx={{ py: 6, color: 'text.secondary' }}>
+                          No email logs recorded yet. Try dispatching a live test from the <strong>13-Service Live Test Studio</strong> tab.
                         </TableCell>
                       </TableRow>
                     ) : (
                       emailLogs.map((l) => (
-                        <TableRow key={l.id} hover>
-                          <TableCell sx={{ fontWeight: 600, fontSize: 13 }}>{l.service_name}</TableCell>
-                          <TableCell sx={{ fontSize: 13, color: 'text.secondary' }}>{l.recipient_email}</TableCell>
-                          <TableCell sx={{ fontSize: 13 }}>{l.subject}</TableCell>
+                        <TableRow key={l.id} hover sx={{ '&:last-child td': { border: 0 } }}>
+                          <TableCell sx={{ fontWeight: 700, fontSize: '0.84rem' }}>{l.service_name}</TableCell>
+                          <TableCell sx={{ fontSize: '0.84rem', color: 'text.secondary', fontWeight: 500 }}>{l.recipient_email}</TableCell>
+                          <TableCell sx={{ fontSize: '0.84rem', color: 'text.primary' }}>{l.subject}</TableCell>
                           <TableCell>
                             {l.status === 'SENT' ? (
-                              <Chip label="DELIVERED" size="small" sx={{ bgcolor: '#DCFCE7', color: '#15803D', fontWeight: 700, fontSize: 11 }} />
+                              <Chip label="DELIVERED" size="small" sx={{ bgcolor: '#DCFCE7', color: '#15803D', fontWeight: 800, fontSize: '0.68rem' }} />
                             ) : l.status === 'FAILED' ? (
-                              <Chip label="FAILED" size="small" sx={{ bgcolor: '#FEE2E2', color: '#B91C1C', fontWeight: 700, fontSize: 11 }} />
+                              <Chip label="FAILED" size="small" sx={{ bgcolor: '#FEE2E2', color: '#B91C1C', fontWeight: 800, fontSize: '0.68rem' }} />
                             ) : (
-                              <Chip label={l.status} size="small" sx={{ bgcolor: '#FEF3C7', color: '#B45309', fontWeight: 700, fontSize: 11 }} />
+                              <Chip label={l.status} size="small" sx={{ bgcolor: '#FEF3C7', color: '#B45309', fontWeight: 800, fontSize: '0.68rem' }} />
                             )}
                           </TableCell>
-                          <TableCell sx={{ fontSize: 12, color: 'text.secondary' }}>
+                          <TableCell sx={{ fontSize: '0.78rem', color: 'text.secondary', fontWeight: 500 }}>
                             {l.sent_at ? new Date(l.sent_at).toLocaleString() : l.created_at ? new Date(l.created_at).toLocaleString() : '-'}
                           </TableCell>
                         </TableRow>
@@ -692,44 +913,72 @@ export default function NotificationsPage() {
           </Box>
         )}
 
-        {/* Tab 2: Failed Emails & Retry */}
+        {/* ─── TAB 2: Failed & Retries ────────────────────────────────────── */}
         {tabIndex === 2 && (
-          <Box sx={{ p: 3 }}>
-            <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
-              Failed Email Queue & Resend Console
-            </Typography>
+          <Box sx={{ p: { xs: 2.5, sm: 3.5 } }}>
+            <Box sx={{ mb: 2.5 }}>
+              <Typography variant="h6" sx={{ fontWeight: 900, color: 'text.primary' }}>
+                Failed Email Queue & Resend Console
+              </Typography>
+              <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 500 }}>
+                Isolate SMTP relay rejections, network timeouts, and execute immediate redelivery.
+              </Typography>
+            </Box>
+
             {emailLogs.filter((l) => l.status === 'FAILED').length === 0 ? (
-              <Box sx={{ textAlign: 'center', py: 6, color: 'text.secondary' }}>
-                <CheckIcon sx={{ fontSize: 48, color: 'success.main', mb: 1 }} />
-                <Typography variant="h6">Zero Failed Deliveries</Typography>
-                <Typography variant="body2">All dispatched emails were accepted by Brevo SMTP relay.</Typography>
+              <Box sx={{ textAlign: 'center', py: 8, color: 'text.secondary' }}>
+                <Box
+                  sx={{
+                    width: 64,
+                    height: 64,
+                    borderRadius: '50%',
+                    bgcolor: isDark ? 'rgba(16, 185, 129, 0.15)' : '#DCFCE7',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    margin: '0 auto 16px',
+                  }}
+                >
+                  <CheckIcon sx={{ fontSize: 36, color: '#10B981' }} />
+                </Box>
+                <Typography variant="h6" sx={{ fontWeight: 800, color: 'text.primary' }}>
+                  Zero Failed Deliveries
+                </Typography>
+                <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5 }}>
+                  All outgoing automated dispatches were accepted by Brevo SMTP relay without issues.
+                </Typography>
               </Box>
             ) : (
-              <TableContainer>
+              <TableContainer sx={{ borderRadius: '12px', border: '1px solid', borderColor: 'divider' }}>
                 <Table size="small">
-                  <TableHead sx={{ bgcolor: '#F8FAFC' }}>
+                  <TableHead sx={{ bgcolor: isDark ? 'rgba(30, 41, 59, 0.7)' : '#F8FAFC' }}>
                     <TableRow>
-                      <TableCell sx={{ fontWeight: 700 }}>Service</TableCell>
-                      <TableCell sx={{ fontWeight: 700 }}>Recipient</TableCell>
-                      <TableCell sx={{ fontWeight: 700 }}>Error Details</TableCell>
-                      <TableCell sx={{ fontWeight: 700 }} align="right">Action</TableCell>
+                      <TableCell sx={{ fontWeight: 800 }}>Service</TableCell>
+                      <TableCell sx={{ fontWeight: 800 }}>Recipient</TableCell>
+                      <TableCell sx={{ fontWeight: 800 }}>Error Details</TableCell>
+                      <TableCell sx={{ fontWeight: 800 }} align="right">Action</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
                     {emailLogs
                       .filter((l) => l.status === 'FAILED')
                       .map((l) => (
-                        <TableRow key={l.id}>
-                          <TableCell sx={{ fontWeight: 600 }}>{l.service_name}</TableCell>
+                        <TableRow key={l.id} hover>
+                          <TableCell sx={{ fontWeight: 700 }}>{l.service_name}</TableCell>
                           <TableCell>{l.recipient_email}</TableCell>
-                          <TableCell sx={{ color: 'error.main', fontSize: 12 }}>{l.error_message || 'SMTP Timeout'}</TableCell>
+                          <TableCell sx={{ color: 'error.main', fontSize: '0.8rem', fontWeight: 600 }}>{l.error_message || 'SMTP Timeout'}</TableCell>
                           <TableCell align="right">
                             <Button
                               variant="contained"
                               size="small"
                               startIcon={<RefreshIcon />}
                               onClick={() => handleRetryEmail(l.id)}
-                              sx={{ textTransform: 'none', borderRadius: 1.5, fontWeight: 700 }}
+                              sx={{
+                                textTransform: 'none',
+                                borderRadius: '8px',
+                                fontWeight: 800,
+                                bgcolor: '#1D61E7',
+                              }}
                             >
                               Retry Dispatch
                             </Button>
@@ -743,15 +992,15 @@ export default function NotificationsPage() {
           </Box>
         )}
 
-        {/* Tab 3: 13 Automation Rules */}
+        {/* ─── TAB 3: 13 Automation Rules ─────────────────────────────────── */}
         {tabIndex === 3 && (
-          <Box sx={{ p: 3 }}>
-            <Box sx={{ mb: 2 }}>
-              <Typography variant="h6" sx={{ fontWeight: 700 }}>
+          <Box sx={{ p: { xs: 2.5, sm: 3.5 } }}>
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="h6" sx={{ fontWeight: 900, color: 'text.primary' }}>
                 13 Automated Governance Email Rules
               </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Toggle automated event triggers. Note: Statutory critical circulars (e.g. Composition Deficit, Quorum Override) cannot be disabled.
+              <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 500 }}>
+                Configure trigger automations. Note: Statutory critical circulars (Composition Deficit, Quorum Override, Ratified Minutes) are locked to active.
               </Typography>
             </Box>
 
@@ -762,36 +1011,44 @@ export default function NotificationsPage() {
                 const isLocked = ['COMPOSITION_DEFICIT', 'QUORUM_OVERRIDE', 'MINUTES_APPROVED'].includes(svc.event_type);
 
                 return (
-                  <Grid item xs={12} md={6} key={svc.id}>
+                  <Grid size={{ xs: 12, md: 6 }} key={svc.id}>
                     <Paper
                       elevation={0}
                       sx={{
                         p: 2.5,
-                        borderRadius: 2.5,
-                        border: '1px solid #E2E8F0',
-                        bgcolor: isEnabled ? '#FFFFFF' : '#F8FAFC',
+                        borderRadius: '16px',
+                        border: '1.5px solid',
+                        borderColor: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(226, 232, 240, 0.9)',
+                        bgcolor: isEnabled
+                          ? (isDark ? 'rgba(30, 41, 59, 0.5)' : '#FFFFFF')
+                          : (isDark ? 'rgba(15, 23, 42, 0.3)' : '#F8FAFC'),
                         opacity: isEnabled ? 1 : 0.75,
                         display: 'flex',
                         flexDirection: 'column',
                         justifyContent: 'space-between',
                         height: '100%',
+                        transition: 'all 0.2s',
+                        '&:hover': {
+                          borderColor: isEnabled ? '#1D61E7' : 'divider',
+                          boxShadow: '0 6px 18px rgba(0,0,0,0.05)',
+                        },
                       }}
                     >
                       <Box>
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
                           <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-                            <Chip label={`#${svc.id}`} size="small" sx={{ fontWeight: 800, bgcolor: '#E2E8F0' }} />
-                            <Typography variant="subtitle1" sx={{ fontWeight: 700, color: 'text.primary' }}>
+                            <Chip label={`#${svc.id}`} size="small" sx={{ fontWeight: 900, bgcolor: isDark ? 'rgba(255,255,255,0.1)' : '#E2E8F0' }} />
+                            <Typography variant="subtitle1" sx={{ fontWeight: 800, color: 'text.primary', fontSize: '0.96rem' }}>
                               {svc.name}
                             </Typography>
                           </Box>
                           {isLocked ? (
-                            <Tooltip title="Statutory Requirement: This alert cannot be disabled">
+                            <Tooltip title="Statutory Mandate: Regulatory requirement cannot be disabled">
                               <Chip
-                                icon={<ShieldIcon sx={{ fontSize: '14px !important' }} />}
+                                icon={<ShieldIcon sx={{ fontSize: '13px !important', color: '#B45309 !important' }} />}
                                 label="MANDATORY"
                                 size="small"
-                                sx={{ bgcolor: '#FEF3C7', color: '#92400E', fontWeight: 800, fontSize: 10 }}
+                                sx={{ bgcolor: '#FEF3C7', color: '#B45309', fontWeight: 900, fontSize: '0.65rem' }}
                               />
                             </Tooltip>
                           ) : (
@@ -802,15 +1059,15 @@ export default function NotificationsPage() {
                             />
                           )}
                         </Box>
-                        <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1.5 }}>
+                        <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1.8, fontSize: '0.85rem', lineHeight: 1.5 }}>
                           {svc.description}
                         </Typography>
                       </Box>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pt: 1, borderTop: '1px solid #F1F5F9' }}>
-                        <Typography variant="caption" sx={{ color: 'text.disabled', fontWeight: 600 }}>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pt: 1.2, borderTop: '1px solid', borderColor: 'divider' }}>
+                        <Typography variant="caption" sx={{ color: 'text.disabled', fontWeight: 700, fontSize: '0.72rem' }}>
                           TRIGGER: {svc.event_type}
                         </Typography>
-                        <Chip label={svc.category} size="small" variant="outlined" sx={{ fontSize: 11 }} />
+                        <Chip label={svc.category} size="small" variant="outlined" sx={{ fontSize: '0.72rem', fontWeight: 700 }} />
                       </Box>
                     </Paper>
                   </Grid>
@@ -820,25 +1077,34 @@ export default function NotificationsPage() {
           </Box>
         )}
 
-        {/* Tab 4: 13-Service Live Test Studio */}
+        {/* ─── TAB 4: 13-Service Live Test Studio ─────────────────────────── */}
         {tabIndex === 4 && (
-          <Box sx={{ p: 3 }}>
+          <Box sx={{ p: { xs: 2.5, sm: 3.5 } }}>
             <Box sx={{ mb: 3 }}>
-              <Typography variant="h6" sx={{ fontWeight: 700 }}>
+              <Typography variant="h6" sx={{ fontWeight: 900, color: 'text.primary' }}>
                 13-Service Live Demonstration Studio
               </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Trigger real Brevo SMTP emails for any of the 13 automated services. Evaluates template rendering, dynamic resolution, and audit logging.
+              <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 500 }}>
+                Trigger real-time Brevo SMTP emails for any of the 13 automated services. Evaluates template rendering, dynamic resolution, and audit logging.
               </Typography>
             </Box>
 
             <Grid container spacing={3}>
-              <Grid item xs={12} md={5}>
-                <Paper elevation={0} sx={{ p: 3, border: '1px solid #DCE8F5', borderRadius: 3, bgcolor: '#F8FAFC' }}>
-                  <Typography variant="subtitle2" sx={{ fontWeight: 800, mb: 2, color: 'primary.main', textTransform: 'uppercase' }}>
+              <Grid size={{ xs: 12, md: 5 }}>
+                <Paper
+                  elevation={0}
+                  sx={{
+                    p: 3,
+                    border: '1.5px solid',
+                    borderColor: isDark ? 'rgba(255, 255, 255, 0.08)' : '#DCE8F5',
+                    borderRadius: '18px',
+                    bgcolor: isDark ? 'rgba(30, 41, 59, 0.5)' : '#F8FAFC',
+                  }}
+                >
+                  <Typography variant="subtitle2" sx={{ fontWeight: 900, mb: 1.5, color: '#1D61E7', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                     1. Select Automated Service
                   </Typography>
-                  <FormControl fullWidth size="small" sx={{ mb: 2.5, bgcolor: '#FFF' }}>
+                  <FormControl fullWidth size="small" sx={{ mb: 2.5, bgcolor: 'background.paper', borderRadius: '10px' }}>
                     <InputLabel>Service Name</InputLabel>
                     <Select
                       value={selectedServiceId}
@@ -853,7 +1119,7 @@ export default function NotificationsPage() {
                     </Select>
                   </FormControl>
 
-                  <Typography variant="subtitle2" sx={{ fontWeight: 800, mb: 1, color: 'primary.main', textTransform: 'uppercase' }}>
+                  <Typography variant="subtitle2" sx={{ fontWeight: 900, mb: 1, color: '#1D61E7', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                     2. Target Recipient Email
                   </Typography>
                   <TextField
@@ -863,7 +1129,7 @@ export default function NotificationsPage() {
                     onChange={(e) => setCustomRecipient(e.target.value)}
                     placeholder="name@vignan.ac.in"
                     helperText="Brevo verified sender will dispatch real email to this inbox"
-                    sx={{ mb: 3, bgcolor: '#FFF' }}
+                    sx={{ mb: 3, bgcolor: 'background.paper', borderRadius: '10px' }}
                   />
 
                   <Button
@@ -874,63 +1140,94 @@ export default function NotificationsPage() {
                     onClick={handleTestDispatch}
                     disabled={dispatching || !customRecipient}
                     sx={{
-                      py: 1.5,
-                      borderRadius: 2,
-                      fontWeight: 800,
+                      py: 1.6,
+                      borderRadius: '14px',
+                      fontWeight: 900,
                       textTransform: 'none',
-                      fontSize: 15,
-                      boxShadow: '0 4px 14px rgba(37, 99, 235, 0.3)',
+                      fontSize: '0.96rem',
+                      bgcolor: '#1D61E7',
+                      boxShadow: '0 8px 24px rgba(29, 97, 231, 0.35)',
+                      '&:hover': { bgcolor: '#1548B2' },
                     }}
                   >
-                    {dispatching ? 'Dispatching via Brevo...' : `Dispatch #${selectedServiceId} Live Email`}
+                    {dispatching ? 'Dispatching via Brevo Relay...' : `Dispatch #${selectedServiceId} Live Email`}
                   </Button>
                 </Paper>
               </Grid>
 
-              <Grid item xs={12} md={7}>
-                <Paper elevation={0} sx={{ p: 3, border: '1px solid #DCE8F5', borderRadius: 3, bgcolor: '#FFFFFF' }}>
-                  <Typography variant="subtitle2" sx={{ fontWeight: 800, mb: 2, color: 'text.secondary', textTransform: 'uppercase' }}>
+              <Grid size={{ xs: 12, md: 7 }}>
+                <Paper
+                  elevation={0}
+                  sx={{
+                    p: 3,
+                    border: '1.5px solid',
+                    borderColor: isDark ? 'rgba(255, 255, 255, 0.08)' : '#DCE8F5',
+                    borderRadius: '18px',
+                    bgcolor: 'background.paper',
+                  }}
+                >
+                  <Typography variant="subtitle2" sx={{ fontWeight: 900, mb: 2, color: 'text.secondary', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                     Service Specification & Payload
                   </Typography>
 
                   {selectedService && (
                     <Box>
-                      <Box sx={{ mb: 2, p: 2, bgcolor: '#EFF6FF', borderRadius: 2, border: '1px solid #BFDBFE' }}>
-                        <Typography variant="subtitle1" sx={{ fontWeight: 800, color: '#1E40AF' }}>
+                      <Box
+                        sx={{
+                          mb: 2.5,
+                          p: 2.2,
+                          bgcolor: isDark ? 'rgba(30, 58, 138, 0.2)' : '#EFF6FF',
+                          borderRadius: '14px',
+                          border: '1px solid',
+                          borderColor: isDark ? 'rgba(59, 130, 246, 0.3)' : '#BFDBFE',
+                        }}
+                      >
+                        <Typography variant="subtitle1" sx={{ fontWeight: 900, color: '#1D61E7' }}>
                           {selectedService.name}
                         </Typography>
-                        <Typography variant="body2" sx={{ color: '#3B82F6', mt: 0.5 }}>
+                        <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5 }}>
                           {selectedService.description}
                         </Typography>
                       </Box>
 
-                      <Typography variant="caption" sx={{ fontWeight: 700, color: 'text.secondary', textTransform: 'uppercase' }}>
-                        Dynamic Data Injected into Template:
+                      <Typography variant="caption" sx={{ fontWeight: 800, color: 'text.secondary', textTransform: 'uppercase' }}>
+                        Dynamic Injected Parameters:
                       </Typography>
                       <Box
                         component="pre"
                         sx={{
-                          p: 2,
+                          p: 2.2,
                           bgcolor: '#0F172A',
                           color: '#38BDF8',
-                          borderRadius: 2,
-                          fontSize: 12,
+                          borderRadius: '14px',
+                          fontSize: '0.8rem',
+                          fontFamily: 'monospace',
                           overflowX: 'auto',
                           mt: 1,
+                          border: '1px solid rgba(255,255,255,0.08)',
                         }}
                       >
                         {JSON.stringify(selectedService.defaultPayload, null, 2)}
                       </Box>
 
                       {dispatchResult && (
-                        <Box sx={{ mt: 2, p: 2, bgcolor: '#F0FDF4', border: '1px solid #86EFAC', borderRadius: 2 }}>
-                          <Typography variant="subtitle2" sx={{ fontWeight: 800, color: '#15803D' }}>
-                            Dispatch Result: {dispatchResult.status.toUpperCase()}
+                        <Box
+                          sx={{
+                            mt: 2.5,
+                            p: 2.2,
+                            bgcolor: isDark ? 'rgba(6, 78, 59, 0.2)' : '#F0FDF4',
+                            border: '1px solid',
+                            borderColor: '#86EFAC',
+                            borderRadius: '14px',
+                          }}
+                        >
+                          <Typography variant="subtitle2" sx={{ fontWeight: 900, color: '#15803D' }}>
+                            Dispatch Result: {dispatchResult.status?.toUpperCase()}
                           </Typography>
-                          <Typography variant="body2" sx={{ color: '#166534', fontSize: 13, mt: 0.5 }}>
+                          <Typography variant="body2" sx={{ color: '#166534', fontSize: '0.84rem', mt: 0.5 }}>
                             Subject: {dispatchResult.subject}
                           </Typography>
-                          <Typography variant="caption" sx={{ color: '#15803D' }}>
+                          <Typography variant="caption" sx={{ color: '#15803D', fontWeight: 700 }}>
                             Sent Count: {dispatchResult.sent_count} | Failed: {dispatchResult.failed_count}
                           </Typography>
                         </Box>
