@@ -1,0 +1,3 @@
+# 
+
+{"status":"ok","app":"Vignan CommiAI","version":"1.0.0"}

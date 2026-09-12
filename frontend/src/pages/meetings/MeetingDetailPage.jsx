@@ -169,7 +169,7 @@ export default function MeetingDetailPage() {
           </Typography>
         </Box>
 
-        {isExecutive && (
+        {isExecutive ? (
           <Box sx={{ display: 'flex', gap: 1.5 }}>
             {meetingStatus === 'IN_PROGRESS' ? (
               <Button
@@ -194,6 +194,20 @@ export default function MeetingDetailPage() {
               </Button>
             )}
           </Box>
+        ) : (
+          <Chip
+            label={meetingStatus === 'IN_PROGRESS' ? 'SESSION IN PROGRESS' : 'SESSION CONCLUDED'}
+            size="small"
+            sx={{
+              fontWeight: 800,
+              bgcolor: meetingStatus === 'IN_PROGRESS' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(148, 163, 184, 0.2)',
+              color: meetingStatus === 'IN_PROGRESS' ? '#10B981' : '#64748B',
+              border: '1px solid',
+              borderColor: meetingStatus === 'IN_PROGRESS' ? '#10B981' : '#64748B',
+              px: 1.2,
+              py: 0.5,
+            }}
+          />
         )}
       </Paper>
 
@@ -261,9 +275,15 @@ export default function MeetingDetailPage() {
       {/* Tabs: Live Attendance, Agenda, Minutes Draft */}
       <Paper elevation={0} sx={{ borderRadius: 2.5, border: '1px solid #E2E8F0', mb: 3 }}>
         <Tabs value={tabIndex} onChange={(e, val) => setTabIndex(val)} sx={{ px: 2 }}>
-          <Tab label={`Live Attendance & Roll Call (${presentCount}/${totalInvited})`} sx={{ fontWeight: 700 }} />
+          <Tab
+            label={isExecutive ? `Live Attendance & Roll Call (${presentCount}/${totalInvited})` : `Committee Roster & Attendance (${presentCount}/${totalInvited})`}
+            sx={{ fontWeight: 700 }}
+          />
           <Tab label="Session Agenda & Timetable" sx={{ fontWeight: 700 }} />
-          <Tab label="Minutes of Meeting (AI Draft & Approval)" sx={{ fontWeight: 700 }} />
+          <Tab
+            label={isExecutive ? "Minutes of Meeting (AI Draft & Approval)" : "Minutes of Meeting (Official Record)"}
+            sx={{ fontWeight: 700 }}
+          />
         </Tabs>
       </Paper>
 

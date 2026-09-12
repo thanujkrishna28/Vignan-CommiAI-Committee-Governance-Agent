@@ -242,10 +242,18 @@ export default function MeetingsListPage() {
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
         <Box>
           <Typography variant="h4" sx={{ fontWeight: 900, color: 'text.primary', letterSpacing: '-0.02em' }}>
-            Statutory Meetings & Quorum Console
+            {user?.role === 'MEMBER'
+              ? 'My Statutory Committee Meetings'
+              : user?.role === 'IQAC'
+              ? 'Institutional Meetings & Quorum Audit'
+              : 'Statutory Meetings & Quorum Console'}
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5 }}>
-            Convene sessions, enforce statutory quorum validation, manage live attendance, and track minutes.
+            {user?.role === 'MEMBER'
+              ? 'View scheduled committee sessions, agenda circulars, confirm attendance RSVP, and review minutes.'
+              : user?.role === 'IQAC'
+              ? 'Audit meeting frequencies, statutory quorum compliance, attendance records, and approved minutes.'
+              : 'Convene sessions, enforce statutory quorum validation, manage live attendance, and track minutes.'}
           </Typography>
         </Box>
 
@@ -484,7 +492,11 @@ export default function MeetingsListPage() {
                     <Button
                       variant="contained"
                       fullWidth={{ xs: true, md: false }}
-                      startIcon={<PlayIcon />}
+                      startIcon={
+                        user?.role === 'REGISTRAR' || user?.role === 'CONVENER'
+                          ? <PlayIcon />
+                          : <EventIcon />
+                      }
                       component={Link}
                       to={`/meetings/${m.id}`}
                       sx={{
@@ -495,9 +507,14 @@ export default function MeetingsListPage() {
                         py: 1,
                         whiteSpace: 'nowrap',
                         boxShadow: '0 4px 12px rgba(37, 99, 235, 0.25)',
+                        bgcolor: user?.role === 'MEMBER' ? '#1E3A8A' : user?.role === 'IQAC' ? '#059669' : 'primary.main',
                       }}
                     >
-                      Open Live Console
+                      {user?.role === 'REGISTRAR' || user?.role === 'CONVENER'
+                        ? 'Open Live Console'
+                        : user?.role === 'IQAC'
+                        ? 'Audit Session & MoM'
+                        : 'View Session & RSVP'}
                     </Button>
                   </Box>
                 </Box>
