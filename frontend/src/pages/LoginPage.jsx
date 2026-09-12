@@ -42,7 +42,7 @@ const DEMO_ACCOUNTS = [
     label: 'Registrar',
     subLabel: 'Dean, SOCE',
     name: 'Prof. Dr. K. V. Krishna Kishore',
-    email: 'kvkk_cse@vignan.ac.in',
+    email: '231fa04e50@gmail.com',
     password: 'Demo@1234',
     color: '#1D61E7',
     bgColor: 'rgba(29, 97, 231, 0.08)',
@@ -55,7 +55,7 @@ const DEMO_ACCOUNTS = [
     label: 'Convener',
     subLabel: 'HoD, CSE',
     name: 'Dr. S. V. Phani Kumar',
-    email: 'dsvpk_cse@vignan.ac.in',
+    email: '231fa04a32@gmail.com',
     password: 'Demo@1234',
     color: '#7C3AED',
     bgColor: 'rgba(124, 58, 237, 0.08)',
@@ -68,7 +68,7 @@ const DEMO_ACCOUNTS = [
     label: 'Member',
     subLabel: 'Asst. Prof., CSE',
     name: 'Dr. J. Veeranjaneyulu',
-    email: 'jv_cse@vignan.ac.in',
+    email: 'thanujkrishna28@gmail.com',
     password: 'Demo@1234',
     color: '#059669',
     bgColor: 'rgba(5, 150, 105, 0.08)',
@@ -81,7 +81,7 @@ const DEMO_ACCOUNTS = [
     label: 'IQAC Coordinator',
     subLabel: 'Asst. Prof., CSE',
     name: 'Dr. E. Deepak Chowdary',
-    email: 'edc_cse@vignan.ac.in',
+    email: 'pujithayarramsetty@gmail.com',
     password: 'Demo@1234',
     color: '#D97706',
     bgColor: 'rgba(217, 119, 6, 0.08)',
@@ -102,7 +102,7 @@ export default function LoginPage() {
   const [activeDemoRole, setActiveDemoRole] = useState(null);
 
   // Login Form State
-  const [email, setEmail] = useState('kvkk_cse@vignan.ac.in');
+  const [email, setEmail] = useState('231fa04e50@gmail.com');
   const [password, setPassword] = useState('Demo@1234');
 
   const handleLoginSubmit = async (e) => {
@@ -479,7 +479,7 @@ export default function LoginPage() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="e.g. registrar@vignan.ac.in"
+                  placeholder="e.g. 231fa04e50@gmail.com"
                   required
                   slotProps={{
                     input: {

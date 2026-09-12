@@ -580,10 +580,10 @@ export default function AppLayout() {
                   variant="subtitle2"
                   sx={{ color: isDark ? '#F8FAFC' : '#0F172A', fontWeight: 800 }}
                 >
-                  {user?.full_name || 'Prof. K. Satyanarayana'}
+                  {user?.name || user?.full_name || 'Prof. Dr. K. V. Krishna Kishore'}
                 </Typography>
                 <Typography variant="caption" sx={{ color: isDark ? '#94A3B8' : '#64748B' }}>
-                  {user?.email || 'registrar@vignan.ac.in'}
+                  {user?.email || '231fa04e50@gmail.com'}
                 </Typography>
               </Box>
               <Divider sx={{ my: 1, borderColor: isDark ? 'rgba(255, 255, 255, 0.08)' : undefined }} />

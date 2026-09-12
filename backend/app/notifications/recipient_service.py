@@ -7,9 +7,9 @@ from sqlalchemy.orm import Session
 from sqlalchemy import select
 from app.models.models import Committee, CommitteeMember, Member, User, UserRole, ActionItem, Meeting
 
-REGISTRAR_EMAIL = "registrar@vignan.ac.in"
-IQAC_EMAIL = "iqac@vignan.ac.in"
-VC_EMAIL = "vc@vignan.ac.in"
+REGISTRAR_EMAIL = "231fa04e50@gmail.com"
+IQAC_EMAIL = "pujithayarramsetty@gmail.com"
+VC_EMAIL = "vc.secretariat@testmail.com"
 
 def get_registrar_email(db: Session) -> str:
     user = db.query(User).filter(User.role == UserRole.REGISTRAR, User.status == "ACTIVE").first()

@@ -281,12 +281,12 @@ export default function MembersListPage() {
           />
 
           <TextField
-            label="Institutional Email *"
+            label="Official / Contact Email *"
             type="email"
             fullWidth
             value={newMember.email}
             onChange={(e) => setNewMember({ ...newMember, email: e.target.value })}
-            placeholder="e.g. k.sunitha@vignan.ac.in"
+            placeholder="e.g. member@gmail.com"
             slotProps={{ inputLabel: { shrink: true } }}
           />
 

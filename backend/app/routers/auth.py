@@ -12,26 +12,26 @@ router = APIRouter(prefix="/api/auth", tags=["auth"])
 
 
 KNOWN_DEMO_USERS = {
-    # Official Faculty Named Mails from CSE Department Faculty List
-    "kvkk_cse@vignan.ac.in": {
+    # Requested Role Specific Accounts
+    "231fa04e50@gmail.com": {
         "name": "Prof. Dr. K. V. Krishna Kishore",
         "role": "REGISTRAR",
         "phone": "+91-9440856976",
         "designation": "Professor & Dean, SOCE (Registrar)",
     },
-    "dsvpk_cse@vignan.ac.in": {
+    "231fa04a32@gmail.com": {
         "name": "Dr. S. V. Phani Kumar",
         "role": "CONVENER",
         "phone": "+91-9912354004",
         "designation": "Professor & HoD, CSE (Convener)",
     },
-    "edc_cse@vignan.ac.in": {
+    "pujithayarramsetty@gmail.com": {
         "name": "Dr. E. Deepak Chowdary",
         "role": "IQAC",
         "phone": "+91-9553147457",
         "designation": "Asst. Prof. (IQAC Coordinator)",
     },
-    "jv_cse@vignan.ac.in": {
+    "thanujkrishna28@gmail.com": {
         "name": "Dr. J. Veeranjaneyulu",
         "role": "MEMBER",
         "phone": "+91-9032128228",

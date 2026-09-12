@@ -274,7 +274,7 @@ export default function NotificationsPage() {
 
   // Test Dispatcher State
   const [selectedServiceId, setSelectedServiceId] = useState(1);
-  const [customRecipient, setCustomRecipient] = useState('thanujkrishna22@gmail.com');
+  const [customRecipient, setCustomRecipient] = useState('thanujkrishna28@gmail.com');
   const [dispatching, setDispatching] = useState(false);
   const [dispatchResult, setDispatchResult] = useState(null);
 
@@ -1127,7 +1127,7 @@ export default function NotificationsPage() {
                     size="small"
                     value={customRecipient}
                     onChange={(e) => setCustomRecipient(e.target.value)}
-                    placeholder="name@vignan.ac.in"
+                    placeholder="e.g. thanujkrishna28@gmail.com"
                     helperText="Institutional verified sender will dispatch official notice to this inbox"
                     sx={{ mb: 3, bgcolor: 'background.paper', borderRadius: '10px' }}
                   />

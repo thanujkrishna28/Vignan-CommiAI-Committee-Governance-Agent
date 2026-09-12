@@ -44,8 +44,8 @@ export default function SettingsPage() {
     aisheCode: 'U-0043',
     naacGrade: 'A+',
     academicYear: '2025-2026',
-    registrarEmail: 'registrar@vignan.ac.in',
-    vcSecretariatEmail: 'vc@vignan.ac.in',
+    registrarEmail: '231fa04e50@gmail.com',
+    vcSecretariatEmail: 'vc.secretariat@testmail.com',
   });
 
   const [governanceSettings, setGovernanceSettings] = useState({
@@ -58,7 +58,7 @@ export default function SettingsPage() {
   });
 
   const [notificationSettings, setNotificationSettings] = useState({
-    brevoSenderEmail: 'notifications@vignan.ac.in',
+    brevoSenderEmail: '231fa04e50@gmail.com',
     brevoSenderName: 'Vignan CommiAI Governance Desk',
     enableBrevoSmtp: true,
     enableWhatsappGateway: true,
