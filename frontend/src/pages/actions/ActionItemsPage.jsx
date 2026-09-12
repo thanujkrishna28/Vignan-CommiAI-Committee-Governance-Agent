@@ -30,6 +30,11 @@ import {
   Add as AddIcon,
   AssignmentTurnedIn as ActionIcon,
   CheckCircle as DoneIcon,
+  CheckCircleRounded as CheckCircleIcon,
+  AutorenewRounded as InProgressIcon,
+  AccessTimeRounded as PendingIcon,
+  ErrorOutlineRounded as OverdueIcon,
+  KeyboardArrowDownRounded as ArrowDownIcon,
   Warning as WarningIcon,
 } from '@mui/icons-material';
 import { actionsApi, committeesApi, membersApi } from '../../services/api';
@@ -150,6 +155,41 @@ export default function ActionItemsPage() {
     return matchSearch && matchStatus;
   });
 
+  const STATUS_CONFIG = {
+    COMPLETED: {
+      label: 'Completed',
+      color: '#059669',
+      bg: (theme) => theme.palette.mode === 'dark' ? 'rgba(16, 185, 129, 0.16)' : '#ECFDF5',
+      border: 'rgba(16, 185, 129, 0.35)',
+      hoverBg: (theme) => theme.palette.mode === 'dark' ? 'rgba(16, 185, 129, 0.25)' : '#D1FAE5',
+      icon: CheckCircleIcon,
+    },
+    IN_PROGRESS: {
+      label: 'In Progress',
+      color: '#2563EB',
+      bg: (theme) => theme.palette.mode === 'dark' ? 'rgba(37, 99, 235, 0.16)' : '#EFF6FF',
+      border: 'rgba(37, 99, 235, 0.35)',
+      hoverBg: (theme) => theme.palette.mode === 'dark' ? 'rgba(37, 99, 235, 0.25)' : '#DBEAFE',
+      icon: InProgressIcon,
+    },
+    PENDING: {
+      label: 'Pending',
+      color: '#D97706',
+      bg: (theme) => theme.palette.mode === 'dark' ? 'rgba(245, 158, 11, 0.16)' : '#FFFBEB',
+      border: 'rgba(245, 158, 11, 0.35)',
+      hoverBg: (theme) => theme.palette.mode === 'dark' ? 'rgba(245, 158, 11, 0.25)' : '#FEF3C7',
+      icon: PendingIcon,
+    },
+    OVERDUE: {
+      label: 'Overdue',
+      color: '#DC2626',
+      bg: (theme) => theme.palette.mode === 'dark' ? 'rgba(239, 68, 68, 0.16)' : '#FEF2F2',
+      border: 'rgba(239, 68, 68, 0.35)',
+      hoverBg: (theme) => theme.palette.mode === 'dark' ? 'rgba(239, 68, 68, 0.25)' : '#FEE2E2',
+      icon: OverdueIcon,
+    },
+  };
+
   const getPriorityChip = (p) => {
     const norm = (p || 'MEDIUM').toUpperCase();
     const colors = {
@@ -256,6 +296,15 @@ export default function ActionItemsPage() {
                   const assigneeName = a.assigned_to?.name || a.assigned_to_name || 'Unassigned';
                   const isAssigned = assigneeName !== 'Unassigned';
                   const formattedDate = a.due_date ? new Date(a.due_date).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) : 'No due date';
+                  const canEditStatus =
+                    user?.role === 'REGISTRAR' ||
+                    user?.role === 'CONVENER' ||
+                    user?.role === 'SUPER_ADMIN' ||
+                    (user?.role === 'MEMBER' && (
+                      a.assigned_to_id === user?.member_id ||
+                      assigneeName.toLowerCase().includes(user?.name?.toLowerCase()) ||
+                      (a.assigned_to?.email && a.assigned_to?.email.toLowerCase() === user?.email?.toLowerCase())
+                    ));
 
                   return (
                     <TableRow key={a.id} hover sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
@@ -308,51 +357,142 @@ export default function ActionItemsPage() {
                         {getPriorityChip(a.priority)}
                       </TableCell>
 
-                      {/* Workflow Status Dropdown */}
+                      {/* Workflow Status Interactive Selector / Badge */}
                       <TableCell align="right" sx={{ py: 2 }}>
-                        <Select
-                          size="small"
-                          value={a.status || 'PENDING'}
-                          onChange={(e) => handleStatusChange(a.id, e.target.value)}
-                          sx={{
-                            fontSize: '0.78rem',
-                            fontWeight: 800,
-                            borderRadius: '10px',
-                            height: 34,
-                            minWidth: 125,
-                            bgcolor:
-                              a.status === 'COMPLETED'
-                                ? 'rgba(34, 197, 94, 0.1)'
-                                : a.status === 'IN_PROGRESS'
-                                ? 'rgba(59, 130, 246, 0.1)'
-                                : a.status === 'OVERDUE'
-                                ? 'rgba(239, 68, 68, 0.1)'
-                                : 'rgba(245, 158, 11, 0.1)',
-                            color:
-                              a.status === 'COMPLETED'
-                                ? '#16A34A'
-                                : a.status === 'IN_PROGRESS'
-                                ? '#2563EB'
-                                : a.status === 'OVERDUE'
-                                ? '#DC2626'
-                                : '#D97706',
-                            '& .MuiOutlinedInput-notchedOutline': {
-                              borderColor:
-                                a.status === 'COMPLETED'
-                                  ? 'rgba(34, 197, 94, 0.3)'
-                                  : a.status === 'IN_PROGRESS'
-                                  ? 'rgba(59, 130, 246, 0.3)'
-                                  : a.status === 'OVERDUE'
-                                  ? 'rgba(239, 68, 68, 0.3)'
-                                  : 'rgba(245, 158, 11, 0.3)',
-                            },
-                          }}
-                        >
-                          <MenuItem value="PENDING" sx={{ fontSize: '0.82rem', fontWeight: 700 }}>⏳ Pending</MenuItem>
-                          <MenuItem value="IN_PROGRESS" sx={{ fontSize: '0.82rem', fontWeight: 700 }}>🔄 In Progress</MenuItem>
-                          <MenuItem value="COMPLETED" sx={{ fontSize: '0.82rem', fontWeight: 700 }}>✅ Completed</MenuItem>
-                          <MenuItem value="OVERDUE" sx={{ fontSize: '0.82rem', fontWeight: 700 }}>⚠️ Overdue</MenuItem>
-                        </Select>
+                        {canEditStatus ? (
+                          <Select
+                            size="small"
+                            value={a.status || 'PENDING'}
+                            onChange={(e) => handleStatusChange(a.id, e.target.value)}
+                            IconComponent={ArrowDownIcon}
+                            renderValue={(val) => {
+                              const cur = STATUS_CONFIG[val] || STATUS_CONFIG.PENDING;
+                              const IconComp = cur.icon;
+                              return (
+                                <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.8, pr: 0.5 }}>
+                                  <IconComp sx={{ fontSize: 16, color: cur.color }} />
+                                  <Typography
+                                    component="span"
+                                    sx={{
+                                      fontWeight: 800,
+                                      fontSize: '0.78rem',
+                                      color: cur.color,
+                                      letterSpacing: '-0.01em',
+                                    }}
+                                  >
+                                    {cur.label}
+                                  </Typography>
+                                </Box>
+                              );
+                            }}
+                            sx={{
+                              borderRadius: '24px',
+                              height: 32,
+                              minWidth: 135,
+                              bgcolor: (theme) => {
+                                const cfg = STATUS_CONFIG[a.status] || STATUS_CONFIG.PENDING;
+                                return typeof cfg.bg === 'function' ? cfg.bg(theme) : cfg.bg;
+                              },
+                              border: '1.5px solid',
+                              borderColor: (STATUS_CONFIG[a.status]?.border) || STATUS_CONFIG.PENDING.border,
+                              transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                              boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+                              '&:hover': {
+                                bgcolor: (theme) => {
+                                  const cfg = STATUS_CONFIG[a.status] || STATUS_CONFIG.PENDING;
+                                  return typeof cfg.hoverBg === 'function' ? cfg.hoverBg(theme) : cfg.hoverBg;
+                                },
+                                borderColor: (STATUS_CONFIG[a.status]?.color) || STATUS_CONFIG.PENDING.color,
+                                boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                              },
+                              '& .MuiSelect-select': {
+                                py: '4px !important',
+                                pl: '10px !important',
+                                pr: '28px !important',
+                                display: 'flex',
+                                alignItems: 'center',
+                              },
+                              '& .MuiOutlinedInput-notchedOutline': {
+                                border: 'none',
+                              },
+                              '& .MuiSelect-icon': {
+                                color: (STATUS_CONFIG[a.status]?.color) || STATUS_CONFIG.PENDING.color,
+                                fontSize: 18,
+                                right: 6,
+                                transition: 'transform 0.2s',
+                              },
+                            }}
+                            MenuProps={{
+                              PaperProps: {
+                                elevation: 6,
+                                sx: {
+                                  borderRadius: '16px',
+                                  mt: 0.8,
+                                  p: 0.8,
+                                  border: '1px solid',
+                                  borderColor: 'divider',
+                                  backdropFilter: 'blur(12px)',
+                                  boxShadow: '0 12px 30px -5px rgba(0,0,0,0.15)',
+                                },
+                              },
+                            }}
+                          >
+                            {Object.entries(STATUS_CONFIG).map(([key, item]) => {
+                              const ItemIcon = item.icon;
+                              return (
+                                <MenuItem
+                                  key={key}
+                                  value={key}
+                                  sx={{
+                                    borderRadius: '10px',
+                                    my: 0.3,
+                                    px: 1.5,
+                                    py: 0.9,
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 1.2,
+                                    fontSize: '0.82rem',
+                                    fontWeight: 700,
+                                    color: item.color,
+                                    transition: 'all 0.15s',
+                                    '&:hover': {
+                                      bgcolor: (theme) => typeof item.bg === 'function' ? item.bg(theme) : item.bg,
+                                    },
+                                    '&.Mui-selected': {
+                                      bgcolor: (theme) => typeof item.bg === 'function' ? item.bg(theme) : item.bg,
+                                      fontWeight: 900,
+                                    },
+                                  }}
+                                >
+                                  <ItemIcon sx={{ fontSize: 17, color: item.color }} />
+                                  <span>{item.label}</span>
+                                </MenuItem>
+                              );
+                            })}
+                          </Select>
+                        ) : (
+                          <Chip
+                            icon={React.createElement(STATUS_CONFIG[a.status]?.icon || STATUS_CONFIG.PENDING.icon, {
+                              sx: { fontSize: '15px !important', color: `${(STATUS_CONFIG[a.status]?.color) || STATUS_CONFIG.PENDING.color} !important` },
+                            })}
+                            label={(STATUS_CONFIG[a.status]?.label) || 'Pending'}
+                            size="small"
+                            sx={{
+                              borderRadius: '24px',
+                              height: 30,
+                              px: 1,
+                              fontWeight: 800,
+                              fontSize: '0.76rem',
+                              bgcolor: (theme) => {
+                                const cfg = STATUS_CONFIG[a.status] || STATUS_CONFIG.PENDING;
+                                return typeof cfg.bg === 'function' ? cfg.bg(theme) : cfg.bg;
+                              },
+                              border: '1.5px solid',
+                              borderColor: (STATUS_CONFIG[a.status]?.border) || STATUS_CONFIG.PENDING.border,
+                              color: (STATUS_CONFIG[a.status]?.color) || STATUS_CONFIG.PENDING.color,
+                            }}
+                          />
+                        )}
                       </TableCell>
                     </TableRow>
                   );
