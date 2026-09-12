@@ -43,7 +43,7 @@ import {
   RefreshRounded as ResendIcon,
   LockRounded as LockIcon,
 } from '@mui/icons-material';
-import { minutesApi, meetingsApi } from '../../services/api';
+import { minutesApi, meetingsApi, getErrorMessage } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import { useRealtime } from '../../context/SocketContext';
 
@@ -132,7 +132,7 @@ export default function MinutesApprovalsPage() {
       setResendCountdown(45);
     } catch (err) {
       console.error('OTP request error:', err);
-      setOtpError(err.response?.data?.detail || 'Failed to dispatch verification OTP to email.');
+      setOtpError(getErrorMessage(err, 'Failed to dispatch verification OTP to email.'));
     } finally {
       setOtpSending(false);
     }
@@ -165,7 +165,7 @@ export default function MinutesApprovalsPage() {
       loadData();
     } catch (err) {
       console.error('Approval error:', err);
-      alert(err.response?.data?.detail || 'Failed to apply approval signature. Please verify your OTP code.');
+      alert(getErrorMessage(err, 'Failed to apply approval signature. Please verify your OTP code.'));
     } finally {
       setSubmitting(false);
     }
@@ -197,7 +197,7 @@ export default function MinutesApprovalsPage() {
       loadData();
     } catch (err) {
       console.error('Create minutes error:', err);
-      alert(err.response?.data?.detail || 'Failed to save minutes draft.');
+      alert(getErrorMessage(err, 'Failed to save minutes draft.'));
     } finally {
       setSubmitting(false);
     }

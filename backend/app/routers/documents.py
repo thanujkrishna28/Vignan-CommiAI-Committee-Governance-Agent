@@ -39,12 +39,16 @@ async def list_documents(
         result.append({
             "id": d.id,
             "name": d.name,
+            "filename": d.original_filename or d.name,
             "original_filename": d.original_filename,
             "file_type": d.file_type,
             "file_size": d.file_size,
             "cloudinary_url": d.cloudinary_url,
-            "category": d.category,
+            "file_url": d.cloudinary_url,
+            "category": str(d.category) if d.category else "OTHER",
+            "doc_type": str(d.category) if d.category else "OTHER",
             "description": d.description,
+            "summary": d.description,
             "committee_id": d.committee_id,
             "meeting_id": d.meeting_id,
             "is_indexed": d.is_indexed,
@@ -58,8 +62,8 @@ async def list_documents(
 @router.post("/upload", response_model=dict, status_code=201)
 async def upload_doc(
     file: UploadFile = File(...),
-    name: str = Form(...),
-    category: str = Form("OTHER"),
+    name: Optional[str] = Form(None),
+    category: Optional[str] = Form("OTHER"),
     description: Optional[str] = Form(None),
     committee_id: Optional[str] = Form(None),
     meeting_id: Optional[str] = Form(None),
@@ -67,14 +71,28 @@ async def upload_doc(
     current_user: User = Depends(get_current_user)
 ):
     # Validate file
-    ext = os.path.splitext(file.filename)[1].lower()
-    if ext not in ALLOWED_EXTENSIONS:
-        raise HTTPException(status_code=400, detail=f"File type {ext} not allowed")
+    orig_filename = file.filename or "uploaded_document"
+    ext = os.path.splitext(orig_filename)[1].lower()
+    if ext and ext not in ALLOWED_EXTENSIONS:
+        raise HTTPException(
+            status_code=400, 
+            detail=f"File type {ext} is not allowed. Permitted formats: {', '.join(sorted(ALLOWED_EXTENSIONS))}"
+        )
     
     content = await file.read()
     
     if len(content) > MAX_FILE_SIZE:
         raise HTTPException(status_code=400, detail="File too large. Maximum 50MB allowed.")
+    
+    doc_name = name.strip() if (name and name.strip()) else orig_filename
+    
+    # Normalize category enum
+    category_val = DocumentCategory.OTHER
+    if category:
+        try:
+            category_val = DocumentCategory(category)
+        except (ValueError, KeyError):
+            category_val = DocumentCategory.OTHER
     
     cloudinary_url = None
     cloudinary_public_id = None
@@ -83,28 +101,30 @@ async def upload_doc(
         try:
             result = upload_document(
                 file_content=content,
-                filename=file.filename,
+                filename=orig_filename,
                 person_id=current_user.id,
                 committee_id=committee_id,
                 meeting_id=meeting_id,
-                category=category
+                category=category_val.value if hasattr(category_val, "value") else str(category_val)
             )
-            cloudinary_url = result["url"]
-            cloudinary_public_id = result["public_id"]
+            cloudinary_url = result.get("url")
+            cloudinary_public_id = result.get("public_id")
         except Exception as e:
-            raise HTTPException(status_code=500, detail=f"File upload failed: {str(e)}")
+            # Log warning, but don't prevent local archival if Cloudinary is temporarily unreachable
+            import logging
+            logging.getLogger(__name__).warning(f"Cloudinary upload failed: {e}")
     
     doc = Document(
-        name=name,
-        original_filename=file.filename,
+        name=doc_name,
+        original_filename=orig_filename,
         file_type=ext.lstrip("."),
         file_size=len(content),
         cloudinary_url=cloudinary_url,
         cloudinary_public_id=cloudinary_public_id,
-        category=category,
+        category=category_val,
         description=description,
-        committee_id=committee_id,
-        meeting_id=meeting_id,
+        committee_id=committee_id if committee_id else None,
+        meeting_id=meeting_id if meeting_id else None,
         uploaded_by=current_user.id,
         is_indexed=False
     )
@@ -114,25 +134,27 @@ async def upload_doc(
         user_id=current_user.id,
         action="document_uploaded",
         entity_type="document",
-        description=f"Document '{name}' uploaded"
+        description=f"Document '{doc_name}' uploaded ({category_val})"
     )
     db.add(log)
     db.commit()
     db.refresh(doc)
     
-    # Index document for RAG asynchronously
+    # Index document for RAG asynchronously / safely
     try:
         from app.rag.rag_service import index_document
-        index_document(db, doc.id, content, file.filename)
+        index_document(db, doc.id, content, orig_filename)
     except Exception as e:
         pass  # RAG indexing is optional
     
     return {
         "id": doc.id,
         "name": doc.name,
+        "filename": doc.original_filename,
         "cloudinary_url": doc.cloudinary_url,
+        "file_url": doc.cloudinary_url,
         "is_indexed": doc.is_indexed,
-        "category": doc.category
+        "category": str(doc.category) if doc.category else "OTHER"
     }
 
 

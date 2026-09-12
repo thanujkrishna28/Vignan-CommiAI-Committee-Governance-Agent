@@ -38,6 +38,20 @@ api.interceptors.response.use(
   }
 );
 
+export const getErrorMessage = (err, fallback = 'An unexpected error occurred.') => {
+  if (!err) return fallback;
+  const detail = err.response?.data?.detail ?? err.response?.data?.message ?? err.response?.data?.error;
+  if (typeof detail === 'string') return detail;
+  if (Array.isArray(detail)) {
+    return detail.map(d => (typeof d === 'string' ? d : d.msg || d.message || JSON.stringify(d))).join(', ');
+  }
+  if (detail && typeof detail === 'object') {
+    return detail.message || detail.msg || detail.detail || JSON.stringify(detail);
+  }
+  if (err.message) return err.message;
+  return fallback;
+};
+
 // ─── Auth API ───────────────────────────────────────────────────────────────
 export const authApi = {
   login: async (email, password) => {
@@ -335,11 +349,13 @@ export const documentsApi = {
     const res = await api.get('/documents', { params });
     return res.data;
   },
-  upload: async (file, committeeId, category = 'OTHER') => {
+  upload: async (file, committeeId, category = 'OTHER', name = null, description = '') => {
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('committee_id', committeeId);
-    formData.append('category', category);
+    formData.append('name', name || file.name || 'Uploaded Document');
+    if (committeeId) formData.append('committee_id', committeeId);
+    if (category) formData.append('category', category);
+    if (description) formData.append('description', description);
     const res = await api.post('/documents/upload', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });

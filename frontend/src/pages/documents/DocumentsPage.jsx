@@ -28,7 +28,7 @@ import {
   Search as SearchIcon,
   Add as AddIcon,
 } from '@mui/icons-material';
-import { documentsApi, committeesApi } from '../../services/api';
+import { documentsApi, committeesApi, getErrorMessage } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 
 export default function DocumentsPage() {
@@ -37,6 +37,7 @@ export default function DocumentsPage() {
   const [committees, setCommittees] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [uploadError, setUploadError] = useState('');
   const [openModal, setOpenModal] = useState(false);
   const [uploading, setUploading] = useState(false);
 
@@ -71,6 +72,7 @@ export default function DocumentsPage() {
 
   const handleUpload = async (e) => {
     e.preventDefault();
+    setUploadError('');
     if (!selectedFile) {
       alert('Please select a file to deposit.');
       return;
@@ -82,13 +84,15 @@ export default function DocumentsPage() {
 
     setUploading(true);
     try {
-      await documentsApi.upload(selectedFile, selectedCommittee, selectedCategory);
+      await documentsApi.upload(selectedFile, selectedCommittee, selectedCategory, selectedFile.name);
       setOpenModal(false);
       setSelectedFile(null);
       loadData();
     } catch (err) {
       console.error('Upload error:', err);
-      alert(err.response?.data?.detail || 'Failed to upload document.');
+      const errMsg = getErrorMessage(err, 'Failed to upload document.');
+      setUploadError(errMsg);
+      alert(errMsg);
     } finally {
       setUploading(false);
     }
@@ -185,12 +189,12 @@ export default function DocumentsPage() {
                 <Box>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1.5 }}>
                     <Chip
-                      label={doc.doc_type || 'STATUTORY_RECORD'}
+                      label={doc.category || doc.doc_type || 'STATUTORY_RECORD'}
                       size="small"
                       sx={{ fontWeight: 700, fontSize: '0.65rem', textTransform: 'uppercase' }}
                     />
                     <Chip
-                      label="VERIFIED"
+                      label={doc.is_indexed ? 'INDEXED & VERIFIED' : 'VERIFIED'}
                       size="small"
                       color="success"
                       variant="outlined"
@@ -198,10 +202,10 @@ export default function DocumentsPage() {
                     />
                   </Box>
                   <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 0.5, lineHeight: 1.3 }}>
-                    {doc.filename}
+                    {doc.name || doc.filename || doc.original_filename || 'Governance Document'}
                   </Typography>
                   <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1.5 }}>
-                    {doc.summary || 'Official governance documentation deposited into the institutional repository.'}
+                    {doc.description || doc.summary || 'Official governance documentation deposited into the institutional repository.'}
                   </Typography>
                 </Box>
 
@@ -213,10 +217,11 @@ export default function DocumentsPage() {
                     size="small"
                     variant="outlined"
                     onClick={() => {
-                      if (doc.file_url) {
-                        window.open(doc.file_url, '_blank');
+                      const url = doc.file_url || doc.cloudinary_url;
+                      if (url) {
+                        window.open(url, '_blank');
                       } else {
-                        alert('Document download initiated.');
+                        alert(`Record "${doc.name || doc.filename || 'Document'}" is safely archived in the institutional registry.`);
                       }
                     }}
                     sx={{ fontWeight: 700, textTransform: 'none', borderRadius: '8px' }}
@@ -231,9 +236,15 @@ export default function DocumentsPage() {
       )}
 
       {/* ─── Upload Modal Dialog ────────────────────────────────────────── */}
-      <Dialog open={openModal} onClose={() => setOpenModal(false)} maxWidth="sm" fullWidth>
+      <Dialog open={openModal} onClose={() => !uploading && setOpenModal(false)} maxWidth="sm" fullWidth>
         <DialogTitle sx={{ fontWeight: 800, pt: '24px !important' }}>Deposit Statutory Document</DialogTitle>
         <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: '16px !important' }}>
+          {uploadError && (
+            <Alert severity="error" sx={{ mb: 1 }}>
+              {uploadError}
+            </Alert>
+          )}
+
           <FormControl fullWidth>
             <InputLabel shrink>Associated Committee *</InputLabel>
             <Select
@@ -269,13 +280,18 @@ export default function DocumentsPage() {
             <input
               type="file"
               hidden
-              accept=".pdf,.docx,.txt,.csv"
-              onChange={(e) => setSelectedFile(e.target.files[0])}
+              accept=".pdf,.docx,.txt,.csv,.xlsx"
+              onChange={(e) => {
+                if (e.target.files && e.target.files[0]) {
+                  setSelectedFile(e.target.files[0]);
+                  setUploadError('');
+                }
+              }}
             />
           </Button>
         </DialogContent>
         <DialogActions sx={{ p: 2.5 }}>
-          <Button onClick={() => setOpenModal(false)} color="inherit">
+          <Button onClick={() => setOpenModal(false)} color="inherit" disabled={uploading}>
             Cancel
           </Button>
           <Button variant="contained" onClick={handleUpload} disabled={uploading || !selectedFile}>

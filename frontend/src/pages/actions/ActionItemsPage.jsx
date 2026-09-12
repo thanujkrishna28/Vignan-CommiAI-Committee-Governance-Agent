@@ -37,7 +37,7 @@ import {
   KeyboardArrowDownRounded as ArrowDownIcon,
   Warning as WarningIcon,
 } from '@mui/icons-material';
-import { actionsApi, committeesApi, membersApi } from '../../services/api';
+import { actionsApi, committeesApi, membersApi, getErrorMessage } from '../../services/api';
 import { useRealtime } from '../../context/SocketContext';
 import { useAuth } from '../../context/AuthContext';
 
@@ -139,7 +139,7 @@ export default function ActionItemsPage() {
       loadData();
     } catch (err) {
       console.error('Error creating action:', err);
-      alert(err.response?.data?.detail || 'Failed to create action item.');
+      alert(getErrorMessage(err, 'Failed to create action item.'));
     } finally {
       setSaving(false);
     }

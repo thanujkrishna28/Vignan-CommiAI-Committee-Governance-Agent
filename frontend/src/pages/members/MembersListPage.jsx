@@ -35,7 +35,7 @@ import {
   PersonAdd as PersonAddIcon,
   Email as EmailIcon,
 } from '@mui/icons-material';
-import { membersApi } from '../../services/api';
+import { membersApi, getErrorMessage } from '../../services/api';
 import { useRealtime } from '../../context/SocketContext';
 
 export default function MembersListPage() {
@@ -104,7 +104,7 @@ export default function MembersListPage() {
       loadMembers();
     } catch (err) {
       console.error('Error creating member:', err);
-      alert(err.response?.data?.detail || 'Failed to nominate member.');
+      alert(getErrorMessage(err, 'Failed to nominate member.'));
     } finally {
       setSaving(false);
     }

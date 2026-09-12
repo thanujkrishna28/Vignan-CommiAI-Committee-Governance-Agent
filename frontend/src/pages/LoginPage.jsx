@@ -35,6 +35,7 @@ import {
   FlashOn as QuickIcon,
 } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
+import { getErrorMessage } from '../services/api';
 
 const DEMO_ACCOUNTS = [
   {
@@ -113,7 +114,7 @@ export default function LoginPage() {
       await login(email, password);
       navigate('/');
     } catch (err) {
-      setError(err.response?.data?.detail || 'Authentication failed. Please check your credentials.');
+      setError(getErrorMessage(err, 'Authentication failed. Please check your credentials.'));
     } finally {
       setLoading(false);
     }
@@ -129,7 +130,7 @@ export default function LoginPage() {
       await login(acc.email, acc.password);
       navigate('/');
     } catch (err) {
-      setError(err.response?.data?.detail || `Failed to log in as ${acc.label}. Ensure database is seeded.`);
+      setError(getErrorMessage(err, `Failed to log in as ${acc.label}. Ensure database is seeded.`));
     } finally {
       setLoading(false);
       setActiveDemoRole(null);
