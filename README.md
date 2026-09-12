@@ -39,6 +39,29 @@ In every accredited university (like Vignan's Foundation for Science, Technology
 
 > **Password for all Demo Accounts**: `Demo@1234`
 
+### 🔒 Statutory Role-Based Access Control (RBAC) Matrix
+
+| Governance Function | Member | Convener | IQAC Coordinator | Registrar / Executive Admin |
+| :--- | :---: | :---: | :---: | :---: |
+| **View Active Committees** | ✅ | ✅ | ✅ | ✅ |
+| **Create / Reconstitute Committee** | ❌ | ❌ | ❌ | ✅ **Exclusive** |
+| **Constitute & Appoint Members** | ❌ | ❌ | ❌ | ✅ **Exclusive** |
+| **View Scheduled Meetings** | ✅ | ✅ | ✅ | ✅ |
+| **Convene & Schedule Meeting** | ❌ | ✅ | ❌ (Audit View) | ✅ |
+| **Confirm RSVP / Attendance** | ✅ | ✅ | ✅ | ✅ |
+| **View Agenda & Discussion Pack** | ✅ | ✅ | ✅ | ✅ |
+| **Create & Assign Action Items** | ❌ | ✅ | ❌ | ✅ |
+| **Update Own Assigned Action (ATR)** | ✅ | ✅ | ✅ | ✅ |
+| **Submit Action Taken Report (ATR)** | ✅ | ✅ | ✅ | ✅ |
+| **Draft Minutes of the Meeting (MoM)** | ❌ | ✅ (AI-Assisted) | ❌ | ✅ |
+| **Review & Ratify Minutes** | ✅ | ✅ | ✅ | ✅ |
+| **Approve Final Minutes** | ❌ | ✅ | ❌ | ✅ |
+| **Sign / Acknowledge Minutes** | ✅ | ✅ | ✅ | ✅ |
+| **Upload Evidence / Working Paper** | ✅ | ✅ | ✅ | ✅ |
+| **Deposit Official Gazette / Act** | ❌ | ❌ | ✅ | ✅ |
+| **Manage Notification Rules & SLA** | ❌ | ❌ | ❌ | ✅ **Exclusive** |
+| **View Email Audit Logs & Retries** | ❌ | ❌ | ❌ | ✅ **Exclusive** |
+
 ---
 
 ## 🧭 4. Core Features & What Forms / Fields Exist
