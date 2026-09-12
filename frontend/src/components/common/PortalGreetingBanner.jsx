@@ -49,34 +49,54 @@ export default function PortalGreetingBanner({
         borderColor: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(226, 232, 240, 0.85)',
         backgroundColor: isDark ? '#0B132B' : '#F8FAFC',
         backgroundImage: isDark
-          ? `linear-gradient(135deg, rgba(11, 23, 46, 0.96) 0%, rgba(15, 23, 42, 0.91) 48%, rgba(15, 23, 42, 0.72) 100%), url('/vignan-building.jpg')`
-          : `linear-gradient(135deg, rgba(255, 255, 255, 0.96) 0%, rgba(240, 246, 255, 0.92) 48%, rgba(240, 246, 255, 0.70) 100%), url('/vignan-building.jpg')`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center right',
-        backdropFilter: 'blur(12px)',
+          ? 'linear-gradient(135deg, #0B172E 0%, #0F172A 55%, #1E293B 100%)'
+          : 'linear-gradient(135deg, #EEF5FF 0%, #F8FAFC 50%, #FFFFFF 100%)',
         boxShadow: isDark
           ? '0 10px 30px -10px rgba(0, 0, 0, 0.5)'
-          : '0 8px 25px -5px rgba(37, 99, 235, 0.07)',
+          : '0 8px 25px -5px rgba(37, 99, 235, 0.06)',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
         gap: 2,
-        minHeight: { xs: 'auto', md: 160 },
+        minHeight: { xs: 'auto', md: 165 },
       }}
     >
+      {/* Right Side Campus Image with Smooth Fade */}
+      <Box
+        component="img"
+        src="/vignan-building.jpg"
+        alt="Vignan University Campus"
+        sx={{
+          position: 'absolute',
+          right: 0,
+          top: 0,
+          bottom: 0,
+          width: { xs: '55%', sm: '48%', md: '42%' },
+          height: '100%',
+          objectFit: 'cover',
+          objectPosition: 'center',
+          opacity: isDark ? 0.32 : 0.88,
+          maskImage: 'linear-gradient(to right, transparent 0%, rgba(0,0,0,0.4) 25%, rgba(0,0,0,1) 80%)',
+          WebkitMaskImage: 'linear-gradient(to right, transparent 0%, rgba(0,0,0,0.4) 25%, rgba(0,0,0,1) 80%)',
+          pointerEvents: 'none',
+          zIndex: 1,
+        }}
+      />
+
+      {/* Main Top Row Content */}
       <Box
         sx={{
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'flex-start',
-          flexWrap: 'wrap',
           gap: 2,
           position: 'relative',
           zIndex: 2,
+          flexWrap: { xs: 'wrap', sm: 'nowrap' },
         }}
       >
         {/* Left Side: Dynamic Greeting & Institutional Status */}
-        <Box sx={{ maxWidth: { xs: '100%', md: '72%' } }}>
+        <Box sx={{ maxWidth: { xs: '100%', sm: '65%', md: '60%' } }}>
           {badgeText && (
             <Chip
               label={badgeText}
@@ -100,7 +120,7 @@ export default function PortalGreetingBanner({
                 fontWeight: 900,
                 color: 'text.primary',
                 letterSpacing: '-0.03em',
-                fontSize: { xs: '1.4rem', sm: '1.8rem', md: '2.1rem' },
+                fontSize: { xs: '1.4rem', sm: '1.75rem', md: '2.05rem' },
                 lineHeight: 1.2,
               }}
             >
@@ -112,7 +132,7 @@ export default function PortalGreetingBanner({
             <Typography
               component="span"
               sx={{
-                fontSize: { xs: '1.4rem', sm: '1.8rem', md: '2.1rem' },
+                fontSize: { xs: '1.4rem', sm: '1.75rem', md: '2.05rem' },
                 animation: 'wave 2s infinite',
                 display: 'inline-block',
                 transformOrigin: '70% 70%',
@@ -137,7 +157,7 @@ export default function PortalGreetingBanner({
             sx={{
               color: 'text.secondary',
               mt: 0.8,
-              fontSize: { xs: '0.85rem', sm: '0.96rem' },
+              fontSize: { xs: '0.85rem', sm: '0.94rem' },
               fontWeight: 500,
               lineHeight: 1.5,
             }}
@@ -152,22 +172,23 @@ export default function PortalGreetingBanner({
           )}
         </Box>
 
-        {/* Right Side: Floating Live Clock & Calendar Widget (exact match to screenshot 2) */}
+        {/* Right Side: Floating Live Clock & Calendar Widget */}
         <Paper
           elevation={0}
           sx={{
             p: '10px 18px',
             borderRadius: '16px',
-            bgcolor: isDark ? 'rgba(15, 23, 42, 0.85)' : 'rgba(255, 255, 255, 0.95)',
+            bgcolor: isDark ? 'rgba(15, 23, 42, 0.90)' : 'rgba(255, 255, 255, 0.95)',
             border: '1px solid',
             borderColor: isDark ? 'rgba(255, 255, 255, 0.12)' : 'rgba(226, 232, 240, 0.95)',
             boxShadow: isDark
-              ? '0 8px 24px rgba(0, 0, 0, 0.35)'
+              ? '0 8px 24px rgba(0, 0, 0, 0.4)'
               : '0 6px 20px rgba(37, 99, 235, 0.08)',
             display: 'flex',
             flexDirection: 'column',
             alignItems: { xs: 'flex-start', sm: 'flex-end' },
             backdropFilter: 'blur(12px)',
+            flexShrink: 0,
           }}
         >
           <Typography
