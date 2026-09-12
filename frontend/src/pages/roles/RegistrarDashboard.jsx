@@ -38,6 +38,7 @@ import {
 } from '@mui/icons-material';
 import { committeesApi, complianceApi, actionsApi, meetingsApi } from '../../services/api';
 import { useRealtime } from '../../context/SocketContext';
+import PortalGreetingBanner from '../../components/common/PortalGreetingBanner';
 
 export default function RegistrarDashboard() {
   const [assistantVisible, setAssistantVisible] = useState(true);
@@ -161,153 +162,12 @@ export default function RegistrarDashboard() {
       <Grid container spacing={2.5} sx={{ width: '100%' }} alignItems="stretch">
         {/* Left Hero Card */}
         <Grid size={{ xs: 12, lg: assistantVisible ? 8 : 12 }}>
-          <Paper
-            elevation={0}
-            sx={{
-              height: '100%',
-              minHeight: 220,
-              borderRadius: '20px',
-              p: { xs: 2.5, sm: 3.5 },
-              position: 'relative',
-              overflow: 'hidden',
-              bgcolor: 'background.paper',
-              backgroundImage: (theme) =>
-                theme.palette.mode === 'dark'
-                  ? 'linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.9) 100%)'
-                  : 'linear-gradient(135deg, #E0EFFF 0%, #EFF6FF 55%, rgba(255,255,255,0.9) 100%)',
-              border: '1px solid',
-              borderColor: 'divider',
-              boxShadow: (theme) =>
-                theme.palette.mode === 'dark'
-                  ? '0 4px 20px rgba(0, 0, 0, 0.4)'
-                  : '0 4px 20px rgba(37, 99, 235, 0.06)',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between',
-            }}
-          >
-            {/* Live Clock Card on Top Right of Hero */}
-            <Paper
-              elevation={0}
-              sx={{
-                position: 'absolute',
-                top: 20,
-                right: 20,
-                bgcolor: (theme) =>
-                  theme.palette.mode === 'dark'
-                    ? 'rgba(15, 23, 42, 0.85)'
-                    : 'rgba(255, 255, 255, 0.88)',
-                backdropFilter: 'blur(12px)',
-                border: '1px solid',
-                borderColor: 'divider',
-                borderRadius: '12px',
-                px: 1.5,
-                py: 0.8,
-                display: { xs: 'none', sm: 'block' },
-                textAlign: 'right',
-                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
-                zIndex: 2,
-              }}
-            >
-              <Typography
-                variant="caption"
-                sx={{ color: 'text.secondary', fontWeight: 600, display: 'block', fontSize: '0.68rem' }}
-              >
-                {currentTime.toLocaleDateString('en-US', { weekday: 'long' })}
-              </Typography>
-              <Typography
-                variant="subtitle2"
-                sx={{ color: 'text.primary', fontWeight: 800, fontSize: '0.8rem' }}
-              >
-                {currentTime.toLocaleDateString('en-US', {
-                  day: 'numeric',
-                  month: 'short',
-                  year: 'numeric',
-                })}
-                ,{' '}
-                {currentTime.toLocaleTimeString('en-US', {
-                  hour: '2-digit',
-                  minute: '2-digit',
-                })}
-              </Typography>
-            </Paper>
-
-            {/* Hero Left Content */}
-            <Box sx={{ maxWidth: { xs: '100%', sm: '65%' }, zIndex: 2 }}>
-              <Typography
-                variant="h4"
-                sx={{
-                  fontWeight: 900,
-                  fontSize: { xs: '1.6rem', sm: '2rem', md: '2.2rem' },
-                  letterSpacing: '-0.03em',
-                  color: 'text.primary',
-                  mb: 0.5,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 1,
-                  flexWrap: 'wrap',
-                }}
-              >
-                Good Morning,{' '}
-                <Box component="span" sx={{ color: 'primary.main' }}>
-                  Registrar
-                </Box>{' '}
-                👋
-              </Typography>
-              <Typography
-                variant="body1"
-                sx={{ color: 'text.secondary', fontSize: '0.95rem', fontWeight: 500, mb: 2 }}
-              >
-                Institutional governance status: {totalCommittees} active bodies, {avgComplianceScore}% statutory compliance.
-              </Typography>
-            </Box>
-
-            {/* Institutional Quote in Hero Footer */}
-            <Box sx={{ zIndex: 2, pt: 2 }}>
-              <Typography
-                variant="caption"
-                sx={{
-                  color: 'text.secondary',
-                  fontStyle: 'italic',
-                  fontWeight: 600,
-                  fontSize: '0.82rem',
-                  display: 'block',
-                }}
-              >
-                &ldquo;Transparency. Statutory Accountability. Academic Excellence.&rdquo;
-              </Typography>
-              <Typography
-                variant="caption"
-                sx={{ color: 'text.disabled', fontWeight: 700, fontSize: '0.75rem' }}
-              >
-                &mdash; Vignan CommiAI Governance Engine
-              </Typography>
-            </Box>
-
-            {/* Vignan Building Campus Graphic */}
-            <Box
-              component="img"
-              src="/vignan-building.jpg"
-              alt="Vignan University"
-              sx={{
-                position: 'absolute',
-                right: 0,
-                bottom: 0,
-                top: 0,
-                width: { xs: '100%', sm: '46%' },
-                height: '100%',
-                objectFit: 'cover',
-                opacity: (theme) =>
-                  theme.palette.mode === 'dark' ? 0.18 : 0.88,
-                maskImage:
-                  'linear-gradient(to right, transparent 0%, rgba(0,0,0,1) 40%)',
-                WebkitMaskImage:
-                  'linear-gradient(to right, transparent 0%, rgba(0,0,0,1) 40%)',
-                pointerEvents: 'none',
-                zIndex: 1,
-              }}
-            />
-          </Paper>
+          <PortalGreetingBanner
+            roleTitle="Registrar"
+            statusText={`Institutional governance status: ${totalCommittees} active bodies, ${avgComplianceScore}% statutory compliance.`}
+            quoteText="“Transparency. Statutory Accountability. Academic Excellence.” — Vignan CommiAI Governance Engine"
+            accentColor="#1D61E7"
+          />
         </Grid>
 
         {/* Right CommiAI Assistant Card */}

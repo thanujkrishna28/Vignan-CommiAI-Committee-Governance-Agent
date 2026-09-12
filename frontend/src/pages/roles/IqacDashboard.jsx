@@ -20,6 +20,7 @@ import {
   AutoAwesome as SparkleIcon,
 } from '@mui/icons-material';
 import { complianceApi } from '../../services/api';
+import PortalGreetingBanner from '../../components/common/PortalGreetingBanner';
 
 export default function IqacDashboard() {
   const [complianceList, setComplianceList] = useState([]);
@@ -37,67 +38,37 @@ export default function IqacDashboard() {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, width: '100%' }}>
       {/* IQAC Header Banner */}
-      <Paper
-        elevation={0}
-        sx={{
-          p: 3,
-          borderRadius: 3,
-          bgcolor: 'background.paper',
-          backgroundImage: (theme) =>
-            theme.palette.mode === 'dark'
-              ? 'linear-gradient(135deg, #0B172E 0%, #064E3B 100%)'
-              : 'linear-gradient(135deg, #0B172E 0%, #064E3B 100%)',
-          color: '#FFF',
-          border: '1px solid rgba(255,255,255,0.1)',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: 2,
-        }}
-      >
-        <Box>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1 }}>
-            <Chip
-              label="IQAC / ACCREDITATION AUDIT"
+      <PortalGreetingBanner
+        roleTitle="IQAC Director"
+        badgeText="IQAC / ACCREDITATION AUDIT"
+        statusText="Internal Quality Assurance Cell • Audit statutory committee compositions, enforce UGC/AICTE mandates, and compile institutional evidence for accreditation."
+        quoteText="“Quality Assurance. Accreditation Readiness. Continuous Institutional Improvement.” — Vignan CommiAI Governance Engine"
+        accentColor="#10B981"
+        actionButtons={
+          <>
+            <Button
+              variant="contained"
               size="small"
-              sx={{ bgcolor: '#10B981', color: '#0B172E', fontWeight: 800, fontSize: '0.68rem' }}
-            />
-            <Typography variant="caption" sx={{ color: '#94A3B8' }}>
-              Internal Quality Assurance Cell • NAAC Criterion 6 Audit Unit
-            </Typography>
-          </Box>
-          <Typography variant="h4" sx={{ fontWeight: 800, color: '#FFF' }}>
-            IQAC Compliance & Accreditation Radar
-          </Typography>
-          <Typography variant="body2" sx={{ color: '#CBD5E1', mt: 0.5 }}>
-            Audit statutory committee compositions, enforce UGC/AICTE mandates, and compile institutional evidence for accreditation.
-          </Typography>
-        </Box>
-
-        <Box sx={{ display: 'flex', gap: 1.5 }}>
-          <Button
-            variant="contained"
-            size="small"
-            startIcon={<DownloadIcon />}
-            component={Link}
-            to="/reports"
-            sx={{ bgcolor: '#10B981', color: '#0B172E', fontWeight: 700, '&:hover': { bgcolor: '#34D399' } }}
-          >
-            Export NAAC SSR Packet
-          </Button>
-          <Button
-            variant="outlined"
-            size="small"
-            startIcon={<SparkleIcon sx={{ color: '#F59E0B' }} />}
-            component={Link}
-            to="/agent"
-            sx={{ color: '#FFF', borderColor: 'rgba(255,255,255,0.3)' }}
-          >
-            Audit AI Explainer
-          </Button>
-        </Box>
-      </Paper>
+              startIcon={<DownloadIcon />}
+              component={Link}
+              to="/reports"
+              sx={{ bgcolor: '#10B981', color: '#0B172E', fontWeight: 700, '&:hover': { bgcolor: '#34D399' } }}
+            >
+              Export NAAC SSR Packet
+            </Button>
+            <Button
+              variant="outlined"
+              size="small"
+              startIcon={<SparkleIcon sx={{ color: '#F59E0B' }} />}
+              component={Link}
+              to="/agent"
+              sx={{ color: 'text.primary', borderColor: 'divider', bgcolor: 'background.paper', fontWeight: 600 }}
+            >
+              Audit AI Explainer
+            </Button>
+          </>
+        }
+      />
 
       {/* IQAC Audit Metrics */}
       <Grid container spacing={1.5} sx={{ width: '100%' }}>

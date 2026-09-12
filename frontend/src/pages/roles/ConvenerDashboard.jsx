@@ -21,6 +21,7 @@ import {
 } from '@mui/icons-material';
 import { meetingsApi, actionsApi } from '../../services/api';
 import { useRealtime } from '../../context/SocketContext';
+import PortalGreetingBanner from '../../components/common/PortalGreetingBanner';
 
 export default function ConvenerDashboard() {
   const [meetings, setMeetings] = useState([]);
@@ -52,71 +53,50 @@ export default function ConvenerDashboard() {
     loadData(true);
   });
 
-
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, width: '100%' }}>
       {/* Convener Header Banner */}
-      <Paper
-        elevation={0}
-        sx={{
-          p: 3,
-          borderRadius: 3,
-          bgcolor: 'background.paper',
-          backgroundImage: (theme) =>
-            theme.palette.mode === 'dark'
-              ? 'linear-gradient(135deg, #0B172E 0%, #1A3B66 100%)'
-              : 'linear-gradient(135deg, #0B172E 0%, #1A3B66 100%)',
-          color: '#FFF',
-          border: '1px solid rgba(255,255,255,0.1)',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: 2,
-        }}
-      >
-        <Box>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1 }}>
-            <Chip
-              label="MEMBER SECRETARY / CONVENER"
+      <PortalGreetingBanner
+        roleTitle="Member Secretary & Convener"
+        badgeText="MEMBER SECRETARY / CONVENER CONSOLE"
+        statusText="Academic Council & Statutory Committee Operations • Prepare meeting notices, conduct sessions with real-time quorum validation, and draft official minutes."
+        quoteText="“Procedural Precision. Statutory Rigor. Streamlined Governance.” — Vignan CommiAI Governance Engine"
+        accentColor="#D97706"
+        actionButtons={
+          <>
+            <Button
+              variant="contained"
               size="small"
-              sx={{ bgcolor: '#DFAC36', color: '#0B172E', fontWeight: 800, fontSize: '0.68rem' }}
-            />
-            <Typography variant="caption" sx={{ color: '#94A3B8' }}>
-              Academic Council & Curriculum Committee
-            </Typography>
-          </Box>
-          <Typography variant="h4" sx={{ fontWeight: 800, color: '#FFF' }}>
-            Convener Operations Console
-          </Typography>
-          <Typography variant="body2" sx={{ color: '#CBD5E1', mt: 0.5 }}>
-            Prepare statutory meeting notices, conduct live sessions with real-time quorum validation, and draft official minutes.
-          </Typography>
-        </Box>
-
-        <Box sx={{ display: 'flex', gap: 1.5 }}>
-          <Button
-            variant="contained"
-            size="small"
-            startIcon={<AddIcon />}
-            component={Link}
-            to="/meetings/new"
-            sx={{ bgcolor: '#C69214', color: '#0B172E', fontWeight: 700, '&:hover': { bgcolor: '#DFAC36' } }}
-          >
-            Schedule Meeting
-          </Button>
-          <Button
-            variant="outlined"
-            size="small"
-            startIcon={<SparkleIcon sx={{ color: '#F59E0B' }} />}
-            component={Link}
-            to="/agent"
-            sx={{ color: '#FFF', borderColor: 'rgba(255,255,255,0.3)' }}
-          >
-            AI Agenda Builder
-          </Button>
-        </Box>
-      </Paper>
+              startIcon={<AddIcon />}
+              component={Link}
+              to="/meetings/new"
+              sx={{ bgcolor: '#C69214', color: '#0B172E', fontWeight: 700, '&:hover': { bgcolor: '#DFAC36' } }}
+            >
+              Schedule Meeting
+            </Button>
+            <Button
+              variant="outlined"
+              size="small"
+              startIcon={<PlayIcon />}
+              component={Link}
+              to="/meetings"
+              sx={{ color: 'text.primary', borderColor: 'divider', bgcolor: 'background.paper', fontWeight: 600 }}
+            >
+              Live Meeting Hub
+            </Button>
+            <Button
+              variant="outlined"
+              size="small"
+              startIcon={<SparkleIcon sx={{ color: '#F59E0B' }} />}
+              component={Link}
+              to="/agent"
+              sx={{ color: 'text.primary', borderColor: 'divider', bgcolor: 'background.paper', fontWeight: 600 }}
+            >
+              AI Agenda Builder
+            </Button>
+          </>
+        }
+      />
 
       {/* Convener Quick Stats */}
       <Grid container spacing={1.5} sx={{ width: '100%' }}>

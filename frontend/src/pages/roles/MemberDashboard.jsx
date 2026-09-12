@@ -10,6 +10,7 @@ import {
   Paper,
   Divider,
 } from '@mui/material';
+import PortalGreetingBanner from '../../components/common/PortalGreetingBanner';
 
 export default function MemberDashboard() {
   const [actions] = useState([
@@ -34,48 +35,24 @@ export default function MemberDashboard() {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, width: '100%' }}>
       {/* Member Header Banner */}
-      <Paper
-        elevation={0}
-        sx={{
-          p: 3,
-          borderRadius: 3,
-          bgcolor: 'background.paper',
-          backgroundImage: (theme) =>
-            theme.palette.mode === 'dark'
-              ? 'linear-gradient(135deg, #0B172E 0%, #153860 100%)'
-              : 'linear-gradient(135deg, #0B172E 0%, #153860 100%)',
-          color: '#FFF',
-          border: '1px solid rgba(255,255,255,0.1)',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: 2,
-        }}
-      >
-        <Box>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1 }}>
-            <Chip
-              label="COMMITTEE MEMBER PORTAL"
-              size="small"
-              sx={{ bgcolor: '#38BDF8', color: '#0B172E', fontWeight: 800, fontSize: '0.68rem' }}
-            />
-            <Typography variant="caption" sx={{ color: '#94A3B8' }}>
-              Prof. K. Sunitha • Professor CSE
-            </Typography>
-          </Box>
-          <Typography variant="h4" sx={{ fontWeight: 800, color: '#FFF' }}>
-            Member Workspace & Action Desk
-          </Typography>
-          <Typography variant="body2" sx={{ color: '#CBD5E1', mt: 0.5 }}>
-            Access committee agenda papers, track your assigned institutional action items, and confirm meeting attendance.
-          </Typography>
-        </Box>
-
-        <Box sx={{ display: 'flex', gap: 1.5 }}>
-          <Chip label="2 Active Committee Memberships" sx={{ bgcolor: 'rgba(255,255,255,0.1)', color: '#FFF', fontWeight: 600 }} />
-        </Box>
-      </Paper>
+      <PortalGreetingBanner
+        roleTitle="Prof. K. Sunitha"
+        badgeText="COMMITTEE MEMBER PORTAL"
+        statusText="Professor CSE • Member Workspace & Action Desk • Access committee agenda papers, track your assigned institutional action items, and confirm meeting attendance."
+        quoteText="“Collaborative Deliberation. Timely Execution. Academic Excellence.” — Vignan CommiAI Governance Engine"
+        accentColor="#0284C7"
+        actionButtons={
+          <Chip
+            label="2 Active Committee Memberships"
+            sx={{
+              bgcolor: 'rgba(2, 132, 199, 0.12)',
+              color: '#0284C7',
+              fontWeight: 700,
+              border: '1px solid rgba(2, 132, 199, 0.3)',
+            }}
+          />
+        }
+      />
 
       {/* Member Metrics */}
       <Grid container spacing={1.5} sx={{ width: '100%' }}>
