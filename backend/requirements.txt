@@ -27,3 +27,6 @@ email-validator>=2.1.1
 python-dateutil>=2.9.0
 numpy>=1.26.4
 tiktoken>=0.7.0
+python-socketio>=5.11.0
+python-engineio>=4.9.0
+google-genai>=0.1.1
