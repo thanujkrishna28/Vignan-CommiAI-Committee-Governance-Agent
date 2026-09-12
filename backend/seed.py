@@ -1,6 +1,6 @@
 """
 Seed data for Vignan CommiAI.
-Creates realistic institutional data with intentional compliance issues for demo.
+Creates realistic institutional data with authentic VFSTR faculty members and intentional compliance states for demo.
 """
 import sys
 import os
@@ -20,7 +20,7 @@ from app.models.models import (
 )
 from app.auth.auth import hash_password
 
-def seed():
+def seed(force: bool = False):
     from app.database import init_db
     print("Enabling vector extension...")
     init_db()
@@ -30,10 +30,31 @@ def seed():
     db = SessionLocal()
     
     try:
-        # Check if already seeded
-        if db.query(User).count() > 0:
-            print("Database already seeded. Skipping.")
+        # Check if already seeded and not force
+        if not force and db.query(User).count() > 0:
+            print("Database already seeded. Skipping (use --force to reseed).")
             return
+        
+        if force:
+            print("Force flag detected. Clearing existing data...")
+            # Truncate / delete existing data in correct FK dependency order
+            db.query(AuditLog).delete()
+            db.query(ActionItem).delete()
+            db.query(MinuteSection).delete()
+            db.query(Minutes).delete()
+            db.query(AgendaItem).delete()
+            db.query(Agenda).delete()
+            db.query(QuorumRecord).delete()
+            db.query(MeetingAttendance).delete()
+            db.query(Meeting).delete()
+            db.query(UserCommitteeAccess).delete()
+            db.query(CommitteeMember).delete()
+            db.query(CommitteeRequirement).delete()
+            db.query(Member).delete()
+            db.query(Committee).delete()
+            db.query(User).delete()
+            db.commit()
+            print("Existing tables cleared.")
         
         print("Seeding users...")
         
@@ -220,7 +241,7 @@ def seed():
             CommitteeRequirement(committee_id=icc.id, requirement_type=RequirementType.GENDER,
                 description="Presiding officer must be woman", required_gender="FEMALE", required_count=1),
             
-            # Research Advisory Committee (with intentional missing external)
+            # Research Advisory Committee (with intentional missing external for demo)
             CommitteeRequirement(committee_id=rac.id, requirement_type=RequirementType.COUNT,
                 description="Minimum 6 members required", required_count=6),
             CommitteeRequirement(committee_id=rac.id, requirement_type=RequirementType.EXTERNAL,
@@ -237,87 +258,129 @@ def seed():
         db.add_all(requirements)
         db.flush()
         
-        print("Seeding members...")
+        print("Seeding real VFSTR CSE faculty members directory...")
         
-        # ─── MEMBERS ──────────────────────────────────────────────────────────
+        # ─── REAL FACULTY & STATUTORY MEMBERS ──────────────────────────────────
         
         members_data = [
-            # Faculty
-            Member(name="Dr. Rajesh Kumar", email="rajesh.kumar@vignan.ac.in", designation="Professor & Registrar",
-                   department="Administration", member_type=MemberType.ADMINISTRATION, gender="MALE", is_external=False),
-            Member(name="Prof. Anita Sharma", email="anita.sharma@vignan.ac.in", designation="Professor & Dean",
-                   department="Computer Science", member_type=MemberType.FACULTY, gender="FEMALE", is_external=False),
-            Member(name="Dr. Venkat Reddy", email="venkat.reddy@vignan.ac.in", designation="Associate Professor",
-                   department="Electronics", member_type=MemberType.FACULTY, gender="MALE", is_external=False),
-            Member(name="Dr. Priya Nair", email="priya.nair@vignan.ac.in", designation="IQAC Director",
-                   department="Quality Assurance", member_type=MemberType.ADMINISTRATION, gender="FEMALE", is_external=False),
-            Member(name="Prof. Srinivas Rao", email="srinivas.rao@vignan.ac.in", designation="Professor",
-                   department="Mechanical Engineering", member_type=MemberType.FACULTY, gender="MALE", is_external=False),
-            Member(name="Dr. Lakshmi Devi", email="lakshmi.devi@vignan.ac.in", designation="Professor",
-                   department="Civil Engineering", member_type=MemberType.FACULTY, gender="FEMALE", is_external=False),
-            Member(name="Dr. Ravi Shankar", email="ravi.shankar@vignan.ac.in", designation="Associate Professor",
-                   department="Mathematics", member_type=MemberType.FACULTY, gender="MALE", is_external=False),
-            Member(name="Dr. Meena Kumari", email="meena.kumari@vignan.ac.in", designation="Associate Professor",
-                   department="Physics", member_type=MemberType.FACULTY, gender="FEMALE", is_external=False),
-            Member(name="Prof. Arun Kumar", email="arun.kumar@vignan.ac.in", designation="Professor & HoD",
-                   department="MBA", member_type=MemberType.FACULTY, gender="MALE", is_external=False),
-            Member(name="Dr. Sunita Patel", email="sunita.patel@vignan.ac.in", designation="Professor",
-                   department="Biotechnology", member_type=MemberType.FACULTY, gender="FEMALE", is_external=False),
-            Member(name="Dr. Kiran Babu", email="kiran.babu@vignan.ac.in", designation="Assistant Professor",
-                   department="Computer Science", member_type=MemberType.FACULTY, gender="MALE", is_external=False),
-            Member(name="Prof. Vijayalakshmi", email="vijaya.laksmi@vignan.ac.in", designation="Professor",
-                   department="Chemistry", member_type=MemberType.FACULTY, gender="FEMALE", is_external=False),
-            Member(name="Dr. Naresh Babu", email="naresh.babu@vignan.ac.in", designation="Associate Professor",
-                   department="Information Technology", member_type=MemberType.FACULTY, gender="MALE", is_external=False),
-            Member(name="Dr. Padmavathi", email="padmavathi@vignan.ac.in", designation="Professor",
-                   department="ECE", member_type=MemberType.FACULTY, gender="FEMALE", is_external=False),
-            Member(name="Prof. Suresh Chandra", email="suresh.chandra@vignan.ac.in", designation="Dean of Research",
-                   department="Research", member_type=MemberType.FACULTY, gender="MALE", is_external=False),
-            Member(name="Dr. Ramya Sri", email="ramya.sri@vignan.ac.in", designation="Assistant Professor",
-                   department="MBA", member_type=MemberType.FACULTY, gender="FEMALE", is_external=False),
-            Member(name="Dr. Chandra Mohan", email="chandra.mohan@vignan.ac.in", designation="Library Director",
-                   department="Library", member_type=MemberType.ADMINISTRATION, gender="MALE", is_external=False),
-            Member(name="Mrs. Sudha Rani", email="sudha.rani@vignan.ac.in", designation="Finance Controller",
-                   department="Finance", member_type=MemberType.ADMINISTRATION, gender="FEMALE", is_external=False),
-            Member(name="Dr. Prasad Varma", email="prasad.varma@vignan.ac.in", designation="Controller of Examinations",
-                   department="Examinations", member_type=MemberType.ADMINISTRATION, gender="MALE", is_external=False),
-            Member(name="Mr. Raju Naidu", email="raju.naidu@vignan.ac.in", designation="Administrative Officer",
-                   department="Administration", member_type=MemberType.ADMINISTRATION, gender="MALE", is_external=False),
+            # Real VFSTR CSE Department Faculty
+            Member(name="Prof. Dr. K. V. Krishna Kishore", email="kvkk_cse@vignan.ac.in", designation="Professor & Dean, SOCE",
+                   department="Computer Science & Engineering", member_type=MemberType.ADMINISTRATION, gender="MALE", phone="+91-9440856976", is_external=False),
+            Member(name="Dr. S. V. Phani Kumar", email="dsvpk_cse@vignan.ac.in", designation="Professor & HoD, CSE",
+                   department="Computer Science & Engineering", member_type=MemberType.FACULTY, gender="MALE", phone="+91-9912354004", is_external=False),
+            Member(name="Dr. N. Veeranjaneyulu", email="drnv_cse@vignan.ac.in", designation="Professor",
+                   department="Computer Science & Engineering", member_type=MemberType.FACULTY, gender="MALE", phone="+91-9885230292", is_external=False),
+            Member(name="Dr. P. Siva Prasad", email="drpsp_cse@vignan.ac.in", designation="Associate Professor",
+                   department="Computer Science & Engineering", member_type=MemberType.FACULTY, gender="MALE", phone="+91-9000543303", is_external=False),
+            Member(name="Dr. S. Deva Kumar", email="sdc_cse@vignan.ac.in", designation="Associate Professor",
+                   department="Computer Science & Engineering", member_type=MemberType.FACULTY, gender="MALE", phone="+91-9959589221", is_external=False),
+            Member(name="Dr. B. Yalamanda", email="by_cse@vignan.ac.in", designation="Associate Professor",
+                   department="Computer Science & Engineering", member_type=MemberType.FACULTY, gender="MALE", phone="+91-9912382838", is_external=False),
+            Member(name="Dr. D. V. S. S. Subrahmanyam", email="drdvs_cse@vignan.ac.in", designation="Associate Professor",
+                   department="Computer Science & Engineering", member_type=MemberType.FACULTY, gender="MALE", phone="+91-9848383849", is_external=False),
+            Member(name="Dr. D. Sreenu", email="drds_cse@vignan.ac.in", designation="Associate Professor",
+                   department="Computer Science & Engineering", member_type=MemberType.FACULTY, gender="MALE", phone="+91-7981711146", is_external=False),
+            Member(name="Dr. Shaik Shafi", email="ss_cse@vignan.ac.in", designation="Associate Professor",
+                   department="Computer Science & Engineering", member_type=MemberType.FACULTY, gender="MALE", phone="+91-8919630537", is_external=False),
+            Member(name="Dr. R. Prahlad Kumar", email="rpk_cse@vignan.ac.in", designation="Associate Professor",
+                   department="Computer Science & Engineering", member_type=MemberType.FACULTY, gender="MALE", phone="+91-7569202591", is_external=False),
+            Member(name="Dr. Satish Kumar Setti", email="sks_cse@vignan.ac.in", designation="Associate Professor",
+                   department="Computer Science & Engineering", member_type=MemberType.FACULTY, gender="MALE", phone="+91-9501236143", is_external=False),
+            Member(name="Dr. M. Sunil Babu", email="msb_cse@vignan.ac.in", designation="Associate Professor",
+                   department="Computer Science & Engineering", member_type=MemberType.FACULTY, gender="MALE", phone="+91-9346210440", is_external=False),
+            Member(name="Dr. E. Deepak Chowdary", email="edc_cse@vignan.ac.in", designation="Assistant Professor",
+                   department="Computer Science & Engineering", member_type=MemberType.FACULTY, gender="MALE", phone="+91-9553147457", is_external=False),
+            Member(name="Dr. Ch. V. Krishna Reddy", email="drckr_cse@vignan.ac.in", designation="Assistant Professor",
+                   department="Computer Science & Engineering", member_type=MemberType.FACULTY, gender="MALE", phone="+91-9492160912", is_external=False),
+            Member(name="Dr. S. S. S. N. Usha Devi N.", email="sssnud_cse@vignan.ac.in", designation="Assistant Professor",
+                   department="Computer Science & Engineering", member_type=MemberType.FACULTY, gender="FEMALE", phone="+91-9849931362", is_external=False),
+            Member(name="Dr. T. M. Nagesh", email="tmn_cse@vignan.ac.in", designation="Assistant Professor",
+                   department="Computer Science & Engineering", member_type=MemberType.FACULTY, gender="MALE", phone="+91-9989063538", is_external=False),
+            Member(name="Mr. Md. Ghouse Mohiddin", email="mgm_cse@vignan.ac.in", designation="Assistant Professor",
+                   department="Computer Science & Engineering", member_type=MemberType.FACULTY, gender="MALE", phone="+91-9490243406", is_external=False),
+            Member(name="Dr. Vinuj T", email="drvt_cse@vignan.ac.in", designation="Assistant Professor",
+                   department="Computer Science & Engineering", member_type=MemberType.FACULTY, gender="MALE", phone="+91-9751888957", is_external=False),
+            Member(name="Dr. B. Venugopal", email="drbvg_cse@vignan.ac.in", designation="Sr. Assistant Professor",
+                   department="Computer Science & Engineering", member_type=MemberType.FACULTY, gender="MALE", phone="+91-9346247171", is_external=False),
+            Member(name="Dr. G. Sasibhushana Rao", email="drgsbr_cse@vignan.ac.in", designation="Assistant Professor",
+                   department="Computer Science & Engineering", member_type=MemberType.FACULTY, gender="MALE", phone="+91-9553106888", is_external=False),
+            Member(name="Dr. U. Bhaskar", email="drub_cse@vignan.ac.in", designation="Assistant Professor",
+                   department="Computer Science & Engineering", member_type=MemberType.FACULTY, gender="MALE", phone="+91-9949700992", is_external=False),
+            Member(name="Dr. K. Ravindra Swaroop", email="krs_cse@vignan.ac.in", designation="Assistant Professor",
+                   department="Computer Science & Engineering", member_type=MemberType.FACULTY, gender="MALE", phone="+91-9963628004", is_external=False),
+            Member(name="Dr. G. Bala Narsimha Rao", email="gbnr_cse@vignan.ac.in", designation="Assistant Professor",
+                   department="Computer Science & Engineering", member_type=MemberType.FACULTY, gender="MALE", phone="+91-9912754608", is_external=False),
+            Member(name="Dr. G. Venkatasubba Reddy", email="drgvsr_cse@vignan.ac.in", designation="Assistant Professor",
+                   department="Computer Science & Engineering", member_type=MemberType.FACULTY, gender="MALE", phone="+91-9177973607", is_external=False),
+            Member(name="Dr. J. Veeranjaneyulu", email="jv_cse@vignan.ac.in", designation="Assistant Professor",
+                   department="Computer Science & Engineering", member_type=MemberType.FACULTY, gender="MALE", phone="+91-9032128228", is_external=False),
+            Member(name="Dr. Krishna Kanth", email="bkr_cse@vignan.ac.in", designation="Assistant Professor",
+                   department="Computer Science & Engineering", member_type=MemberType.FACULTY, gender="MALE", phone="+91-9492729993", is_external=False),
+            Member(name="Dr. J. Vijetha Ananthi", email="jva_cse@vignan.ac.in", designation="Assistant Professor",
+                   department="Computer Science & Engineering", member_type=MemberType.FACULTY, gender="FEMALE", phone="+91-9704528946", is_external=False),
+            Member(name="Dr. P. Samatha Rao", email="p_samatharao_cse@vignan.ac.in", designation="Assistant Professor",
+                   department="Computer Science & Engineering", member_type=MemberType.FACULTY, gender="FEMALE", phone="+91-9493202740", is_external=False),
+            Member(name="Dr. M. Teja Sree", email="tsm_cse@vignan.ac.in", designation="Assistant Professor",
+                   department="Computer Science & Engineering", member_type=MemberType.FACULTY, gender="FEMALE", phone="+91-9849310847", is_external=False),
+            Member(name="Dr. Janardhan Karuturi", email="jk_cse@vignan.ac.in", designation="Assistant Professor",
+                   department="Computer Science & Engineering", member_type=MemberType.FACULTY, gender="MALE", phone="+91-9908762922", is_external=False),
+            Member(name="Dr. V. Vijaya Bhaskara Rao", email="vvr_cse@vignan.ac.in", designation="Assistant Professor",
+                   department="Computer Science & Engineering", member_type=MemberType.FACULTY, gender="MALE", phone="+91-9440621300", is_external=False),
+            Member(name="Dr. Bukke Radha Keerthi", email="drbrk_cse@vignan.ac.in", designation="Assistant Professor",
+                   department="Computer Science & Engineering", member_type=MemberType.FACULTY, gender="FEMALE", phone="+91-9881185411", is_external=False),
+            Member(name="Dr. M. Bhargavi", email="mb_cse@vignan.ac.in", designation="Assistant Professor",
+                   department="Computer Science & Engineering", member_type=MemberType.FACULTY, gender="FEMALE", phone="+91-7981121100", is_external=False),
+            Member(name="Dr. Shyam Sunder Nethi", email="ngss_cse@vignan.ac.in", designation="Assistant Professor",
+                   department="Computer Science & Engineering", member_type=MemberType.FACULTY, gender="MALE", phone="+91-7032524716", is_external=False),
+            Member(name="Dr. G. Sreeram", email="gs_cse@vignan.ac.in", designation="Assistant Professor",
+                   department="Computer Science & Engineering", member_type=MemberType.FACULTY, gender="MALE", phone="+91-9985958567", is_external=False),
+            Member(name="Mrs. M. Sirisha", email="ms_cse@vignan.ac.in", designation="Assistant Professor",
+                   department="Computer Science & Engineering", member_type=MemberType.FACULTY, gender="FEMALE", phone="+91-8978586926", is_external=False),
+            Member(name="Dr. B. Premamayudu", email="bpm_cse@vignan.ac.in", designation="Professor",
+                   department="Computer Science & Engineering", member_type=MemberType.FACULTY, gender="MALE", phone="+91-9440552433", is_external=False),
+            Member(name="Dr. S. Venkateswarlu", email="sv_cse@vignan.ac.in", designation="Professor",
+                   department="Computer Science & Engineering", member_type=MemberType.FACULTY, gender="MALE", phone="+91-9848143232", is_external=False),
+            Member(name="Mrs. K. Prasanthi", email="kp_cse@vignan.ac.in", designation="Assistant Professor",
+                   department="Computer Science & Engineering", member_type=MemberType.FACULTY, gender="FEMALE", phone="+91-9849201928", is_external=False),
+            Member(name="Mrs. P. Vijaya Bala", email="pvb_cse@vignan.ac.in", designation="Assistant Professor",
+                   department="Computer Science & Engineering", member_type=MemberType.FACULTY, gender="FEMALE", phone="+91-9866839399", is_external=False),
+            Member(name="Mrs. Ch. Pavani", email="chp_cse@vignan.ac.in", designation="Assistant Professor",
+                   department="Computer Science & Engineering", member_type=MemberType.FACULTY, gender="FEMALE", phone="+91-9704153071", is_external=False),
+            Member(name="Mrs. K. Himabindu", email="khb_cse@vignan.ac.in", designation="Assistant Professor",
+                   department="Computer Science & Engineering", member_type=MemberType.FACULTY, gender="FEMALE", phone="+91-9949987822", is_external=False),
             
-            # External Members
-            Member(name="Dr. Krishnamurthy", email="krishnamurthy@iitm.ac.in", designation="Professor",
+            # External Statutory & Domain Experts
+            Member(name="Adv. T. Raghavan", email="raghavan.legal@hckerala.gov.in", designation="Senior Advocate & Legal Advisor",
+                   department="Legal & Statutory", organization="High Court Advocates Council",
+                   member_type=MemberType.EXTERNAL, gender="MALE", phone="+91-9847012345", is_external=True),
+            Member(name="Dr. M. S. Ramachandra", email="msr@iitm.ac.in", designation="Professor & Research Advisor",
                    department="Computer Science", organization="IIT Madras",
-                   member_type=MemberType.EXTERNAL, gender="MALE", is_external=True),
-            Member(name="Adv. Radha Krishnan", email="radha.krishnan@legalaid.org", designation="Senior Advocate",
-                   department="Legal", organization="Hyderabad Legal Aid Society",
-                   member_type=MemberType.EXTERNAL, gender="MALE", is_external=True),
-            Member(name="Ms. Sangeetha Menon", email="sangeetha@ngoforum.org", designation="Director",
-                   organization="Women's Rights Forum NGO",
-                   member_type=MemberType.EXTERNAL, gender="FEMALE", is_external=True),
-            Member(name="Mr. Subramaniam", email="subramaniam@infosys.com", designation="VP Technology",
-                   organization="Infosys Limited",
-                   member_type=MemberType.EXTERNAL, gender="MALE", is_external=True),
-            Member(name="Dr. Padma Reddy", email="padma.reddy@drdo.gov.in", designation="Scientist",
-                   organization="DRDO",
-                   member_type=MemberType.EXTERNAL, gender="FEMALE", is_external=True),
+                   member_type=MemberType.EXTERNAL, gender="MALE", phone="+91-9444011223", is_external=True),
+            Member(name="Ms. Lakshmi Prasanna", email="lakshmi.p@welfarengo.org", designation="Director",
+                   department="Social Welfare", organization="Women & Child Welfare Society NGO",
+                   member_type=MemberType.EXTERNAL, gender="FEMALE", phone="+91-9848099887", is_external=True),
+            Member(name="Mr. N. S. Ramanathan", email="ramanathan.ns@tcs.com", designation="VP Technology",
+                   department="Industry Collaborations", organization="Tata Consultancy Services",
+                   member_type=MemberType.EXTERNAL, gender="MALE", phone="+91-9820055443", is_external=True),
+            Member(name="Dr. A. Sanjeeva Rao", email="sanjeeva.rao@drdo.gov.in", designation="Senior Scientist",
+                   department="Defense R&D", organization="DRDO",
+                   member_type=MemberType.EXTERNAL, gender="MALE", phone="+91-9440188776", is_external=True),
             
-            # Students
-            Member(name="Mr. Arjun Rao", email="arjun.rao@student.vignan.ac.in", designation="Student Representative",
-                   department="B.Tech CSE", member_type=MemberType.STUDENT, gender="MALE", is_student=True),
-            Member(name="Ms. Kavitha Reddy", email="kavitha.reddy@student.vignan.ac.in", designation="Student Representative",
-                   department="B.Tech ECE", member_type=MemberType.STUDENT, gender="FEMALE", is_student=True),
-            Member(name="Mr. Rahul Gupta", email="rahul.gupta@student.vignan.ac.in", designation="Student Representative",
-                   department="MBA", member_type=MemberType.STUDENT, gender="MALE", is_student=True),
-            Member(name="Ms. Divya Sharma", email="divya.sharma@student.vignan.ac.in", designation="Research Scholar",
-                   department="PhD CS", member_type=MemberType.STUDENT, gender="FEMALE", is_student=True),
-            Member(name="Mr. Venkata Suresh", email="venkata.suresh@student.vignan.ac.in", designation="Student Representative",
-                   department="B.Tech Civil", member_type=MemberType.STUDENT, gender="MALE", is_student=True),
+            # Student Representatives
+            Member(name="Mr. K. Arjun Varma", email="211fa04001@vignan.ac.in", designation="Student Representative",
+                   department="B.Tech CSE", member_type=MemberType.STUDENT, gender="MALE", phone="+91-9121040001", is_student=True),
+            Member(name="Ms. P. Sai Harika", email="211fa04045@vignan.ac.in", designation="Student Representative",
+                   department="B.Tech CSE", member_type=MemberType.STUDENT, gender="FEMALE", phone="+91-9121040045", is_student=True),
+            Member(name="Mr. Ch. Tarun Kumar", email="221fa04012@vignan.ac.in", designation="Student Representative",
+                   department="B.Tech CSE", member_type=MemberType.STUDENT, gender="MALE", phone="+91-9121040012", is_student=True),
+            Member(name="Ms. V. Divya Teja", email="201fa04022@vignan.ac.in", designation="Research Scholar",
+                   department="PhD Computer Science", member_type=MemberType.STUDENT, gender="FEMALE", phone="+91-9121040022", is_student=True),
         ]
         db.add_all(members_data)
         db.flush()
         
         # Build member lookup
-        m = {m.name: m for m in members_data}
+        m = {mem.name: mem for mem in members_data}
         
         print("Seeding committee memberships...")
         
@@ -335,136 +398,160 @@ def seed():
         # Research Advisory Committee member with tenure expired
         end_expired = today - timedelta(days=5)  # already expired
         
-        # Academic Council — COMPLIANT
+        # Academic Council — COMPLIANT (apex body)
         ac_members = [
-            CommitteeMember(committee_id=ac.id, member_id=m["Dr. Rajesh Kumar"].id, role="Chairperson",
+            CommitteeMember(committee_id=ac.id, member_id=m["Prof. Dr. K. V. Krishna Kishore"].id, role="Chairperson",
                            start_date=start_2024, end_date=end_2026, is_active=True),
-            CommitteeMember(committee_id=ac.id, member_id=m["Prof. Anita Sharma"].id, role="Member",
+            CommitteeMember(committee_id=ac.id, member_id=m["Dr. S. V. Phani Kumar"].id, role="Convener",
                            start_date=start_2024, end_date=end_2026, is_active=True),
-            CommitteeMember(committee_id=ac.id, member_id=m["Dr. Venkat Reddy"].id, role="Member",
+            CommitteeMember(committee_id=ac.id, member_id=m["Dr. N. Veeranjaneyulu"].id, role="Member",
                            start_date=start_2024, end_date=end_2026, is_active=True),
-            CommitteeMember(committee_id=ac.id, member_id=m["Prof. Srinivas Rao"].id, role="Member",
+            CommitteeMember(committee_id=ac.id, member_id=m["Dr. P. Siva Prasad"].id, role="Member",
                            start_date=start_2024, end_date=end_2026, is_active=True),
-            CommitteeMember(committee_id=ac.id, member_id=m["Dr. Lakshmi Devi"].id, role="Member",
+            CommitteeMember(committee_id=ac.id, member_id=m["Dr. S. Deva Kumar"].id, role="Member",
                            start_date=start_2024, end_date=end_2026, is_active=True),
-            CommitteeMember(committee_id=ac.id, member_id=m["Dr. Ravi Shankar"].id, role="Member",
+            CommitteeMember(committee_id=ac.id, member_id=m["Dr. B. Yalamanda"].id, role="Member",
                            start_date=start_2024, end_date=end_2026, is_active=True),
-            CommitteeMember(committee_id=ac.id, member_id=m["Dr. Meena Kumari"].id, role="Member",
+            CommitteeMember(committee_id=ac.id, member_id=m["Dr. D. V. S. S. Subrahmanyam"].id, role="Member",
                            start_date=start_2024, end_date=end_2026, is_active=True),
-            CommitteeMember(committee_id=ac.id, member_id=m["Prof. Arun Kumar"].id, role="Member",
+            CommitteeMember(committee_id=ac.id, member_id=m["Dr. D. Sreenu"].id, role="Member",
                            start_date=start_2024, end_date=end_2026, is_active=True),
-            CommitteeMember(committee_id=ac.id, member_id=m["Dr. Sunita Patel"].id, role="Member",
+            CommitteeMember(committee_id=ac.id, member_id=m["Dr. Shaik Shafi"].id, role="Member",
                            start_date=start_2024, end_date=end_2026, is_active=True),
-            CommitteeMember(committee_id=ac.id, member_id=m["Dr. Kiran Babu"].id, role="Member",
+            CommitteeMember(committee_id=ac.id, member_id=m["Dr. R. Prahlad Kumar"].id, role="Member",
                            start_date=start_2024, end_date=end_2026, is_active=True),
-            CommitteeMember(committee_id=ac.id, member_id=m["Prof. Vijayalakshmi"].id, role="Member",
+            CommitteeMember(committee_id=ac.id, member_id=m["Dr. Satish Kumar Setti"].id, role="Member",
                            start_date=start_2024, end_date=end_2026, is_active=True),
-            CommitteeMember(committee_id=ac.id, member_id=m["Dr. Naresh Babu"].id, role="Member",
+            CommitteeMember(committee_id=ac.id, member_id=m["Dr. M. Sunil Babu"].id, role="Member",
                            start_date=start_2024, end_date=end_2026, is_active=True),
-            CommitteeMember(committee_id=ac.id, member_id=m["Dr. Padmavathi"].id, role="Member",
+            CommitteeMember(committee_id=ac.id, member_id=m["Dr. E. Deepak Chowdary"].id, role="Member",
                            start_date=start_2024, end_date=end_2026, is_active=True),
-            CommitteeMember(committee_id=ac.id, member_id=m["Prof. Suresh Chandra"].id, role="Member",
+            CommitteeMember(committee_id=ac.id, member_id=m["Dr. J. Veeranjaneyulu"].id, role="Member",
                            start_date=start_2024, end_date=end_2026, is_active=True),
-            CommitteeMember(committee_id=ac.id, member_id=m["Dr. Ramya Sri"].id, role="Convener",
+            CommitteeMember(committee_id=ac.id, member_id=m["Dr. S. S. S. N. Usha Devi N."].id, role="Member",
                            start_date=start_2024, end_date=end_2026, is_active=True),
-            CommitteeMember(committee_id=ac.id, member_id=m["Mr. Arjun Rao"].id, role="Student Representative",
+            CommitteeMember(committee_id=ac.id, member_id=m["Dr. J. Vijetha Ananthi"].id, role="Member",
+                           start_date=start_2024, end_date=end_2026, is_active=True),
+            CommitteeMember(committee_id=ac.id, member_id=m["Dr. M. Bhargavi"].id, role="Member",
+                           start_date=start_2024, end_date=end_2026, is_active=True),
+            CommitteeMember(committee_id=ac.id, member_id=m["Mr. K. Arjun Varma"].id, role="Student Representative",
                            start_date=start_2024, end_date=date(2025, 5, 31), is_active=True),
-            CommitteeMember(committee_id=ac.id, member_id=m["Ms. Kavitha Reddy"].id, role="Student Representative",
+            CommitteeMember(committee_id=ac.id, member_id=m["Ms. P. Sai Harika"].id, role="Student Representative",
                            start_date=start_2024, end_date=date(2025, 5, 31), is_active=True),
         ]
         
-        # Finance Committee — WARNING (member tenure expiring)
+        # Finance Committee — WARNING (member tenure expiring in 18 days)
         fc_members = [
-            CommitteeMember(committee_id=fc.id, member_id=m["Dr. Rajesh Kumar"].id, role="Chairperson",
+            CommitteeMember(committee_id=fc.id, member_id=m["Prof. Dr. K. V. Krishna Kishore"].id, role="Chairperson",
                            start_date=start_2024, end_date=end_2026, is_active=True),
-            CommitteeMember(committee_id=fc.id, member_id=m["Mrs. Sudha Rani"].id, role="Finance Secretary",
+            CommitteeMember(committee_id=fc.id, member_id=m["Dr. S. V. Phani Kumar"].id, role="Convener",
+                           start_date=start_2024, end_date=end_2026, is_active=True),
+            CommitteeMember(committee_id=fc.id, member_id=m["Dr. P. Siva Prasad"].id, role="Member",
+                           start_date=start_2024, end_date=end_2026, is_active=True),
+            CommitteeMember(committee_id=fc.id, member_id=m["Dr. B. Yalamanda"].id, role="Member",
+                           start_date=start_2024, end_date=end_2026, is_active=True),
+            CommitteeMember(committee_id=fc.id, member_id=m["Dr. R. Prahlad Kumar"].id, role="Member",
+                           start_date=start_2024, end_date=end_2026, is_active=True),
+            CommitteeMember(committee_id=fc.id, member_id=m["Dr. J. Vijetha Ananthi"].id, role="Finance Secretary",
                            start_date=start_2024, end_date=end_expiring, is_active=True),  # EXPIRING!
-            CommitteeMember(committee_id=fc.id, member_id=m["Prof. Arun Kumar"].id, role="Member",
-                           start_date=start_2024, end_date=end_2026, is_active=True),
-            CommitteeMember(committee_id=fc.id, member_id=m["Dr. Ravi Shankar"].id, role="Member",
-                           start_date=start_2024, end_date=end_2026, is_active=True),
-            CommitteeMember(committee_id=fc.id, member_id=m["Mr. Subramaniam"].id, role="External Expert",
+            CommitteeMember(committee_id=fc.id, member_id=m["Mr. N. S. Ramanathan"].id, role="External Expert",
                            start_date=start_2024, end_date=end_2026, is_active=True),  # External present
-            CommitteeMember(committee_id=fc.id, member_id=m["Prof. Srinivas Rao"].id, role="Member",
-                           start_date=start_2024, end_date=end_2026, is_active=True),
-            CommitteeMember(committee_id=fc.id, member_id=m["Dr. Meena Kumari"].id, role="Convener",
-                           start_date=start_2024, end_date=end_2026, is_active=True),
         ]
         
-        # Examination Committee — WARNING (overdue meeting)
+        # Examination Committee — WARNING (meeting overdue)
         ec_members = [
-            CommitteeMember(committee_id=ec.id, member_id=m["Dr. Prasad Varma"].id, role="Controller/Chairperson",
+            CommitteeMember(committee_id=ec.id, member_id=m["Dr. N. Veeranjaneyulu"].id, role="Controller/Chairperson",
                            start_date=start_2024, end_date=end_2026, is_active=True),
-            CommitteeMember(committee_id=ec.id, member_id=m["Prof. Anita Sharma"].id, role="Member",
+            CommitteeMember(committee_id=ec.id, member_id=m["Dr. S. V. Phani Kumar"].id, role="Convener",
                            start_date=start_2024, end_date=end_2026, is_active=True),
-            CommitteeMember(committee_id=ec.id, member_id=m["Dr. Kiran Babu"].id, role="Member",
+            CommitteeMember(committee_id=ec.id, member_id=m["Dr. D. V. S. S. Subrahmanyam"].id, role="Member",
                            start_date=start_2024, end_date=end_2026, is_active=True),
-            CommitteeMember(committee_id=ec.id, member_id=m["Dr. Naresh Babu"].id, role="Member",
+            CommitteeMember(committee_id=ec.id, member_id=m["Dr. Satish Kumar Setti"].id, role="Member",
                            start_date=start_2024, end_date=end_2026, is_active=True),
-            CommitteeMember(committee_id=ec.id, member_id=m["Dr. Ramya Sri"].id, role="Member",
+            CommitteeMember(committee_id=ec.id, member_id=m["Dr. E. Deepak Chowdary"].id, role="Member",
                            start_date=start_2024, end_date=end_2026, is_active=True),
-            CommitteeMember(committee_id=ec.id, member_id=m["Dr. Venkat Reddy"].id, role="Convener",
+            CommitteeMember(committee_id=ec.id, member_id=m["Dr. J. Veeranjaneyulu"].id, role="Member",
                            start_date=start_2024, end_date=end_2026, is_active=True),
         ]
         
-        # ICC — COMPLIANT
+        # Internal Complaints Committee (POSH) — COMPLIANT
         icc_members = [
-            CommitteeMember(committee_id=icc.id, member_id=m["Dr. Lakshmi Devi"].id, role="Presiding Officer",
+            CommitteeMember(committee_id=icc.id, member_id=m["Dr. S. S. S. N. Usha Devi N."].id, role="Presiding Officer",
                            start_date=start_2024, end_date=end_2026, is_active=True),
-            CommitteeMember(committee_id=icc.id, member_id=m["Prof. Vijayalakshmi"].id, role="Member",
+            CommitteeMember(committee_id=icc.id, member_id=m["Dr. J. Vijetha Ananthi"].id, role="Member",
                            start_date=start_2024, end_date=end_2026, is_active=True),
-            CommitteeMember(committee_id=icc.id, member_id=m["Ms. Sangeetha Menon"].id, role="External NGO Member",
+            CommitteeMember(committee_id=icc.id, member_id=m["Dr. Bukke Radha Keerthi"].id, role="Member",
+                           start_date=start_2024, end_date=end_2026, is_active=True),
+            CommitteeMember(committee_id=icc.id, member_id=m["Dr. M. Bhargavi"].id, role="Member",
+                           start_date=start_2024, end_date=end_2026, is_active=True),
+            CommitteeMember(committee_id=icc.id, member_id=m["Mrs. M. Sirisha"].id, role="Member",
+                           start_date=start_2024, end_date=end_2026, is_active=True),
+            CommitteeMember(committee_id=icc.id, member_id=m["Ms. Lakshmi Prasanna"].id, role="External NGO Member",
                            start_date=start_2024, end_date=end_2026, is_active=True),  # External present
-            CommitteeMember(committee_id=icc.id, member_id=m["Mrs. Sudha Rani"].id, role="Member",
-                           start_date=start_2024, end_date=end_2026, is_active=True),
-            CommitteeMember(committee_id=icc.id, member_id=m["Dr. Padmavathi"].id, role="Member",
-                           start_date=start_2024, end_date=end_2026, is_active=True),
         ]
         
         # Research Advisory Committee — NON-COMPLIANT (missing external, missing student, tenure expired)
         rac_members = [
-            CommitteeMember(committee_id=rac.id, member_id=m["Prof. Suresh Chandra"].id, role="Chairperson/Dean of Research",
+            CommitteeMember(committee_id=rac.id, member_id=m["Dr. B. Premamayudu"].id, role="Chairperson/Dean of Research",
                            start_date=start_2024, end_date=end_2026, is_active=True),
-            CommitteeMember(committee_id=rac.id, member_id=m["Dr. Sunita Patel"].id, role="Member",
+            CommitteeMember(committee_id=rac.id, member_id=m["Dr. S. Deva Kumar"].id, role="Convener",
+                           start_date=start_2024, end_date=end_2026, is_active=True),
+            CommitteeMember(committee_id=rac.id, member_id=m["Dr. Shaik Shafi"].id, role="Member",
+                           start_date=start_2024, end_date=end_2026, is_active=True),
+            CommitteeMember(committee_id=rac.id, member_id=m["Dr. Vinuj T"].id, role="Member",
                            start_date=start_2023, end_date=end_expired, is_active=True),  # EXPIRED TENURE!
-            CommitteeMember(committee_id=rac.id, member_id=m["Dr. Ravi Shankar"].id, role="Member",
-                           start_date=start_2024, end_date=end_2026, is_active=True),
-            CommitteeMember(committee_id=rac.id, member_id=m["Dr. Meena Kumari"].id, role="Convener",
-                           start_date=start_2024, end_date=end_2026, is_active=True),
-            # NOTE: No external members (requires 2), no student member (requires 1) — NON-COMPLIANT!
+            # Intentional Demo Gap: No external members (requires 2), no student member (requires 1)
         ]
         
         # Student Welfare Committee — WARNING
         swc_members = [
-            CommitteeMember(committee_id=swc.id, member_id=m["Dr. Rajesh Kumar"].id, role="Chairperson",
+            CommitteeMember(committee_id=swc.id, member_id=m["Prof. Dr. K. V. Krishna Kishore"].id, role="Chairperson",
                            start_date=start_2024, end_date=end_2026, is_active=True),
-            CommitteeMember(committee_id=swc.id, member_id=m["Dr. Kiran Babu"].id, role="Convener",
+            CommitteeMember(committee_id=swc.id, member_id=m["Dr. J. Veeranjaneyulu"].id, role="Convener",
                            start_date=start_2024, end_date=end_2026, is_active=True),
-            CommitteeMember(committee_id=swc.id, member_id=m["Dr. Ramya Sri"].id, role="Member",
+            CommitteeMember(committee_id=swc.id, member_id=m["Dr. E. Deepak Chowdary"].id, role="Member",
                            start_date=start_2024, end_date=end_2026, is_active=True),
-            CommitteeMember(committee_id=swc.id, member_id=m["Mr. Arjun Rao"].id, role="Student Representative",
+            CommitteeMember(committee_id=swc.id, member_id=m["Dr. P. Samatha Rao"].id, role="Member",
+                           start_date=start_2024, end_date=end_2026, is_active=True),
+            CommitteeMember(committee_id=swc.id, member_id=m["Mr. K. Arjun Varma"].id, role="Student Representative",
                            start_date=start_2024, end_date=date(2025, 5, 31), is_active=True),
-            CommitteeMember(committee_id=swc.id, member_id=m["Ms. Kavitha Reddy"].id, role="Student Representative",
+            CommitteeMember(committee_id=swc.id, member_id=m["Ms. P. Sai Harika"].id, role="Student Representative",
                            start_date=start_2024, end_date=date(2025, 5, 31), is_active=True),
-            CommitteeMember(committee_id=swc.id, member_id=m["Mr. Rahul Gupta"].id, role="Student Representative",
+            CommitteeMember(committee_id=swc.id, member_id=m["Mr. Ch. Tarun Kumar"].id, role="Student Representative",
                            start_date=start_2024, end_date=date(2025, 5, 31), is_active=True),
         ]
         
         # Library Committee — COMPLIANT
         lc_members = [
-            CommitteeMember(committee_id=lc.id, member_id=m["Dr. Chandra Mohan"].id, role="Library Director/Chairperson",
+            CommitteeMember(committee_id=lc.id, member_id=m["Dr. S. Venkateswarlu"].id, role="Library Committee Chairperson",
                            start_date=start_2024, end_date=end_2026, is_active=True),
-            CommitteeMember(committee_id=lc.id, member_id=m["Dr. Naresh Babu"].id, role="Member",
+            CommitteeMember(committee_id=lc.id, member_id=m["Dr. M. Sunil Babu"].id, role="Convener",
                            start_date=start_2024, end_date=end_2026, is_active=True),
-            CommitteeMember(committee_id=lc.id, member_id=m["Prof. Vijayalakshmi"].id, role="Member",
+            CommitteeMember(committee_id=lc.id, member_id=m["Dr. G. Sasibhushana Rao"].id, role="Member",
                            start_date=start_2024, end_date=end_2026, is_active=True),
-            CommitteeMember(committee_id=lc.id, member_id=m["Dr. Ravi Shankar"].id, role="Convener",
+            CommitteeMember(committee_id=lc.id, member_id=m["Dr. Janardhan Karuturi"].id, role="Member",
                            start_date=start_2024, end_date=end_2026, is_active=True),
-            CommitteeMember(committee_id=lc.id, member_id=m["Mr. Arjun Rao"].id, role="Student Representative",
+            CommitteeMember(committee_id=lc.id, member_id=m["Dr. Shyam Sunder Nethi"].id, role="Member",
+                           start_date=start_2024, end_date=end_2026, is_active=True),
+            CommitteeMember(committee_id=lc.id, member_id=m["Mr. K. Arjun Varma"].id, role="Student Representative",
                            start_date=start_2024, end_date=date(2025, 5, 31), is_active=True),
         ]
         
-        all_memberships = ac_members + fc_members + ec_members + icc_members + rac_members + swc_members + lc_members
+        # Anti-Ragging Committee — COMPLIANT
+        arc_members = [
+            CommitteeMember(committee_id=arc_comm.id, member_id=m["Prof. Dr. K. V. Krishna Kishore"].id, role="Chairperson",
+                           start_date=start_2024, end_date=end_2026, is_active=True),
+            CommitteeMember(committee_id=arc_comm.id, member_id=m["Dr. S. V. Phani Kumar"].id, role="Convener",
+                           start_date=start_2024, end_date=end_2026, is_active=True),
+            CommitteeMember(committee_id=arc_comm.id, member_id=m["Dr. N. Veeranjaneyulu"].id, role="Member",
+                           start_date=start_2024, end_date=end_2026, is_active=True),
+            CommitteeMember(committee_id=arc_comm.id, member_id=m["Adv. T. Raghavan"].id, role="Legal Advisor",
+                           start_date=start_2024, end_date=end_2026, is_active=True),
+            CommitteeMember(committee_id=arc_comm.id, member_id=m["Mr. K. Arjun Varma"].id, role="Student Representative",
+                           start_date=start_2024, end_date=date(2025, 5, 31), is_active=True),
+        ]
+        
+        all_memberships = ac_members + fc_members + ec_members + icc_members + rac_members + swc_members + lc_members + arc_members
         db.add_all(all_memberships)
         db.flush()
         
@@ -477,7 +564,7 @@ def seed():
             committee_id=ac.id, title="Academic Council Meeting - August 2026",
             meeting_number=1, meeting_date=date(2026, 8, 10),
             start_time="10:00", end_time="13:00",
-            location="Conference Hall, Admin Block",
+            location="Board Room, Admin Block",
             meeting_mode="OFFLINE", status=MeetingStatus.COMPLETED,
             created_by=registrar.id
         )
@@ -486,7 +573,7 @@ def seed():
             committee_id=ac.id, title="Academic Council Meeting - September 2026",
             meeting_number=2, meeting_date=today + timedelta(days=7),
             start_time="10:00", end_time="13:00",
-            location="Conference Hall, Admin Block",
+            location="Board Room, Admin Block",
             meeting_mode="OFFLINE", status=MeetingStatus.SCHEDULED,
             created_by=registrar.id
         )
@@ -496,7 +583,7 @@ def seed():
             committee_id=fc.id, title="Finance Committee Meeting - Q2 2026",
             meeting_number=1, meeting_date=date(2026, 6, 15),
             start_time="11:00", end_time="14:00",
-            location="Board Room, Admin Block",
+            location="Conference Hall 1, Admin Block",
             meeting_mode="OFFLINE", status=MeetingStatus.COMPLETED,
             created_by=registrar.id
         )
@@ -505,7 +592,7 @@ def seed():
             committee_id=fc.id, title="Finance Committee Meeting - Q3 2026",
             meeting_number=2, meeting_date=today + timedelta(days=15),
             start_time="11:00", end_time="14:00",
-            location="Board Room, Admin Block",
+            location="Conference Hall 1, Admin Block",
             meeting_mode="HYBRID", status=MeetingStatus.SCHEDULED,
             created_by=registrar.id
         )
@@ -582,47 +669,47 @@ def seed():
         
         # Academic Council Meeting 1 — quorum met
         ac_attendance = [
-            MeetingAttendance(meeting_id=ac_meeting1.id, member_id=m["Dr. Rajesh Kumar"].id, attendance_status=AttendanceStatus.PRESENT),
-            MeetingAttendance(meeting_id=ac_meeting1.id, member_id=m["Prof. Anita Sharma"].id, attendance_status=AttendanceStatus.PRESENT),
-            MeetingAttendance(meeting_id=ac_meeting1.id, member_id=m["Dr. Venkat Reddy"].id, attendance_status=AttendanceStatus.PRESENT),
-            MeetingAttendance(meeting_id=ac_meeting1.id, member_id=m["Prof. Srinivas Rao"].id, attendance_status=AttendanceStatus.PRESENT),
-            MeetingAttendance(meeting_id=ac_meeting1.id, member_id=m["Dr. Lakshmi Devi"].id, attendance_status=AttendanceStatus.PRESENT),
-            MeetingAttendance(meeting_id=ac_meeting1.id, member_id=m["Dr. Ravi Shankar"].id, attendance_status=AttendanceStatus.PRESENT),
-            MeetingAttendance(meeting_id=ac_meeting1.id, member_id=m["Dr. Meena Kumari"].id, attendance_status=AttendanceStatus.PRESENT),
-            MeetingAttendance(meeting_id=ac_meeting1.id, member_id=m["Prof. Arun Kumar"].id, attendance_status=AttendanceStatus.PRESENT),
-            MeetingAttendance(meeting_id=ac_meeting1.id, member_id=m["Dr. Sunita Patel"].id, attendance_status=AttendanceStatus.PRESENT),
-            MeetingAttendance(meeting_id=ac_meeting1.id, member_id=m["Dr. Kiran Babu"].id, attendance_status=AttendanceStatus.ABSENT),
-            MeetingAttendance(meeting_id=ac_meeting1.id, member_id=m["Prof. Vijayalakshmi"].id, attendance_status=AttendanceStatus.PRESENT),
-            MeetingAttendance(meeting_id=ac_meeting1.id, member_id=m["Dr. Naresh Babu"].id, attendance_status=AttendanceStatus.PRESENT),
-            MeetingAttendance(meeting_id=ac_meeting1.id, member_id=m["Dr. Padmavathi"].id, attendance_status=AttendanceStatus.EXCUSED),
-            MeetingAttendance(meeting_id=ac_meeting1.id, member_id=m["Prof. Suresh Chandra"].id, attendance_status=AttendanceStatus.PRESENT),
-            MeetingAttendance(meeting_id=ac_meeting1.id, member_id=m["Mr. Arjun Rao"].id, attendance_status=AttendanceStatus.PRESENT),
-            MeetingAttendance(meeting_id=ac_meeting1.id, member_id=m["Ms. Kavitha Reddy"].id, attendance_status=AttendanceStatus.PRESENT),
+            MeetingAttendance(meeting_id=ac_meeting1.id, member_id=m["Prof. Dr. K. V. Krishna Kishore"].id, attendance_status=AttendanceStatus.PRESENT),
+            MeetingAttendance(meeting_id=ac_meeting1.id, member_id=m["Dr. S. V. Phani Kumar"].id, attendance_status=AttendanceStatus.PRESENT),
+            MeetingAttendance(meeting_id=ac_meeting1.id, member_id=m["Dr. N. Veeranjaneyulu"].id, attendance_status=AttendanceStatus.PRESENT),
+            MeetingAttendance(meeting_id=ac_meeting1.id, member_id=m["Dr. P. Siva Prasad"].id, attendance_status=AttendanceStatus.PRESENT),
+            MeetingAttendance(meeting_id=ac_meeting1.id, member_id=m["Dr. S. Deva Kumar"].id, attendance_status=AttendanceStatus.PRESENT),
+            MeetingAttendance(meeting_id=ac_meeting1.id, member_id=m["Dr. B. Yalamanda"].id, attendance_status=AttendanceStatus.PRESENT),
+            MeetingAttendance(meeting_id=ac_meeting1.id, member_id=m["Dr. D. V. S. S. Subrahmanyam"].id, attendance_status=AttendanceStatus.PRESENT),
+            MeetingAttendance(meeting_id=ac_meeting1.id, member_id=m["Dr. D. Sreenu"].id, attendance_status=AttendanceStatus.PRESENT),
+            MeetingAttendance(meeting_id=ac_meeting1.id, member_id=m["Dr. Shaik Shafi"].id, attendance_status=AttendanceStatus.PRESENT),
+            MeetingAttendance(meeting_id=ac_meeting1.id, member_id=m["Dr. R. Prahlad Kumar"].id, attendance_status=AttendanceStatus.ABSENT),
+            MeetingAttendance(meeting_id=ac_meeting1.id, member_id=m["Dr. Satish Kumar Setti"].id, attendance_status=AttendanceStatus.PRESENT),
+            MeetingAttendance(meeting_id=ac_meeting1.id, member_id=m["Dr. M. Sunil Babu"].id, attendance_status=AttendanceStatus.PRESENT),
+            MeetingAttendance(meeting_id=ac_meeting1.id, member_id=m["Dr. E. Deepak Chowdary"].id, attendance_status=AttendanceStatus.EXCUSED),
+            MeetingAttendance(meeting_id=ac_meeting1.id, member_id=m["Dr. J. Veeranjaneyulu"].id, attendance_status=AttendanceStatus.PRESENT),
+            MeetingAttendance(meeting_id=ac_meeting1.id, member_id=m["Mr. K. Arjun Varma"].id, attendance_status=AttendanceStatus.PRESENT),
+            MeetingAttendance(meeting_id=ac_meeting1.id, member_id=m["Ms. P. Sai Harika"].id, attendance_status=AttendanceStatus.PRESENT),
         ]
         db.add_all(ac_attendance)
         
         ac_quorum = QuorumRecord(
-            meeting_id=ac_meeting1.id, required_count=8, eligible_count=17,
-            present_count=13, quorum_met=True,
+            meeting_id=ac_meeting1.id, required_count=8, eligible_count=19,
+            present_count=14, quorum_met=True,
             validated_by=registrar.id, validated_at=datetime(2026, 8, 10, 10, 15)
         )
         db.add(ac_quorum)
         
         # Finance Committee Meeting 1 — quorum met
         fc_attendance = [
-            MeetingAttendance(meeting_id=fc_meeting1.id, member_id=m["Dr. Rajesh Kumar"].id, attendance_status=AttendanceStatus.PRESENT),
-            MeetingAttendance(meeting_id=fc_meeting1.id, member_id=m["Mrs. Sudha Rani"].id, attendance_status=AttendanceStatus.PRESENT),
-            MeetingAttendance(meeting_id=fc_meeting1.id, member_id=m["Prof. Arun Kumar"].id, attendance_status=AttendanceStatus.PRESENT),
-            MeetingAttendance(meeting_id=fc_meeting1.id, member_id=m["Dr. Ravi Shankar"].id, attendance_status=AttendanceStatus.PRESENT),
-            MeetingAttendance(meeting_id=fc_meeting1.id, member_id=m["Mr. Subramaniam"].id, attendance_status=AttendanceStatus.PRESENT),
-            MeetingAttendance(meeting_id=fc_meeting1.id, member_id=m["Prof. Srinivas Rao"].id, attendance_status=AttendanceStatus.PRESENT),
-            MeetingAttendance(meeting_id=fc_meeting1.id, member_id=m["Dr. Meena Kumari"].id, attendance_status=AttendanceStatus.ABSENT),
+            MeetingAttendance(meeting_id=fc_meeting1.id, member_id=m["Prof. Dr. K. V. Krishna Kishore"].id, attendance_status=AttendanceStatus.PRESENT),
+            MeetingAttendance(meeting_id=fc_meeting1.id, member_id=m["Dr. S. V. Phani Kumar"].id, attendance_status=AttendanceStatus.PRESENT),
+            MeetingAttendance(meeting_id=fc_meeting1.id, member_id=m["Dr. P. Siva Prasad"].id, attendance_status=AttendanceStatus.PRESENT),
+            MeetingAttendance(meeting_id=fc_meeting1.id, member_id=m["Dr. B. Yalamanda"].id, attendance_status=AttendanceStatus.PRESENT),
+            MeetingAttendance(meeting_id=fc_meeting1.id, member_id=m["Dr. R. Prahlad Kumar"].id, attendance_status=AttendanceStatus.PRESENT),
+            MeetingAttendance(meeting_id=fc_meeting1.id, member_id=m["Dr. J. Vijetha Ananthi"].id, attendance_status=AttendanceStatus.PRESENT),
+            MeetingAttendance(meeting_id=fc_meeting1.id, member_id=m["Mr. N. S. Ramanathan"].id, attendance_status=AttendanceStatus.PRESENT),
         ]
         db.add_all(fc_attendance)
         
         fc_quorum = QuorumRecord(
             meeting_id=fc_meeting1.id, required_count=5, eligible_count=7,
-            present_count=6, quorum_met=True,
+            present_count=7, quorum_met=True,
             validated_by=registrar.id, validated_at=datetime(2026, 6, 15, 11, 10)
         )
         db.add(fc_quorum)
@@ -637,25 +724,25 @@ def seed():
             # Academic Council actions
             ActionItem(
                 committee_id=ac.id, meeting_id=ac_meeting1.id,
-                title="Finalize new curriculum for B.Tech 2026 batch",
-                description="Review and approve the updated curriculum incorporating NEP 2020 guidelines",
-                owner_id=m["Prof. Anita Sharma"].id,
+                title="Finalize new curriculum for B.Tech CSE 2026 batch",
+                description="Review and approve the updated AI & Data Science specializations incorporating NEP 2020 guidelines",
+                owner_id=m["Dr. S. V. Phani Kumar"].id,
                 due_date=today + timedelta(days=30),
                 priority=ActionPriority.HIGH, status=ActionStatus.IN_PROGRESS
             ),
             ActionItem(
                 committee_id=ac.id, meeting_id=ac_meeting1.id,
                 title="Submit annual academic audit report to UGC",
-                description="Prepare and submit comprehensive academic audit documentation",
-                owner_id=m["Dr. Rajesh Kumar"].id,
+                description="Prepare and submit comprehensive institutional academic audit documentation",
+                owner_id=m["Prof. Dr. K. V. Krishna Kishore"].id,
                 due_date=today + timedelta(days=45),
                 priority=ActionPriority.CRITICAL, status=ActionStatus.PENDING
             ),
             ActionItem(
                 committee_id=ac.id, meeting_id=ac_meeting1.id,
-                title="Review and update examination regulations",
-                description="Update examination regulations to align with NEP 2020",
-                owner_id=m["Dr. Prasad Varma"].id,
+                title="Review and update autonomous examination regulations",
+                description="Update examination continuous assessment policies to align with NBA outcome-based criteria",
+                owner_id=m["Dr. N. Veeranjaneyulu"].id,
                 due_date=today - timedelta(days=5),  # OVERDUE
                 priority=ActionPriority.HIGH, status=ActionStatus.OVERDUE
             ),
@@ -663,25 +750,25 @@ def seed():
             # Finance Committee actions
             ActionItem(
                 committee_id=fc.id, meeting_id=fc_meeting1.id,
-                title="Prepare Q3 2026 budget variance report",
-                description="Analyze and document budget vs actuals for Q3",
-                owner_id=m["Mrs. Sudha Rani"].id,
+                title="Prepare Q3 2026 CSE department lab variance report",
+                description="Analyze and document AI supercomputing lab equipment budget vs actual expenditure",
+                owner_id=m["Dr. J. Vijetha Ananthi"].id,
                 due_date=today + timedelta(days=7),
                 priority=ActionPriority.HIGH, status=ActionStatus.IN_PROGRESS
             ),
             ActionItem(
                 committee_id=fc.id, meeting_id=fc_meeting1.id,
-                title="Process pending faculty salary revisions",
-                description="Implement approved salary revision for teaching staff",
-                owner_id=m["Mrs. Sudha Rani"].id,
+                title="Process faculty research incentive disbursements",
+                description="Implement approved faculty Scopus/SCI publication incentive payments",
+                owner_id=m["Dr. J. Vijetha Ananthi"].id,
                 due_date=today - timedelta(days=10),  # OVERDUE
                 priority=ActionPriority.CRITICAL, status=ActionStatus.OVERDUE
             ),
             ActionItem(
                 committee_id=fc.id, meeting_id=fc_meeting1.id,
-                title="Infrastructure development fund allocation",
-                description="Allocate approved funds for new laboratory infrastructure",
-                owner_id=m["Dr. Rajesh Kumar"].id,
+                title="High performance GPU server cluster fund allocation",
+                description="Allocate approved institutional capital funds for generative AI research servers",
+                owner_id=m["Prof. Dr. K. V. Krishna Kishore"].id,
                 due_date=today + timedelta(days=60),
                 priority=ActionPriority.MEDIUM, status=ActionStatus.PENDING
             ),
@@ -689,25 +776,25 @@ def seed():
             # Research Advisory Committee actions
             ActionItem(
                 committee_id=rac.id,
-                title="Nominate external research expert for RAC",
-                description="Identify and nominate 2 external research experts from academia or industry. Required by AICTE Research Policy.",
-                owner_id=m["Prof. Suresh Chandra"].id,
+                title="Nominate external research experts for RAC",
+                description="Identify and nominate 2 external research experts from IIT/IISc or top R&D organizations. Required by AICTE Research Policy.",
+                owner_id=m["Dr. B. Premamayudu"].id,
                 due_date=today + timedelta(days=20),
                 priority=ActionPriority.CRITICAL, status=ActionStatus.PENDING
             ),
             ActionItem(
                 committee_id=rac.id,
                 title="Appoint research scholar representative to RAC",
-                description="Nominate a PhD research scholar to serve as student representative on RAC.",
-                owner_id=m["Dr. Rajesh Kumar"].id,
+                description="Nominate a PhD research scholar to serve as statutory student representative on RAC.",
+                owner_id=m["Prof. Dr. K. V. Krishna Kishore"].id,
                 due_date=today + timedelta(days=15),
                 priority=ActionPriority.HIGH, status=ActionStatus.PENDING
             ),
             ActionItem(
                 committee_id=rac.id, meeting_id=rac_meeting1.id,
-                title="Submit research publication policy revision",
-                description="Update the research publication policy to include predatory journal list",
-                owner_id=m["Prof. Suresh Chandra"].id,
+                title="Submit revised faculty journal publication guidelines",
+                description="Update university research publication criteria to exclude predatory indexing and reward Q1/Q2 journals",
+                owner_id=m["Dr. B. Premamayudu"].id,
                 due_date=today - timedelta(days=15),  # OVERDUE
                 priority=ActionPriority.HIGH, status=ActionStatus.OVERDUE
             ),
@@ -715,17 +802,17 @@ def seed():
             # Examination Committee actions
             ActionItem(
                 committee_id=ec.id, meeting_id=ec_meeting1.id,
-                title="Submit revised examination timetable for November 2026",
-                description="Finalize and publish the end-semester examination schedule",
-                owner_id=m["Dr. Prasad Varma"].id,
+                title="Submit end-semester examination timetable for November 2026",
+                description="Finalize and publish the institutional end-semester examination schedule and squad rosters",
+                owner_id=m["Dr. N. Veeranjaneyulu"].id,
                 due_date=today + timedelta(days=20),
                 priority=ActionPriority.CRITICAL, status=ActionStatus.IN_PROGRESS
             ),
             ActionItem(
                 committee_id=ec.id, meeting_id=ec_meeting1.id,
-                title="Digitize all examination records pre-2020",
-                description="Scanning and digitization of physical examination records",
-                owner_id=m["Dr. Kiran Babu"].id,
+                title="Digitize valuation records and question bank archives",
+                description="Complete digital encryption of university question paper repository",
+                owner_id=m["Dr. Satish Kumar Setti"].id,
                 due_date=today + timedelta(days=90),
                 priority=ActionPriority.MEDIUM, status=ActionStatus.PENDING
             ),
@@ -733,9 +820,9 @@ def seed():
             # ICC actions
             ActionItem(
                 committee_id=icc.id,
-                title="Conduct POSH awareness training for new faculty",
-                description="Mandatory POSH training for all faculty joining this academic year",
-                owner_id=m["Dr. Lakshmi Devi"].id,
+                title="Conduct POSH statutory awareness workshop for new batch",
+                description="Mandatory POSH induction session for all newly admitted students and staff",
+                owner_id=m["Dr. S. S. S. N. Usha Devi N."].id,
                 due_date=today + timedelta(days=30),
                 priority=ActionPriority.HIGH, status=ActionStatus.PENDING
             ),
@@ -743,17 +830,17 @@ def seed():
             # SWC actions
             ActionItem(
                 committee_id=swc.id, meeting_id=swc_meeting1.id,
-                title="Process pending scholarship applications",
-                description="Review and approve 45 pending scholarship applications for current semester",
-                owner_id=m["Dr. Rajesh Kumar"].id,
+                title="Process merit-cum-means scholarship applications",
+                description="Review and sanction 45 pending merit scholarship disbursements for the semester",
+                owner_id=m["Prof. Dr. K. V. Krishna Kishore"].id,
                 due_date=today + timedelta(days=10),
                 priority=ActionPriority.HIGH, status=ActionStatus.IN_PROGRESS
             ),
             ActionItem(
                 committee_id=swc.id, meeting_id=swc_meeting1.id,
-                title="Setup grievance redressal portal",
-                description="Implement online portal for student grievance submission and tracking",
-                owner_id=m["Dr. Kiran Babu"].id,
+                title="Setup automated student grievance tracking system",
+                description="Integrate online portal for confidential grievance logging and SLA dispatch",
+                owner_id=m["Dr. J. Veeranjaneyulu"].id,
                 due_date=today + timedelta(days=45),
                 priority=ActionPriority.MEDIUM, status=ActionStatus.PENDING
             ),
@@ -761,18 +848,18 @@ def seed():
             # Completed actions
             ActionItem(
                 committee_id=ac.id,
-                title="Submit semester exam results to university",
-                description="Upload and submit final semester results",
-                owner_id=m["Dr. Prasad Varma"].id,
+                title="Submit semester results and grade cards to University Portal",
+                description="Publish semester grade points and issue digital transcripts",
+                owner_id=m["Dr. N. Veeranjaneyulu"].id,
                 due_date=date(2026, 8, 15),
                 priority=ActionPriority.CRITICAL, status=ActionStatus.COMPLETED,
                 completed_at=datetime(2026, 8, 14, 16, 30)
             ),
             ActionItem(
                 committee_id=swc.id,
-                title="Organize freshers orientation program",
-                description="Plan and execute freshman orientation for 2026 batch",
-                owner_id=m["Dr. Ramya Sri"].id,
+                title="Organize University Mahotsav 2026 technical symposium",
+                description="Conducted department hackathon and inter-college coding festival",
+                owner_id=m["Dr. E. Deepak Chowdary"].id,
                 due_date=date(2026, 8, 1),
                 priority=ActionPriority.HIGH, status=ActionStatus.COMPLETED,
                 completed_at=datetime(2026, 7, 31, 18, 0)
@@ -786,19 +873,19 @@ def seed():
         
         audit_logs = [
             AuditLog(user_id=registrar.id, action="committee_created", entity_type="committee",
-                    description="Academic Council created", created_at=datetime(2026, 1, 10, 9, 0)),
+                    description="Academic Council established with UGC compliance charter", created_at=datetime(2026, 1, 10, 9, 0)),
             AuditLog(user_id=registrar.id, action="committee_created", entity_type="committee",
-                    description="Finance Committee created", created_at=datetime(2026, 1, 10, 9, 15)),
+                    description="Finance Committee constituted", created_at=datetime(2026, 1, 10, 9, 15)),
             AuditLog(user_id=registrar.id, action="member_added", entity_type="committee_member",
-                    description="Dr. Rajesh Kumar added as Chairperson to Academic Council", created_at=datetime(2026, 1, 15, 10, 0)),
+                    description="Prof. Dr. K. V. Krishna Kishore appointed as Chairperson to Academic Council", created_at=datetime(2026, 1, 15, 10, 0)),
             AuditLog(user_id=registrar.id, action="meeting_created", entity_type="meeting",
                     description="Academic Council Meeting - August 2026 scheduled", created_at=datetime(2026, 7, 20, 11, 0)),
             AuditLog(user_id=registrar.id, action="attendance_recorded", entity_type="meeting",
                     description="Attendance recorded for Academic Council Meeting - August 2026", created_at=datetime(2026, 8, 10, 10, 30)),
             AuditLog(user_id=registrar.id, action="quorum_validated", entity_type="meeting",
-                    description="Quorum MET: 13/8 for Academic Council Meeting", created_at=datetime(2026, 8, 10, 10, 15)),
+                    description="Quorum MET: 14/8 for Academic Council Meeting", created_at=datetime(2026, 8, 10, 10, 15)),
             AuditLog(user_id=convener.id, action="document_uploaded", entity_type="document",
-                    description="Academic Council Meeting Agenda uploaded", created_at=datetime(2026, 8, 5, 14, 0)),
+                    description="Academic Council Meeting Agenda & Notice circulated", created_at=datetime(2026, 8, 5, 14, 0)),
             AuditLog(user_id=registrar.id, action="compliance_checked", entity_type="committee",
                     description="Compliance check run for Research Advisory Committee: NON_COMPLIANT", created_at=datetime(2026, 9, 1, 9, 0)),
         ]
@@ -811,17 +898,18 @@ def seed():
             UserCommitteeAccess(user_id=convener.id, committee_id=ec.id, access_type=AccessType.CONVENER),
             UserCommitteeAccess(user_id=member_user.id, committee_id=ac.id, access_type=AccessType.MEMBER),
             UserCommitteeAccess(user_id=member_user.id, committee_id=ec.id, access_type=AccessType.MEMBER),
+            UserCommitteeAccess(user_id=member_user.id, committee_id=swc.id, access_type=AccessType.MEMBER),
             UserCommitteeAccess(user_id=member_user.id, committee_id=rac.id, access_type=AccessType.MEMBER),
         ]
         db.add_all(access_records)
         
         db.commit()
-        print("\n[SUCCESS] Seed data created successfully!")
+        print("\n[SUCCESS] Authentic VFSTR Faculty & Committee Member data seeded successfully!")
         print("\nDemo Accounts:")
-        print("  registrar@example.com / Demo@1234  (Registrar - Full Access)")
-        print("  convener@example.com / Demo@1234   (Convener - Committee Access)")
-        print("  member@example.com / Demo@1234     (Member - Read Access)")
-        print("  iqac@example.com / Demo@1234       (IQAC - Compliance Access)")
+        print("  kvkk_cse@vignan.ac.in / Demo@1234  (Registrar - Prof. Dr. K. V. Krishna Kishore)")
+        print("  dsvpk_cse@vignan.ac.in / Demo@1234 (Convener - Dr. S. V. Phani Kumar)")
+        print("  jv_cse@vignan.ac.in / Demo@1234    (Member - Dr. J. Veeranjaneyulu)")
+        print("  edc_cse@vignan.ac.in / Demo@1234   (IQAC - Dr. E. Deepak Chowdary)")
         print("\nCompliance States:")
         print("  Academic Council: COMPLIANT")
         print("  Finance Committee: WARNING (tenure expiring in 18 days)")
@@ -838,4 +926,5 @@ def seed():
 
 
 if __name__ == "__main__":
-    seed()
+    force_flag = "--force" in sys.argv
+    seed(force=force_flag)
