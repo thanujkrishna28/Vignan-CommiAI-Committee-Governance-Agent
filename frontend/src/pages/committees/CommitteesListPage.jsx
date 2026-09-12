@@ -156,62 +156,69 @@ export default function CommitteesListPage() {
   };
 
   const getStatusChip = (status, score) => {
+    const formattedScore = score !== undefined && score !== null ? `${score}%` : '';
     switch (status) {
       case 'COMPLIANT':
         return (
-          <Tooltip title={`Statutory AI Audit Score: ${score || 100}% — All quotas & quorum satisfied`}>
-            <Chip
-              icon={<CompliantIcon sx={{ fontSize: '13px !important', color: '#059669' }} />}
-              label={`COMPLIANT ${score ? `(${score}%)` : '(100%)'}`}
-              size="small"
-              sx={{
-                bgcolor: (theme) => (theme.palette.mode === 'dark' ? 'rgba(16, 185, 129, 0.15)' : '#ECFDF5'),
-                color: '#059669',
-                fontWeight: 800,
-                fontSize: '0.67rem',
-                border: '1px solid rgba(16, 185, 129, 0.35)',
-                boxShadow: '0 1px 3px rgba(16, 185, 129, 0.15)',
-              }}
-            />
-          </Tooltip>
+          <Box
+            sx={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 0.6,
+              px: 1,
+              py: 0.3,
+              borderRadius: '12px',
+              bgcolor: (theme) => (theme.palette.mode === 'dark' ? 'rgba(16, 185, 129, 0.12)' : '#ECFDF5'),
+              color: '#059669',
+              fontSize: '0.7rem',
+              fontWeight: 700,
+            }}
+          >
+            <Box sx={{ width: 6, height: 6, borderRadius: '50%', bgcolor: '#10B981' }} />
+            COMPLIANT {formattedScore ? `(${formattedScore})` : ''}
+          </Box>
         );
       case 'ATTENTION':
       case 'WARNING':
         return (
-          <Tooltip title={`Statutory AI Audit Score: ${score || 70}% — Action or Renewal Recommended`}>
-            <Chip
-              icon={<WarningIcon sx={{ fontSize: '13px !important', color: '#D97706' }} />}
-              label={`ATTENTION ${score ? `(${score}%)` : ''}`}
-              size="small"
-              sx={{
-                bgcolor: (theme) => (theme.palette.mode === 'dark' ? 'rgba(245, 158, 11, 0.15)' : '#FFFBEB'),
-                color: '#D97706',
-                fontWeight: 800,
-                fontSize: '0.67rem',
-                border: '1px solid rgba(245, 158, 11, 0.35)',
-                boxShadow: '0 1px 3px rgba(245, 158, 11, 0.15)',
-              }}
-            />
-          </Tooltip>
+          <Box
+            sx={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 0.6,
+              px: 1,
+              py: 0.3,
+              borderRadius: '12px',
+              bgcolor: (theme) => (theme.palette.mode === 'dark' ? 'rgba(245, 158, 11, 0.12)' : '#FFFBEB'),
+              color: '#D97706',
+              fontSize: '0.7rem',
+              fontWeight: 700,
+            }}
+          >
+            <Box sx={{ width: 6, height: 6, borderRadius: '50%', bgcolor: '#F59E0B' }} />
+            ATTENTION {formattedScore ? `(${formattedScore})` : ''}
+          </Box>
         );
       case 'NON_COMPLIANT':
       default:
         return (
-          <Tooltip title={`Statutory AI Audit Score: ${score || 40}% — Statutory shortfall detected`}>
-            <Chip
-              icon={<ErrorIcon sx={{ fontSize: '13px !important', color: '#DC2626' }} />}
-              label={`NON-COMPLIANT ${score ? `(${score}%)` : ''}`}
-              size="small"
-              sx={{
-                bgcolor: (theme) => (theme.palette.mode === 'dark' ? 'rgba(239, 68, 68, 0.15)' : '#FEF2F2'),
-                color: '#DC2626',
-                fontWeight: 800,
-                fontSize: '0.67rem',
-                border: '1px solid rgba(239, 68, 68, 0.35)',
-                boxShadow: '0 1px 3px rgba(239, 68, 68, 0.15)',
-              }}
-            />
-          </Tooltip>
+          <Box
+            sx={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 0.6,
+              px: 1,
+              py: 0.3,
+              borderRadius: '12px',
+              bgcolor: (theme) => (theme.palette.mode === 'dark' ? 'rgba(239, 68, 68, 0.12)' : '#FEF2F2'),
+              color: '#DC2626',
+              fontSize: '0.7rem',
+              fontWeight: 700,
+            }}
+          >
+            <Box sx={{ width: 6, height: 6, borderRadius: '50%', bgcolor: '#EF4444' }} />
+            NON-COMPLIANT {formattedScore ? `(${formattedScore})` : ''}
+          </Box>
         );
     }
   };
@@ -220,26 +227,20 @@ export default function CommitteesListPage() {
     switch (status) {
       case 'COMPLIANT':
         return {
-          gradient: 'linear-gradient(90deg, #10B981 0%, #059669 100%)',
+          gradient: '#10B981',
           barColor: '#10B981',
-          accentBg: 'rgba(16, 185, 129, 0.08)',
-          borderColor: 'rgba(16, 185, 129, 0.3)',
         };
       case 'ATTENTION':
       case 'WARNING':
         return {
-          gradient: 'linear-gradient(90deg, #F59E0B 0%, #D97706 100%)',
+          gradient: '#F59E0B',
           barColor: '#F59E0B',
-          accentBg: 'rgba(245, 158, 11, 0.08)',
-          borderColor: 'rgba(245, 158, 11, 0.3)',
         };
       case 'NON_COMPLIANT':
       default:
         return {
-          gradient: 'linear-gradient(90deg, #EF4444 0%, #DC2626 100%)',
+          gradient: '#EF4444',
           barColor: '#EF4444',
-          accentBg: 'rgba(239, 68, 68, 0.08)',
-          borderColor: 'rgba(239, 68, 68, 0.3)',
         };
     }
   };
@@ -263,11 +264,11 @@ export default function CommitteesListPage() {
             startIcon={<AddIcon />}
             onClick={() => setOpenModal(true)}
             sx={{
-              fontWeight: 800,
               borderRadius: '12px',
               px: 2.5,
               py: 1,
-              boxShadow: '0 4px 14px rgba(37, 99, 235, 0.3)',
+              fontWeight: 800,
+              boxShadow: '0 4px 14px rgba(37, 99, 235, 0.35)',
             }}
           >
             Constitute Committee
@@ -275,7 +276,7 @@ export default function CommitteesListPage() {
         )}
       </Box>
 
-      {/* Filter and Search Bar */}
+      {/* Filters Bar */}
       <Paper
         elevation={0}
         sx={{
@@ -292,53 +293,58 @@ export default function CommitteesListPage() {
         }}
       >
         <TextField
-          size="small"
-          placeholder="Search by committee name, code, or authority..."
+          placeholder="Search by Committee Name, Code, or Statutory Authority..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          slotProps={{
-            input: {
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon sx={{ color: 'text.secondary', fontSize: 20 }} />
-                </InputAdornment>
-              ),
+          size="small"
+          sx={{
+            flex: { xs: '1 1 100%', md: '1 1 400px' },
+            '& .MuiOutlinedInput-root': {
+              borderRadius: '12px',
             },
           }}
-          sx={{ minWidth: { xs: '100%', sm: 340 } }}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon sx={{ color: 'text.secondary', fontSize: 20 }} />
+              </InputAdornment>
+            ),
+          }}
         />
 
         <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-          {[
-            { id: 'ALL', label: 'All Committees' },
-            { id: 'COMPLIANT', label: 'Compliant' },
-            { id: 'ATTENTION', label: 'Requires Attention' },
-            { id: 'NON_COMPLIANT', label: 'Non-Compliant' },
-          ].map((tab) => (
-            <Chip
-              key={tab.id}
-              label={tab.label}
-              clickable
-              onClick={() => setFilterType(tab.id)}
-              sx={{
-                fontWeight: 700,
-                fontSize: '0.75rem',
-                borderRadius: '8px',
-                bgcolor: filterType === tab.id ? 'primary.main' : 'action.hover',
-                color: filterType === tab.id ? '#FFFFFF' : 'text.primary',
-                '&:hover': {
-                  bgcolor: filterType === tab.id ? 'primary.dark' : 'action.selected',
-                },
-              }}
-            />
-          ))}
+          {['ALL', 'COMPLIANT', 'ATTENTION', 'NON_COMPLIANT'].map((type) => {
+            const isSelected = filterType === type;
+            return (
+              <Chip
+                key={type}
+                label={type.replace('_', ' ')}
+                onClick={() => setFilterType(type)}
+                sx={{
+                  fontWeight: 800,
+                  fontSize: '0.75rem',
+                  borderRadius: '10px',
+                  px: 0.5,
+                  bgcolor: isSelected
+                    ? 'primary.main'
+                    : (theme) => (theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.05)' : '#F1F5F9'),
+                  color: isSelected ? '#FFFFFF' : 'text.secondary',
+                  border: '1px solid',
+                  borderColor: isSelected ? 'primary.main' : 'divider',
+                  '&:hover': {
+                    bgcolor: isSelected ? 'primary.dark' : 'action.hover',
+                  },
+                }}
+              />
+            );
+          })}
         </Box>
       </Paper>
 
-      {/* Committee Cards Grid */}
+      {/* Committees Grid */}
       {loading ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
-          <CircularProgress size={36} />
+          <CircularProgress />
         </Box>
       ) : filtered.length === 0 ? (
         <Paper
@@ -346,15 +352,15 @@ export default function CommitteesListPage() {
           sx={{
             p: 6,
             textAlign: 'center',
-            borderRadius: '16px',
+            borderRadius: '20px',
+            bgcolor: 'background.paper',
             border: '1px dashed',
             borderColor: 'divider',
-            bgcolor: 'background.paper',
           }}
         >
-          <CommitteeIcon sx={{ fontSize: 48, color: 'text.secondary', mb: 1.5, opacity: 0.5 }} />
-          <Typography variant="h6" sx={{ fontWeight: 700, color: 'text.primary' }}>
-            No committees found
+          <CommitteeIcon sx={{ fontSize: 48, color: 'text.secondary', mb: 1, opacity: 0.5 }} />
+          <Typography variant="h6" sx={{ fontWeight: 800, color: 'text.primary', mb: 0.5 }}>
+            No Committees Found
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary' }}>
             Try adjusting your search query or filter criteria.
@@ -371,172 +377,86 @@ export default function CommitteesListPage() {
               <Grid size={{ xs: 12, sm: 6, lg: 4 }} key={committee.id}>
                 <Card
                   sx={{
-                    position: 'relative',
-                    overflow: 'hidden',
-                    p: 3,
+                    p: 2.5,
                     height: '100%',
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'space-between',
-                    borderRadius: '20px',
+                    borderRadius: '16px',
                     bgcolor: 'background.paper',
                     border: '1px solid',
                     borderColor: 'divider',
-                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                    transition: 'all 0.2s ease',
                     boxShadow: (theme) =>
                       theme.palette.mode === 'dark'
-                        ? '0 6px 24px rgba(0, 0, 0, 0.4)'
-                        : '0 4px 18px rgba(15, 23, 42, 0.04)',
+                        ? '0 2px 12px rgba(0, 0, 0, 0.25)'
+                        : '0 2px 8px rgba(15, 23, 42, 0.04)',
                     '&:hover': {
-                      transform: 'translateY(-5px)',
-                      borderColor: colorCfg.borderColor,
+                      transform: 'translateY(-2px)',
+                      borderColor: 'primary.main',
                       boxShadow: (theme) =>
                         theme.palette.mode === 'dark'
-                          ? '0 12px 32px rgba(0, 0, 0, 0.6)'
-                          : '0 12px 28px rgba(37, 99, 235, 0.1)',
-                      '& .action-btn': {
-                        bgcolor: 'primary.main',
-                        color: '#FFF',
-                        borderColor: 'primary.main',
-                        '& .MuiSvgIcon-root': {
-                          transform: 'translateX(4px)',
-                        },
-                      },
+                          ? '0 6px 20px rgba(0, 0, 0, 0.35)'
+                          : '0 6px 16px rgba(37, 99, 235, 0.08)',
                     },
                   }}
                 >
-                  {/* Top Status Gradient Bar */}
-                  <Box
-                    sx={{
-                      position: 'absolute',
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      height: 4,
-                      background: colorCfg.gradient,
-                    }}
-                  />
-
                   <Box>
-                    {/* Card Header: Code Badge + Compliance Status */}
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Box
-                          sx={{
-                            width: 36,
-                            height: 36,
-                            borderRadius: '10px',
-                            background: 'linear-gradient(135deg, rgba(37, 99, 235, 0.15) 0%, rgba(30, 58, 138, 0.25) 100%)',
-                            color: 'primary.main',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            fontWeight: 900,
-                            fontSize: '0.78rem',
-                            letterSpacing: '0.02em',
-                            boxShadow: 'inset 0 1px 2px rgba(255, 255, 255, 0.2)',
-                          }}
-                        >
-                          {committee.code ? committee.code.substring(0, 3) : 'COM'}
-                        </Box>
-                        <Chip
-                          label={committee.code || 'STATUTORY'}
-                          size="small"
-                          sx={{
-                            fontWeight: 800,
-                            fontSize: '0.7rem',
-                            borderRadius: '8px',
-                            bgcolor: (theme) => theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.06)' : '#F1F5F9',
-                            color: 'text.secondary',
-                            border: '1px solid',
-                            borderColor: 'divider',
-                          }}
-                        />
-                      </Box>
+                    {/* Top Row: Code Badge + Compliance Status */}
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          fontWeight: 800,
+                          fontSize: '0.72rem',
+                          color: 'primary.main',
+                          letterSpacing: '0.02em',
+                        }}
+                      >
+                        {committee.code || 'STATUTORY'}
+                      </Typography>
                       {getStatusChip(committee.compliance_status, committee.compliance_score)}
                     </Box>
 
-                    {/* Title & Authority */}
+                    {/* Committee Title */}
                     <Typography
                       variant="h6"
                       sx={{
                         fontWeight: 800,
                         color: 'text.primary',
-                        fontSize: '1.08rem',
+                        fontSize: '1.05rem',
                         lineHeight: 1.35,
-                        mb: 0.8,
-                        letterSpacing: '-0.01em',
+                        mb: 0.5,
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden',
+                        minHeight: '2.7em',
                       }}
                     >
                       {committee.name}
                     </Typography>
 
-                    <Box
+                    {/* Authority Subtitle */}
+                    <Typography
+                      variant="caption"
                       sx={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: 0.6,
-                        px: 1,
-                        py: 0.3,
-                        borderRadius: '6px',
-                        bgcolor: 'rgba(245, 158, 11, 0.08)',
-                        border: '1px solid rgba(245, 158, 11, 0.2)',
-                        mb: 1.6,
+                        color: 'text.secondary',
+                        fontWeight: 500,
+                        fontSize: '0.72rem',
+                        display: 'block',
+                        mb: 1.5,
                       }}
                     >
-                      <GavelIcon sx={{ fontSize: 13, color: '#D97706' }} />
-                      <Typography
-                        variant="caption"
-                        sx={{
-                          color: '#B45309',
-                          fontWeight: 700,
-                          fontSize: '0.72rem',
-                          lineHeight: 1,
-                        }}
-                      >
-                        {committee.authority || 'University Statutory Regulations'}
-                      </Typography>
-                    </Box>
+                      {committee.authority || 'University Statutory Regulations'}
+                    </Typography>
 
-                    {/* Key Officer / Convener Pill */}
-                    <Box
-                      sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 1,
-                        p: 1.2,
-                        mb: 2,
-                        borderRadius: '10px',
-                        bgcolor: (theme) => theme.palette.mode === 'dark' ? 'rgba(30, 41, 59, 0.6)' : '#F8FAFC',
-                        border: '1px solid',
-                        borderColor: 'divider',
-                      }}
-                    >
-                      <Box
-                        sx={{
-                          width: 24,
-                          height: 24,
-                          borderRadius: '50%',
-                          bgcolor: 'primary.main',
-                          color: '#FFF',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          fontSize: '0.65rem',
-                          fontWeight: 800,
-                          flexShrink: 0,
-                        }}
-                      >
-                        {officer.name.split(' ').filter(Boolean).slice(-1)[0]?.[0] || 'O'}
-                      </Box>
-                      <Box sx={{ minWidth: 0, flex: 1 }}>
-                        <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600, fontSize: '0.68rem', display: 'block', lineHeight: 1 }}>
-                          {officer.role}: <strong style={{ color: 'inherit' }}>{officer.name}</strong>
-                        </Typography>
-                        <Typography variant="caption" sx={{ color: 'primary.main', fontWeight: 700, fontSize: '0.68rem', display: 'block', mt: 0.3, lineHeight: 1 }}>
-                          {officer.title}
-                        </Typography>
-                      </Box>
+                    {/* Officer In-charge */}
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8, mb: 1.5 }}>
+                      <PeopleIcon sx={{ fontSize: 15, color: 'text.secondary', opacity: 0.7 }} />
+                      <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.74rem' }}>
+                        {officer.role}: <strong style={{ color: 'text.primary' }}>{officer.name}</strong> ({officer.title})
+                      </Typography>
                     </Box>
 
                     {/* Mandate Description */}
@@ -544,35 +464,61 @@ export default function CommitteesListPage() {
                       variant="body2"
                       sx={{
                         color: 'text.secondary',
-                        fontSize: '0.82rem',
-                        lineHeight: 1.55,
+                        fontSize: '0.8rem',
+                        lineHeight: 1.5,
                         mb: 2,
                         display: '-webkit-box',
                         WebkitLineClamp: 2,
                         WebkitBoxOrient: 'vertical',
                         overflow: 'hidden',
-                        minHeight: '2.5em',
+                        minHeight: '2.4em',
                       }}
                     >
-                      {committee.mandate || committee.description || 'Mandated to maintain statutory governance and institutional decision compliance.'}
+                      {committee.mandate ||
+                        committee.description ||
+                        'Mandated to maintain statutory governance and institutional decision compliance.'}
                     </Typography>
 
-                    {/* AI Compliance Health Bar */}
-                    <Box sx={{ mb: 2.2 }}>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.6 }}>
-                        <Typography variant="caption" sx={{ fontWeight: 700, fontSize: '0.68rem', color: 'text.secondary' }}>
+                    {/* Statutory Health Index Bar */}
+                    <Box sx={{ mb: 2 }}>
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          mb: 0.5,
+                        }}
+                      >
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            fontWeight: 600,
+                            fontSize: '0.68rem',
+                            color: 'text.secondary',
+                          }}
+                        >
                           Statutory Health Index
                         </Typography>
-                        <Typography variant="caption" sx={{ fontWeight: 800, fontSize: '0.72rem', color: colorCfg.barColor }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            fontWeight: 800,
+                            fontSize: '0.72rem',
+                            color: colorCfg.barColor,
+                          }}
+                        >
                           {scoreVal}%
                         </Typography>
                       </Box>
                       <Box
                         sx={{
                           width: '100%',
-                          height: 5,
+                          height: 4,
                           borderRadius: '4px',
-                          bgcolor: (theme) => theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.08)' : '#E2E8F0',
+                          bgcolor: (theme) =>
+                            theme.palette.mode === 'dark'
+                              ? 'rgba(255, 255, 255, 0.08)'
+                              : '#E2E8F0',
                           overflow: 'hidden',
                         }}
                       >
@@ -580,9 +526,9 @@ export default function CommitteesListPage() {
                           sx={{
                             width: `${Math.min(100, Math.max(10, scoreVal))}%`,
                             height: '100%',
-                            background: colorCfg.gradient,
+                            bgcolor: colorCfg.barColor,
                             borderRadius: '4px',
-                            transition: 'width 0.6s ease',
+                            transition: 'width 0.3s ease',
                           }}
                         />
                       </Box>
@@ -591,37 +537,52 @@ export default function CommitteesListPage() {
 
                   {/* Footer Section */}
                   <Box>
-                    <Divider sx={{ mb: 1.8 }} />
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8, color: 'text.secondary' }}>
-                        <PeopleIcon sx={{ fontSize: 16, color: 'primary.main' }} />
-                        <Typography variant="caption" sx={{ fontWeight: 700, fontSize: '0.75rem', color: 'text.primary' }}>
-                          {committee.member_count || 8} Members
-                        </Typography>
-                      </Box>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8, color: 'text.secondary' }}>
-                        <EventIcon sx={{ fontSize: 16, color: 'primary.main' }} />
-                        <Typography variant="caption" sx={{ fontWeight: 700, fontSize: '0.75rem', color: 'text.primary' }}>
-                          {committee.meeting_frequency || 2}x / {(committee.frequency_unit || 'YEAR').toLowerCase()}
-                        </Typography>
-                      </Box>
+                    <Divider sx={{ mb: 1.5 }} />
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        mb: 1.5,
+                      }}
+                    >
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          fontWeight: 600,
+                          fontSize: '0.74rem',
+                          color: 'text.secondary',
+                        }}
+                      >
+                        {committee.member_count || 8} Members
+                      </Typography>
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          fontWeight: 600,
+                          fontSize: '0.74rem',
+                          color: 'text.secondary',
+                        }}
+                      >
+                        {committee.meeting_frequency || 2}x /{' '}
+                        {(committee.frequency_unit || 'YEAR').toLowerCase()}
+                      </Typography>
                     </Box>
 
                     <Button
-                      className="action-btn"
                       variant="outlined"
                       fullWidth
                       component={Link}
                       to={`/committees/${committee.id}`}
-                      endIcon={<ArrowIcon sx={{ transition: 'transform 0.2s ease' }} />}
+                      endIcon={<ArrowIcon sx={{ fontSize: 16 }} />}
                       sx={{
-                        borderRadius: '12px',
-                        fontWeight: 800,
+                        borderRadius: '8px',
+                        fontWeight: 700,
                         textTransform: 'none',
-                        py: 0.9,
-                        fontSize: '0.84rem',
+                        py: 0.75,
+                        fontSize: '0.82rem',
                         borderColor: 'divider',
-                        transition: 'all 0.2s ease',
+                        color: 'primary.main',
                       }}
                     >
                       View Committee Details

@@ -271,7 +271,7 @@ export default function CommitteeDetailPage() {
           </Typography>
 
           <Grid container spacing={3}>
-            <Grid item xs={12} md={4}>
+            <Grid size={{ xs: 12, md: 4 }}>
               <Paper variant="outlined" sx={{ p: 2.5, borderRadius: 2 }}>
                 <Typography variant="caption" sx={{ fontWeight: 700, color: '#64748B' }}>
                   Composition Health
@@ -284,7 +284,7 @@ export default function CommitteeDetailPage() {
                 </Typography>
               </Paper>
             </Grid>
-            <Grid item xs={12} md={4}>
+            <Grid size={{ xs: 12, md: 4 }}>
               <Paper variant="outlined" sx={{ p: 2.5, borderRadius: 2 }}>
                 <Typography variant="caption" sx={{ fontWeight: 700, color: '#64748B' }}>
                   Meeting Frequency
@@ -297,7 +297,7 @@ export default function CommitteeDetailPage() {
                 </Typography>
               </Paper>
             </Grid>
-            <Grid item xs={12} md={4}>
+            <Grid size={{ xs: 12, md: 4 }}>
               <Paper variant="outlined" sx={{ p: 2.5, borderRadius: 2 }}>
                 <Typography variant="caption" sx={{ fontWeight: 700, color: '#64748B' }}>
                   Tenure Integrity

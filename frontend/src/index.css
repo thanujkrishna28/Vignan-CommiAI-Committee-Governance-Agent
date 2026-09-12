@@ -51,12 +51,52 @@ html.dark ::-webkit-scrollbar-thumb:hover {
 }
 
 @media print {
-  nav, header, .no-print, button {
+  @page {
+    size: A4 portrait;
+    margin: 10mm 12mm;
+  }
+  
+  html, body {
+    background: #FFFFFF !important;
+    color: #0F172A !important;
+    font-size: 11pt !important;
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  nav, header, aside, .no-print, button, .MuiDrawer-root, .MuiAppBar-root {
     display: none !important;
   }
+
   main {
     margin: 0 !important;
     padding: 0 !important;
     width: 100% !important;
+    max-width: 100% !important;
+    background: #FFFFFF !important;
+    color: #0F172A !important;
+    overflow: visible !important;
+  }
+
+  .print-avoid-break, tr, tbody, .signature-container, .certification-block {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  table {
+    page-break-inside: auto;
+    width: 100% !important;
+    border-collapse: collapse !important;
+  }
+
+  thead {
+    display: table-header-group !important;
+  }
+
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    box-shadow: none !important;
   }
 }

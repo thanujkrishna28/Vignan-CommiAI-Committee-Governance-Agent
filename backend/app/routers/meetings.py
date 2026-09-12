@@ -48,11 +48,12 @@ async def list_meetings(
     committee_id: Optional[str] = None,
     status: Optional[str] = None,
     upcoming: Optional[bool] = None,
+    search: Optional[str] = None,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
     from app.utils.cache import cache
-    cache_key = f"meetings:{current_user.id}:{committee_id}:{status}:{upcoming}"
+    cache_key = f"meetings:{current_user.id}:{committee_id}:{status}:{upcoming}:{search}"
     cached = cache.get(cache_key)
     if cached is not None:
         return cached
@@ -64,6 +65,8 @@ async def list_meetings(
         q = q.filter(Meeting.committee_id == committee_id)
     if status:
         q = q.filter(Meeting.status == status)
+    if search:
+        q = q.filter(Meeting.title.ilike(f"%{search}%"))
     
     today = date.today()
     if upcoming:

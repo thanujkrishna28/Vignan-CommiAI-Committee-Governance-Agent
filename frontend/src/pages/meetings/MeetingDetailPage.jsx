@@ -222,7 +222,7 @@ export default function MeetingDetailPage() {
         }}
       >
         <Grid container spacing={3} alignItems="center">
-          <Grid item xs={12} md={7}>
+          <Grid size={{ xs: 12, md: 7 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
               <Box
                 sx={{
@@ -252,7 +252,7 @@ export default function MeetingDetailPage() {
             </Box>
           </Grid>
 
-          <Grid item xs={12} md={5} sx={{ display: 'flex', justifyContent: { xs: 'flex-start', md: 'flex-end' }, gap: 1.5 }}>
+          <Grid size={{ xs: 12, md: 5 }} sx={{ display: 'flex', justifyContent: { xs: 'flex-start', md: 'flex-end' }, gap: 1.5 }}>
             {!quorumMet && isExecutive && (
               <Button
                 variant="outlined"

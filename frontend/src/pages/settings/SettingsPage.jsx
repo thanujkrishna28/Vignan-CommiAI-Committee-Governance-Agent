@@ -202,7 +202,7 @@ export default function SettingsPage() {
           </Box>
 
           <Grid container spacing={2.5}>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
                 label="University Name"
                 fullWidth
@@ -211,7 +211,7 @@ export default function SettingsPage() {
                 size="small"
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
                 label="Statutory Accreditation / AISHE Code"
                 fullWidth
@@ -220,7 +220,7 @@ export default function SettingsPage() {
                 size="small"
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
                 label="Vice Chancellor"
                 fullWidth
@@ -229,7 +229,7 @@ export default function SettingsPage() {
                 size="small"
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
                 label="Registrar"
                 fullWidth
@@ -238,7 +238,7 @@ export default function SettingsPage() {
                 size="small"
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
                 label="Dean Academics"
                 fullWidth
@@ -247,7 +247,7 @@ export default function SettingsPage() {
                 size="small"
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
                 label="IQAC Director"
                 fullWidth
@@ -256,7 +256,7 @@ export default function SettingsPage() {
                 size="small"
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
                 label="Official Campus Domain"
                 fullWidth
@@ -265,7 +265,7 @@ export default function SettingsPage() {
                 size="small"
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
                 label="Academic Year"
                 fullWidth
@@ -309,7 +309,7 @@ export default function SettingsPage() {
           </Box>
 
           <Grid container spacing={2.5}>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
                 label="Minimum Quorum Percentage (%)"
                 type="number"
@@ -320,7 +320,7 @@ export default function SettingsPage() {
                 helperText="Statutory minimum attendance required to legally begin proceedings."
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
                 label="Mandatory External Members"
                 type="number"
@@ -331,7 +331,7 @@ export default function SettingsPage() {
                 helperText="Required industry/external academic experts on key statutory bodies."
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
                 label="Minimum Notice Period (Days)"
                 type="number"
@@ -342,7 +342,7 @@ export default function SettingsPage() {
                 helperText="Lead time for convening ordinary statutory meetings."
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
                 label="Emergency Meeting Notice (Days)"
                 type="number"
@@ -353,7 +353,7 @@ export default function SettingsPage() {
                 helperText="Lead time for urgent / extraordinary committee sessions."
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <FormControlLabel
                 control={
                   <Switch
@@ -364,7 +364,7 @@ export default function SettingsPage() {
                 label="Cryptographic Lock on Chair Sign-Off (Tamper-Proof)"
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <FormControlLabel
                 control={
                   <Switch
@@ -403,7 +403,7 @@ export default function SettingsPage() {
           </Box>
 
           <Grid container spacing={2.5}>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
                 label="Official Institutional Sender Email"
                 fullWidth
@@ -412,7 +412,7 @@ export default function SettingsPage() {
                 size="small"
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
                 label="Sender Display Name"
                 fullWidth
@@ -421,7 +421,7 @@ export default function SettingsPage() {
                 size="small"
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <FormControlLabel
                 control={
                   <Switch
@@ -432,7 +432,7 @@ export default function SettingsPage() {
                 label="Enable Real-Time Institutional Email Delivery"
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <FormControlLabel
                 control={
                   <Switch
@@ -466,7 +466,7 @@ export default function SettingsPage() {
           </Typography>
 
           <Grid container spacing={2.5}>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <FormControl fullWidth size="small">
                 <InputLabel>Primary LLM Engine</InputLabel>
                 <Select
@@ -479,7 +479,7 @@ export default function SettingsPage() {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <FormControl fullWidth size="small">
                 <InputLabel>Minutes Summarization Depth</InputLabel>
                 <Select
@@ -493,7 +493,7 @@ export default function SettingsPage() {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={12}>
+            <Grid size={12}>
               <FormControlLabel
                 control={
                   <Switch
@@ -504,7 +504,7 @@ export default function SettingsPage() {
                 label="Autonomous Instant Draft Generation upon Meeting Conclusion"
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid size={12}>
               <FormControlLabel
                 control={
                   <Switch
@@ -538,15 +538,15 @@ export default function SettingsPage() {
           </Typography>
 
           <Grid container spacing={2}>
-            <Grid item xs={12}>
+            <Grid size={12}>
               <Alert severity="success" sx={{ borderRadius: '12px' }}>
                 All ratified minutes are protected with SHA-256 digital seals verified against the Vignan Institutional Audit Ledger.
               </Alert>
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <TextField label="Session Inactivity Timeout (Minutes)" defaultValue="30" fullWidth size="small" />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <TextField label="Registrar IP Whitelist" defaultValue="172.16.0.0/16, 10.20.0.0/16" fullWidth size="small" />
             </Grid>
           </Grid>

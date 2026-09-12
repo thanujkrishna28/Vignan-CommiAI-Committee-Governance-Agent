@@ -361,6 +361,10 @@ export const documentsApi = {
     });
     return res.data;
   },
+  getPreview: async (id) => {
+    const res = await api.get(`/documents/${id}/preview`);
+    return res.data;
+  },
   delete: async (id) => {
     const res = await api.delete(`/documents/${id}`);
     return res.data;

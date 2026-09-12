@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from app.database import get_db
-from app.models import Document, Committee, User, UserRole, AuditLog, DocumentCategory
+from app.models import Document, Committee, User, UserRole, AuditLog, DocumentCategory, DocumentChunk
 from app.auth.auth import get_current_user, require_role
 from app.services.cloudinary_service import upload_document, delete_document, is_cloudinary_configured, ALLOWED_EXTENSIONS, MAX_FILE_SIZE
 from app.services.document_processor import extract_text
@@ -36,6 +36,7 @@ async def list_documents(
     docs = q.order_by(Document.created_at.desc()).all()
     result = []
     for d in docs:
+        cat_str = d.category.value if hasattr(d.category, "value") else str(d.category).replace("DocumentCategory.", "") if d.category else "OTHER"
         result.append({
             "id": d.id,
             "name": d.name,
@@ -45,8 +46,8 @@ async def list_documents(
             "file_size": d.file_size,
             "cloudinary_url": d.cloudinary_url,
             "file_url": d.cloudinary_url,
-            "category": str(d.category) if d.category else "OTHER",
-            "doc_type": str(d.category) if d.category else "OTHER",
+            "category": cat_str,
+            "doc_type": cat_str,
             "description": d.description,
             "summary": d.description,
             "committee_id": d.committee_id,
@@ -162,7 +163,40 @@ async def upload_doc(
         "cloudinary_url": doc.cloudinary_url,
         "file_url": doc.cloudinary_url,
         "is_indexed": doc.is_indexed,
-        "category": str(doc.category) if doc.category else "OTHER"
+        "category": doc.category.value if hasattr(doc.category, "value") else str(doc.category).replace("DocumentCategory.", "") if doc.category else "OTHER"
+    }
+
+
+@router.get("/{document_id}/preview", response_model=dict)
+async def get_document_preview(
+    document_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    doc = db.query(Document).filter(Document.id == document_id).first()
+    if not doc:
+        raise HTTPException(status_code=404, detail="Document not found")
+    
+    chunks = db.query(DocumentChunk).filter(DocumentChunk.document_id == document_id).order_by(DocumentChunk.chunk_index.asc()).all()
+    chunk_texts = [c.content for c in chunks] if chunks else []
+    
+    cat_str = doc.category.value if hasattr(doc.category, "value") else str(doc.category).replace("DocumentCategory.", "") if doc.category else "OTHER"
+    
+    return {
+        "id": doc.id,
+        "name": doc.name,
+        "filename": doc.original_filename or doc.name,
+        "file_type": doc.file_type,
+        "file_size": doc.file_size,
+        "file_url": doc.cloudinary_url,
+        "cloudinary_url": doc.cloudinary_url,
+        "category": cat_str,
+        "description": doc.description,
+        "is_indexed": doc.is_indexed,
+        "created_at": str(doc.created_at) if doc.created_at else None,
+        "committee_name": doc.committee.name if doc.committee else None,
+        "chunks_count": len(chunks),
+        "text_preview": "\n\n".join(chunk_texts[:30]) if chunk_texts else (doc.description or "No extracted text preview available.")
     }
 
 
