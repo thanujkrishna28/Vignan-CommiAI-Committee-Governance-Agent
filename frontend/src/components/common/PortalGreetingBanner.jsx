@@ -43,8 +43,8 @@ export default function PortalGreetingBanner({
       sx={{
         position: 'relative',
         overflow: 'hidden',
-        borderRadius: '20px',
-        p: { xs: 2.5, sm: 3, md: 3.2 },
+        borderRadius: '18px',
+        p: { xs: 2, sm: 2.2, md: 2.5 },
         border: '1.5px solid',
         borderColor: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(226, 232, 240, 0.85)',
         backgroundColor: isDark ? '#0B132B' : '#F8FAFC',
@@ -57,8 +57,9 @@ export default function PortalGreetingBanner({
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
-        gap: 2,
-        minHeight: { xs: 'auto', md: 165 },
+        gap: 1.2,
+        height: '100%',
+        minHeight: { xs: 'auto', md: 140 },
       }}
     >
       {/* Right Side Campus Image with Smooth Fade */}
@@ -71,11 +72,11 @@ export default function PortalGreetingBanner({
           right: 0,
           top: 0,
           bottom: 0,
-          width: { xs: '55%', sm: '48%', md: '42%' },
+          width: { xs: '55%', sm: '46%', md: '38%' },
           height: '100%',
           objectFit: 'cover',
           objectPosition: 'center',
-          opacity: isDark ? 0.32 : 0.88,
+          opacity: isDark ? 0.30 : 0.85,
           maskImage: 'linear-gradient(to right, transparent 0%, rgba(0,0,0,0.4) 25%, rgba(0,0,0,1) 80%)',
           WebkitMaskImage: 'linear-gradient(to right, transparent 0%, rgba(0,0,0,0.4) 25%, rgba(0,0,0,1) 80%)',
           pointerEvents: 'none',
@@ -96,46 +97,52 @@ export default function PortalGreetingBanner({
         }}
       >
         {/* Left Side: Dynamic Greeting & Institutional Status */}
-        <Box sx={{ maxWidth: { xs: '100%', sm: '65%', md: '60%' } }}>
+        <Box sx={{ maxWidth: { xs: '100%', sm: '68%', md: '65%' } }}>
           {badgeText && (
             <Chip
               label={badgeText}
               size="small"
               sx={{
-                mb: 1,
+                mb: 0.6,
                 bgcolor: isDark ? `${accentColor}25` : `${accentColor}15`,
                 color: accentColor,
                 fontWeight: 800,
-                fontSize: '0.68rem',
+                fontSize: '0.67rem',
                 border: `1px solid ${accentColor}40`,
-                letterSpacing: '0.04em',
+                letterSpacing: '0.03em',
+                height: 22,
               }}
             />
           )}
 
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
-            <Typography
-              variant="h4"
-              sx={{
-                fontWeight: 900,
-                color: 'text.primary',
-                letterSpacing: '-0.03em',
-                fontSize: { xs: '1.4rem', sm: '1.75rem', md: '2.05rem' },
-                lineHeight: 1.2,
-              }}
-            >
+          <Typography
+            variant="h4"
+            sx={{
+              fontWeight: 800,
+              color: 'text.primary',
+              letterSpacing: '-0.02em',
+              fontSize: { xs: '1.2rem', sm: '1.38rem', md: '1.55rem' },
+              lineHeight: 1.25,
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 0.8,
+              flexWrap: 'wrap',
+            }}
+          >
+            <span>
               {timeGreeting},{' '}
-              <Box component="span" sx={{ color: accentColor }}>
+              <Box component="span" sx={{ color: accentColor, fontWeight: 900 }}>
                 {roleTitle}
               </Box>
-            </Typography>
+            </span>
             <Typography
               component="span"
               sx={{
-                fontSize: { xs: '1.4rem', sm: '1.75rem', md: '2.05rem' },
+                fontSize: { xs: '1.2rem', sm: '1.38rem', md: '1.55rem' },
                 animation: 'wave 2s infinite',
                 display: 'inline-block',
                 transformOrigin: '70% 70%',
+                lineHeight: 1,
                 '@keyframes wave': {
                   '0%': { transform: 'rotate(0deg)' },
                   '10%': { transform: 'rotate(14deg)' },
@@ -150,23 +157,23 @@ export default function PortalGreetingBanner({
             >
               👋
             </Typography>
-          </Box>
+          </Typography>
 
           <Typography
-            variant="body1"
+            variant="body2"
             sx={{
               color: 'text.secondary',
-              mt: 0.8,
-              fontSize: { xs: '0.85rem', sm: '0.94rem' },
+              mt: 0.4,
+              fontSize: { xs: '0.78rem', sm: '0.84rem' },
               fontWeight: 500,
-              lineHeight: 1.5,
+              lineHeight: 1.4,
             }}
           >
             {statusText}
           </Typography>
 
           {actionButtons && (
-            <Box sx={{ display: 'flex', gap: 1.5, mt: 1.8, flexWrap: 'wrap' }}>
+            <Box sx={{ display: 'flex', gap: 1.2, mt: 1.4, flexWrap: 'wrap' }}>
               {actionButtons}
             </Box>
           )}
@@ -176,14 +183,14 @@ export default function PortalGreetingBanner({
         <Paper
           elevation={0}
           sx={{
-            p: '10px 18px',
-            borderRadius: '16px',
+            p: '8px 14px',
+            borderRadius: '14px',
             bgcolor: isDark ? 'rgba(15, 23, 42, 0.90)' : 'rgba(255, 255, 255, 0.95)',
             border: '1px solid',
             borderColor: isDark ? 'rgba(255, 255, 255, 0.12)' : 'rgba(226, 232, 240, 0.95)',
             boxShadow: isDark
-              ? '0 8px 24px rgba(0, 0, 0, 0.4)'
-              : '0 6px 20px rgba(37, 99, 235, 0.08)',
+              ? '0 6px 20px rgba(0, 0, 0, 0.35)'
+              : '0 4px 16px rgba(37, 99, 235, 0.06)',
             display: 'flex',
             flexDirection: 'column',
             alignItems: { xs: 'flex-start', sm: 'flex-end' },
@@ -196,19 +203,19 @@ export default function PortalGreetingBanner({
             sx={{
               color: 'text.secondary',
               fontWeight: 700,
-              fontSize: '0.74rem',
+              fontSize: '0.7rem',
               textTransform: 'capitalize',
             }}
           >
             {dayOfWeek}
           </Typography>
           <Typography
-            variant="subtitle1"
+            variant="subtitle2"
             sx={{
-              fontWeight: 900,
+              fontWeight: 800,
               color: 'text.primary',
-              fontSize: '0.92rem',
-              letterSpacing: '0.02em',
+              fontSize: '0.86rem',
+              letterSpacing: '0.01em',
               fontVariantNumeric: 'tabular-nums',
             }}
           >
@@ -221,7 +228,7 @@ export default function PortalGreetingBanner({
       {quoteText && (
         <Box
           sx={{
-            pt: 1.2,
+            pt: 0.8,
             borderTop: '1px solid',
             borderColor: isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(226, 232, 240, 0.7)',
             display: 'flex',
@@ -237,9 +244,9 @@ export default function PortalGreetingBanner({
             variant="caption"
             sx={{
               fontStyle: 'italic',
-              fontWeight: 600,
+              fontWeight: 500,
               color: isDark ? '#94A3B8' : '#64748B',
-              fontSize: '0.78rem',
+              fontSize: '0.74rem',
             }}
           >
             {quoteText}

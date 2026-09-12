@@ -57,9 +57,9 @@ export default function ConvenerDashboard() {
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, width: '100%' }}>
       {/* Convener Header Banner */}
       <PortalGreetingBanner
-        roleTitle="Dr. S. V. Phani Kumar"
-        badgeText="CONVENER • PROFESSOR & HOD, CSE"
-        statusText="Academic Council & Statutory Committee Operations • Prepare meeting notices, conduct sessions with real-time quorum validation, and draft official minutes."
+        roleTitle="Convener"
+        badgeText="Dr. S. V. Phani Kumar • HoD, CSE"
+        statusText="Academic Council & Statutory Committee Operations • Prepare meeting notices, conduct sessions, and draft official minutes."
         quoteText="“Procedural Precision. Statutory Rigor. Streamlined Governance.” — Vignan CommiAI Governance Engine"
         accentColor="#D97706"
         actionButtons={

@@ -36,9 +36,9 @@ export default function MemberDashboard() {
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, width: '100%' }}>
       {/* Member Header Banner */}
       <PortalGreetingBanner
-        roleTitle="Dr. J. Veeranjaneyulu"
-        badgeText="COMMITTEE MEMBER • ASST. PROFESSOR, CSE"
-        statusText="Asst. Professor CSE • Member Workspace & Action Desk • Access committee agenda papers, track your assigned institutional action items, and confirm meeting attendance."
+        roleTitle="Committee Member"
+        badgeText="Dr. J. Veeranjaneyulu • Asst. Prof., CSE"
+        statusText="Member Workspace & Action Desk • Access committee agenda papers, track assigned action items, and confirm meeting attendance."
         quoteText="“Collaborative Deliberation. Timely Execution. Academic Excellence.” — Vignan CommiAI Governance Engine"
         accentColor="#0284C7"
         actionButtons={
