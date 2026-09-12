@@ -86,9 +86,17 @@ async def upload_doc(
     
     doc_name = name.strip() if (name and name.strip()) else orig_filename
     
-    # Normalize category enum
-    category_val = DocumentCategory.OTHER
-    if category:
+    # Normalize category to safe database enum
+    category_map = {
+        "STATUTORY_ACT": DocumentCategory.REGULATION,
+        "REGULATORY_GUIDELINE": DocumentCategory.REGULATION,
+        "POLICY_ORDER": DocumentCategory.POLICY,
+        "RATIFIED_MINUTES": DocumentCategory.MINUTES,
+        "ACCREDITATION_EVIDENCE": DocumentCategory.EVIDENCE,
+    }
+    if category in category_map:
+        category_val = category_map[category]
+    else:
         try:
             category_val = DocumentCategory(category)
         except (ValueError, KeyError):

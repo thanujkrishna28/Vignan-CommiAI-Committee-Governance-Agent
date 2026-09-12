@@ -52,6 +52,8 @@ fastapi_app = FastAPI(
     lifespan=lifespan
 )
 
+from fastapi.responses import JSONResponse
+
 # Permissive CORS for Vercel frontends, Render, local dev, and custom domains
 fastapi_app.add_middleware(
     CORSMiddleware,
@@ -64,6 +66,22 @@ fastapi_app.add_middleware(
 )
 
 
+@fastapi_app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    logger.error(f"Global unhandled exception on {request.method} {request.url.path}: {exc}", exc_info=True)
+    origin = request.headers.get("origin") or "*"
+    return JSONResponse(
+        status_code=500,
+        content={"detail": f"Server Error: {str(exc)}"},
+        headers={
+            "Access-Control-Allow-Origin": origin,
+            "Access-Control-Allow-Credentials": "true",
+            "Access-Control-Allow-Methods": "*",
+            "Access-Control-Allow-Headers": "*",
+        }
+    )
+
+
 @fastapi_app.middleware("http")
 async def api_prefix_fallback_middleware(request: Request, call_next):
     # If frontend sends requests to /auth/login or /committees instead of /api/..., rewrite scope path
@@ -71,8 +89,22 @@ async def api_prefix_fallback_middleware(request: Request, call_next):
     non_api_exempt = ("/health", "/docs", "/openapi.json", "/redoc", "/socket.io")
     if not path.startswith("/api") and path != "/" and not any(path.startswith(prefix) for prefix in non_api_exempt):
         request.scope["path"] = f"/api{path}"
-    response = await call_next(request)
-    return response
+    try:
+        response = await call_next(request)
+        return response
+    except Exception as exc:
+        logger.error(f"Middleware caught unhandled exception on {request.method} {path}: {exc}", exc_info=True)
+        origin = request.headers.get("origin") or "*"
+        return JSONResponse(
+            status_code=500,
+            content={"detail": f"Server Error: {str(exc)}"},
+            headers={
+                "Access-Control-Allow-Origin": origin,
+                "Access-Control-Allow-Credentials": "true",
+                "Access-Control-Allow-Methods": "*",
+                "Access-Control-Allow-Headers": "*",
+            }
+        )
 
 # Include routers
 fastapi_app.include_router(auth.router)

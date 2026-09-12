@@ -43,17 +43,18 @@ def get_user_notifications(
 ):
     """Fetches in-app notifications for the logged in user or admin."""
     query = db.query(Notification)
-    if current_user.role not in [UserRole.REGISTRAR, UserRole.ADMIN, UserRole.IQAC]:
+    if current_user.role not in [UserRole.REGISTRAR, UserRole.IQAC]:
         query = query.filter(Notification.user_id == current_user.id)
     
     if unread_only:
         query = query.filter(Notification.is_read == False)
 
     notifications = query.order_by(Notification.created_at.desc()).limit(limit).all()
-    unread_count = db.query(Notification).filter(
-        Notification.user_id == current_user.id if current_user.role not in [UserRole.REGISTRAR, UserRole.ADMIN] else True,
-        Notification.is_read == False
-    ).count()
+    
+    unread_query = db.query(Notification).filter(Notification.is_read == False)
+    if current_user.role not in [UserRole.REGISTRAR, UserRole.IQAC]:
+        unread_query = unread_query.filter(Notification.user_id == current_user.id)
+    unread_count = unread_query.count()
 
     return {
         "unread_count": unread_count,
@@ -133,7 +134,7 @@ def retry_email(
     current_user: User = Depends(get_current_user),
 ):
     """Retries sending a failed email."""
-    if current_user.role not in [UserRole.REGISTRAR, UserRole.ADMIN, UserRole.IQAC, UserRole.CONVENER]:
+    if current_user.role not in [UserRole.REGISTRAR, UserRole.IQAC, UserRole.CONVENER]:
         raise HTTPException(status_code=403, detail="Not authorized to retry email dispatch")
     
     result = retry_failed_email_log(log_id, db)
@@ -163,8 +164,8 @@ def update_automation_rule(
     current_user: User = Depends(get_current_user),
 ):
     """Enables or disables an automation rule."""
-    if current_user.role not in [UserRole.REGISTRAR, UserRole.ADMIN]:
-        raise HTTPException(status_code=403, detail="Only Registrar or Admin can modify global automation rules")
+    if current_user.role not in [UserRole.REGISTRAR, UserRole.IQAC]:
+        raise HTTPException(status_code=403, detail="Only Registrar can modify global automation rules")
     
     rule = db.query(NotificationRule).filter(NotificationRule.id == rule_id).first()
     if not rule:
