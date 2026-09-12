@@ -1,0 +1,11 @@
+from app.routers.auth import router as auth_router
+from app.routers.users import router as users_router
+from app.routers.committees import router as committees_router
+from app.routers.members import router as members_router
+from app.routers.meetings import router as meetings_router
+from app.routers.minutes import router as minutes_router
+from app.routers.actions import router as actions_router
+from app.routers.documents import router as documents_router
+from app.routers.compliance import router as compliance_router
+from app.routers.ai import router as ai_router
+from app.routers.reports import router as reports_router
